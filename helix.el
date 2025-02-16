@@ -36,11 +36,21 @@
     (normal . helix-normal-mode))
   "Alist of symbol state name to minor mode.")
 
+(defun helix--update-cursor ()
+  "Update cursor appearance based on modal state."
+  (setq cursor-type
+        (cond
+          ((eq helix--current-state 'insert) 'bar)
+          ((eq helix--current-state 'normal) 'box))))
+
+(defun helix--unload-current-state ()
+  (let ((mode (alist-get helix--current-state helix-state-mode-alist)))
+    (funcall mode -1)))
+
 (defun helix--switch-state (state)
   "Switch to STATE."
   (unless (eq state helix--current-state)
-    (let ((mode (alist-get helix--current-state helix-state-mode-alist)))
-      (funcall mode -1))
+    (helix--unload-current-state)
     (setq helix--current-state state)
     (let ((mode (alist-get state helix-state-mode-alist)))
       (funcall mode 1))
@@ -87,24 +97,17 @@
 
 (define-minor-mode helix-insert-mode
   "Helix INSERT state minor mode."
-  :lighter "h[insert]"
+  :lighter " helix[I]"
   :keymap helix-insert-state-keymap
   (when helix-insert-mode
     (message "in insert mode")))
 
 (define-minor-mode helix-normal-mode
   "Helix NORMAL state minor mode."
-  :lighter "h[normal]"
+  :lighter " helix[N]"
   :keymap helix-normal-state-keymap
   (when helix-normal-mode
     (message "in normal mode")))
-
-(defun helix--update-cursor ()
-  "Update cursor appearance based on modal state."
-  (setq cursor-type
-        (cond
-          ((eq helix--current-state 'insert) 'bar)
-          (t 'box))))
 
 (provide 'helix)
 ;;; helix.el ends here
