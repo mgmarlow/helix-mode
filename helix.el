@@ -66,38 +66,46 @@
   (interactive)
   (helix--switch-state 'normal))
 
-;; Movement
+;; TODO persist highlights when "v" is active.
+(defun helix--clear-highlights ()
+  "Clear any active highlights, if present."
+  (deactivate-mark))
+
 (defun helix--backward-char ()
   (interactive)
-  (deactivate-mark)
+  (helix--clear-highlights)
   (backward-char))
 
 (defun helix--forward-char ()
   (interactive)
-  (deactivate-mark)
+  (helix--clear-highlights)
   (forward-char))
 
 (defun helix--next-line ()
   (interactive)
-  (deactivate-mark)
+  (helix--clear-highlights)
   (next-line))
 
 (defun helix--previous-line ()
   (interactive)
-  (deactivate-mark)
+  (helix--clear-highlights)
   (previous-line))
 
+;; TODO handle line breaks more effectively
 (defun helix--forward-word ()
   (interactive)
-  (deactivate-mark)
+  (helix--clear-highlights)
+  (unless (use-region-p)
+    (set-mark-command nil))
   (forward-word))
 
 (defun helix--backward-word ()
   (interactive)
-  (deactivate-mark)
+  (helix--clear-highlights)
+  (unless (use-region-p)
+    (set-mark-command nil))
   (backward-word))
 
-;; Highlights
 (defun helix--select-line ()
   (interactive)
   (if (use-region-p)
@@ -105,6 +113,12 @@
     (beginning-of-line)
     (set-mark-command nil)
     (end-of-line)))
+
+(defun helix--kill-thing-at-point ()
+  (interactive)
+  (if (use-region-p)
+      (kill-region (region-beginning) (region-end))
+    (delete-char 1)))
 
 (defvar helix-normal-state-keymap
   (let ((keymap (make-keymap)))
@@ -120,7 +134,7 @@
     
     ;; Editing commands
     (define-key keymap "x" 'helix--select-line)
-    (define-key keymap "d" 'kill-line)
+    (define-key keymap "d" 'helix--kill-thing-at-point)
     (define-key keymap "y" 'kill-ring-save)
     (define-key keymap "p" 'yank)
 
