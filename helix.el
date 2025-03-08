@@ -66,20 +66,60 @@
   (interactive)
   (helix--switch-state 'normal))
 
+;; Movement
+(defun helix--backward-char ()
+  (interactive)
+  (deactivate-mark)
+  (backward-char))
+
+(defun helix--forward-char ()
+  (interactive)
+  (deactivate-mark)
+  (forward-char))
+
+(defun helix--next-line ()
+  (interactive)
+  (deactivate-mark)
+  (next-line))
+
+(defun helix--previous-line ()
+  (interactive)
+  (deactivate-mark)
+  (previous-line))
+
+(defun helix--forward-word ()
+  (interactive)
+  (deactivate-mark)
+  (forward-word))
+
+(defun helix--backward-word ()
+  (interactive)
+  (deactivate-mark)
+  (backward-word))
+
+;; Highlights
+(defun helix--select-line ()
+  (interactive)
+  (if (use-region-p)
+      (next-line)
+    (beginning-of-line)
+    (set-mark-command nil)
+    (end-of-line)))
+
 (defvar helix-normal-state-keymap
   (let ((keymap (make-keymap)))
     (suppress-keymap keymap t)
 
     ;; Movement keys
-    (define-key keymap "h" 'backward-char)
-    (define-key keymap "j" 'next-line)
-    (define-key keymap "k" 'previous-line)
-    (define-key keymap "l" 'forward-char)
-    (define-key keymap "w" 'forward-word)
-    (define-key keymap "b" 'backward-word)
+    (define-key keymap "h" 'helix--backward-char)
+    (define-key keymap "l" 'helix--forward-char)
+    (define-key keymap "j" 'helix--next-line)
+    (define-key keymap "k" 'helix--previous-line)
+    (define-key keymap "w" 'helix--forward-word)
+    (define-key keymap "b" 'helix--backward-word)
     
     ;; Editing commands
-    (define-key keymap "x" 'delete-char)
+    (define-key keymap "x" 'helix--select-line)
     (define-key keymap "d" 'kill-line)
     (define-key keymap "y" 'kill-ring-save)
     (define-key keymap "p" 'yank)
