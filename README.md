@@ -4,8 +4,7 @@ Helix keybindings in Emacs.
 
 ## Installation
 
-Modern Emacs versions, use the `use-package` macro with `:vc` pointing
-to this repository:
+Point `use-package` to this repository:
 
 ```lisp
 (use-package helix
@@ -51,3 +50,7 @@ Accessed by typing `g` in normal mode.
 | e   | Go to end of file       | `helix-go-end-buffer`       |
 | l   | Go to end of line       | `helix-go-end-line`         |
 | h   | Go to beginning of line | `helix-go-beginning-line`   |
+
+## License
+
+Licensed under GPLv3.
