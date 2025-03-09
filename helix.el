@@ -24,12 +24,12 @@
 
 ;;; Code:
 
-;; Eventually define a defcustom group:
-; (defgroup helix nil
-;   "Custom group for Helix."
-;   :group 'helix)
+(defgroup helix nil
+  "Custom group for Helix."
+  :group 'helix)
 
-(defvar helix--current-state 'normal)
+(defvar helix--current-state 'normal
+  "Current modal state, one of normal or insert.")
 
 (defvar helix-state-mode-alist
   `((insert . helix-insert-mode)
@@ -38,6 +38,9 @@
 
 (defvar helix--current-selection nil
   "Beginning point of current visual selection.")
+
+(defvar helix-global-mode nil
+  "Enable Helix mode in all buffers.")
 
 (defun helix--update-cursor ()
   "Update cursor appearance based on modal state."
@@ -81,66 +84,66 @@
   (unless helix--current-selection
     (deactivate-mark)))
 
-(defun helix--backward-char ()
+(defun helix-backward-char ()
   (interactive)
   (helix--clear-highlights)
   (backward-char))
 
-(defun helix--forward-char ()
+(defun helix-forward-char ()
   (interactive)
   (helix--clear-highlights)
   (forward-char))
 
-(defun helix--next-line ()
+(defun helix-next-line ()
   (interactive)
   (helix--clear-highlights)
   (next-line))
 
-(defun helix--previous-line ()
+(defun helix-previous-line ()
   (interactive)
   (helix--clear-highlights)
   (previous-line))
 
 ;; TODO handle line breaks more effectively
-(defun helix--forward-word ()
+(defun helix-forward-word ()
   (interactive)
   (helix--clear-highlights)
   (unless (use-region-p)
     (set-mark-command nil))
   (forward-word))
 
-(defun helix--backward-word ()
+(defun helix-backward-word ()
   (interactive)
   (helix--clear-highlights)
   (unless (use-region-p)
     (set-mark-command nil))
   (backward-word))
 
-(defun helix--go-beginning-line ()
+(defun helix-go-beginning-line ()
   "Go to beginning of line"
   (interactive)
   (helix--clear-highlights)
   (beginning-of-line))
 
-(defun helix--go-end-line ()
+(defun helix-go-end-line ()
   "Go to end of line"
   (interactive)
   (helix--clear-highlights)
   (end-of-line))
 
-(defun helix--go-beginning-buffer ()
+(defun helix-go-beginning-buffer ()
   "Go to beginning of buffer."
   (interactive)
   (helix--clear-highlights)
   (beginning-of-buffer))
 
-(defun helix--go-end-buffer ()
+(defun helix-go-end-buffer ()
   "Go to end of buffer."
   (interactive)
   (helix--clear-highlights)
   (end-of-buffer))
 
-(defun helix--select-line ()
+(defun helix-select-line ()
   "Select the current line, moving the cursor to the end."
   (interactive)
   (if (use-region-p)
@@ -151,14 +154,14 @@
     (set-mark-command nil)
     (end-of-line)))
 
-(defun helix--kill-thing-at-point ()
+(defun helix-kill-thing-at-point ()
   "Kill current region or current point."
   (interactive)
   (if (use-region-p)
       (kill-region (region-beginning) (region-end))
     (delete-char 1)))
 
-(defun helix--begin-selection ()
+(defun helix-begin-selection ()
   "Begin selection at existing region or current point."
   (interactive)
   (unless helix--current-selection
@@ -167,14 +170,14 @@
       (set-mark-command nil)
       (setq helix--current-selection (point)))))
 
-(defun helix--cancel ()
+(defun helix-cancel ()
   "Clear any selections, reset data, and cancel commands."
   (interactive)
   (helix--clear-data)
   (keyboard-quit))
 
 ;; TODO: better handling of indentation based on lang mode.
-(defun helix--insert-newline ()
+(defun helix-insert-newline ()
   "Insert newline and change `helix--current-state' to INSERT mode."
   (interactive)
   (helix--clear-data)
@@ -188,34 +191,34 @@
     (suppress-keymap keymap t)
 
     ;; Movement keys
-    (define-key keymap "h" #'helix--backward-char)
-    (define-key keymap "l" #'helix--forward-char)
-    (define-key keymap "j" #'helix--next-line)
-    (define-key keymap "k" #'helix--previous-line)
-    (define-key keymap "w" #'helix--forward-word)
-    (define-key keymap "b" #'helix--backward-word)
+    (define-key keymap "h" #'helix-backward-char)
+    (define-key keymap "l" #'helix-forward-char)
+    (define-key keymap "j" #'helix-next-line)
+    (define-key keymap "k" #'helix-previous-line)
+    (define-key keymap "w" #'helix-forward-word)
+    (define-key keymap "b" #'helix-backward-word)
 
     ;; Go-to menu
     (define-key keymap "g" 'helix-goto-map)
-    (define-key helix-goto-map "l" #'helix--go-end-line)
-    (define-key helix-goto-map "h" #'helix--go-beginning-line)
-    (define-key helix-goto-map "g" #'helix--go-beginning-buffer)
-    (define-key helix-goto-map "e" #'helix--go-end-buffer)
-    (define-key helix-goto-map "j" #'helix--next-line)
-    (define-key helix-goto-map "k" #'helix--previous-line)
+    (define-key helix-goto-map "l" #'helix-go-end-line)
+    (define-key helix-goto-map "h" #'helix-go-beginning-line)
+    (define-key helix-goto-map "g" #'helix-go-beginning-buffer)
+    (define-key helix-goto-map "e" #'helix-go-end-buffer)
+    (define-key helix-goto-map "j" #'helix-next-line)
+    (define-key helix-goto-map "k" #'helix-previous-line)
     
     ;; Editing commands
-    (define-key keymap "x" #'helix--select-line)
-    (define-key keymap "d" #'helix--kill-thing-at-point)
+    (define-key keymap "x" #'helix-select-line)
+    (define-key keymap "d" #'helix-kill-thing-at-point)
     (define-key keymap "y" #'kill-ring-save)
     (define-key keymap "p" #'yank)
-    (define-key keymap "v" #'helix--begin-selection)
+    (define-key keymap "v" #'helix-begin-selection)
     (define-key keymap "u" #'undo)
-    (define-key keymap "o" #'helix--insert-newline)
+    (define-key keymap "o" #'helix-insert-newline)
 
     ;; State switching
     (define-key keymap "i" #'helix-insert)
-    (define-key keymap [escape] #'helix--cancel)
+    (define-key keymap [escape] #'helix-cancel)
     keymap)
   "Keymap for Helix normal state.")
 
@@ -228,12 +231,36 @@
 (define-minor-mode helix-insert-mode
   "Helix INSERT state minor mode."
   :lighter " helix[I]"
+  :init-value nil
+  :interactive nil
+  :global nil
   :keymap helix-insert-state-keymap)
 
 (define-minor-mode helix-normal-mode
   "Helix NORMAL state minor mode."
   :lighter " helix[N]"
+  :init-value nil
+  :interactive nil
+  :global nil
   :keymap helix-normal-state-keymap)
+
+(add-hook 'after-change-major-mode-hook #'helix-mode-maybe-activate)
+
+(defun helix-mode-maybe-activate ()
+  "Activate `helix-normal-mode' when appropriate."
+  (when (and (not (minibufferp)) helix-global-mode)
+    (helix-normal-mode 1)))
+
+;;;###autoload
+(defun helix-mode ()
+  "Toggle global Helix mode"
+  (interactive)
+  (setq helix-global-mode (not helix-global-mode))
+  (if helix-global-mode
+      (helix-normal-mode 1)
+    (cond
+     (helix-normal-mode (helix-normal-mode -1))
+     (helix-insert-mode (helix-insert-mode -1)))))
 
 (provide 'helix)
 ;;; helix.el ends here
