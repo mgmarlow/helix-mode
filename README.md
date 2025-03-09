@@ -8,7 +8,7 @@ Point `use-package` to this repository:
 
 ```lisp
 (use-package helix
-  :vc (:url "https://github.com/mgmarlow/helix")
+  :vc (:url "https://github.com/mgmarlow/helix-mode")
   :config
   ;; Activate Helix globally
   (helix-mode))
