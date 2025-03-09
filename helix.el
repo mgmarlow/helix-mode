@@ -109,6 +109,30 @@
     (set-mark-command nil))
   (backward-word))
 
+(defun helix--go-beginning-line ()
+  "Go to beginning of line"
+  (interactive)
+  (helix--clear-highlights)
+  (beginning-of-line))
+
+(defun helix--go-end-line ()
+  "Go to end of line"
+  (interactive)
+  (helix--clear-highlights)
+  (end-of-line))
+
+(defun helix--go-beginning-buffer ()
+  "Go to beginning of buffer."
+  (interactive)
+  (helix--clear-highlights)
+  (beginning-of-buffer))
+
+(defun helix--go-end-buffer ()
+  "Go to end of buffer."
+  (interactive)
+  (helix--clear-highlights)
+  (end-of-buffer))
+
 (defun helix--select-line ()
   "Select the current line, moving the cursor to the end."
   (interactive)
@@ -145,6 +169,7 @@
 
 (defvar helix-normal-state-keymap
   (let ((keymap (make-keymap)))
+    (define-prefix-command 'helix-goto-map)
     (suppress-keymap keymap t)
 
     ;; Movement keys
@@ -154,6 +179,15 @@
     (define-key keymap "k" #'helix--previous-line)
     (define-key keymap "w" #'helix--forward-word)
     (define-key keymap "b" #'helix--backward-word)
+
+    ;; Go-to menu
+    (define-key keymap "g" 'helix-goto-map)
+    (define-key helix-goto-map "l" #'helix--go-end-line)
+    (define-key helix-goto-map "h" #'helix--go-beginning-line)
+    (define-key helix-goto-map "g" #'helix--go-beginning-buffer)
+    (define-key helix-goto-map "e" #'helix--go-end-buffer)
+    (define-key helix-goto-map "j" #'helix--next-line)
+    (define-key helix-goto-map "k" #'helix--previous-line)
     
     ;; Editing commands
     (define-key keymap "x" #'helix--select-line)
@@ -161,6 +195,7 @@
     (define-key keymap "y" #'kill-ring-save)
     (define-key keymap "p" #'yank)
     (define-key keymap "v" #'helix--begin-selection)
+    (define-key keymap "u" #'undo)
 
     ;; State switching
     (define-key keymap "i" #'helix-insert)
@@ -177,16 +212,12 @@
 (define-minor-mode helix-insert-mode
   "Helix INSERT state minor mode."
   :lighter " helix[I]"
-  :keymap helix-insert-state-keymap
-  (when helix-insert-mode
-    (message "in insert mode")))
+  :keymap helix-insert-state-keymap)
 
 (define-minor-mode helix-normal-mode
   "Helix NORMAL state minor mode."
   :lighter " helix[N]"
-  :keymap helix-normal-state-keymap
-  (when helix-normal-mode
-    (message "in normal mode")))
+  :keymap helix-normal-state-keymap)
 
 (provide 'helix)
 ;;; helix.el ends here
