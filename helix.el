@@ -4,6 +4,9 @@
 
 ;; Author: Graham Marlow
 ;; Keywords: convenience
+;; Version: 0.1.0
+;; Package-Requires: ((emacs "25.1"))
+;; URL: https://github.com/mgmarlow/helix-mode
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
