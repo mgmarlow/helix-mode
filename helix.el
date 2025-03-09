@@ -36,6 +36,9 @@
     (normal . helix-normal-mode))
   "Alist of symbol state name to minor mode.")
 
+(defvar helix--current-selection nil
+  "Beginning point of current visual selection.")
+
 (defun helix--update-cursor ()
   "Update cursor appearance based on modal state."
   (setq cursor-type
@@ -66,10 +69,10 @@
   (interactive)
   (helix--switch-state 'normal))
 
-;; TODO persist highlights when "v" is active.
 (defun helix--clear-highlights ()
-  "Clear any active highlights, if present."
-  (deactivate-mark))
+  "Clear any active highlights, unless `helix--current-state' is non-nil."
+  (unless helix--current-state
+    (deactivate-mark)))
 
 (defun helix--backward-char ()
   (interactive)
@@ -107,6 +110,7 @@
   (backward-word))
 
 (defun helix--select-line ()
+  "Select the current line, moving the cursor to the end."
   (interactive)
   (if (use-region-p)
       (next-line)
@@ -115,10 +119,27 @@
     (end-of-line)))
 
 (defun helix--kill-thing-at-point ()
+  "Kill current region or current point."
   (interactive)
   (if (use-region-p)
       (kill-region (region-beginning) (region-end))
     (delete-char 1)))
+
+(defun helix--begin-selection ()
+  "Begin selection at existing region or current point."
+  (interactive)
+  (unless helix--current-selection
+    (if (use-region-p)
+        (setq helix--current-selection (region-beginning))
+      (set-mark-command nil)
+      (setq helix--curent-selection (point)))))
+
+(defun helix--cancel ()
+  "Clear any selections, reset data, and cancel commands."
+  (interactive)
+  (deactivate-mark)
+  (setq helix--current-selection nil)
+  (keyboard-quit))
 
 (defvar helix-normal-state-keymap
   (let ((keymap (make-keymap)))
@@ -137,9 +158,11 @@
     (define-key keymap "d" 'helix--kill-thing-at-point)
     (define-key keymap "y" 'kill-ring-save)
     (define-key keymap "p" 'yank)
+    (define-key keymap "v" 'helix--begin-selection)
 
     ;; State switching
     (define-key keymap "i" 'helix-insert)
+    (define-key keymap [escape] 'helix--cancel)
     keymap)
   "Keymap for Helix normal state.")
 
