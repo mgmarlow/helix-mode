@@ -71,7 +71,7 @@
 
 (defun helix--clear-highlights ()
   "Clear any active highlights, unless `helix--current-state' is non-nil."
-  (unless helix--current-state
+  (unless helix--current-selection
     (deactivate-mark)))
 
 (defun helix--backward-char ()
@@ -113,7 +113,9 @@
   "Select the current line, moving the cursor to the end."
   (interactive)
   (if (use-region-p)
-      (next-line)
+      (progn
+        (next-line)
+        (end-of-line))
     (beginning-of-line)
     (set-mark-command nil)
     (end-of-line)))
@@ -132,7 +134,7 @@
     (if (use-region-p)
         (setq helix--current-selection (region-beginning))
       (set-mark-command nil)
-      (setq helix--curent-selection (point)))))
+      (setq helix--current-selection (point)))))
 
 (defun helix--cancel ()
   "Clear any selections, reset data, and cancel commands."
@@ -146,29 +148,29 @@
     (suppress-keymap keymap t)
 
     ;; Movement keys
-    (define-key keymap "h" 'helix--backward-char)
-    (define-key keymap "l" 'helix--forward-char)
-    (define-key keymap "j" 'helix--next-line)
-    (define-key keymap "k" 'helix--previous-line)
-    (define-key keymap "w" 'helix--forward-word)
-    (define-key keymap "b" 'helix--backward-word)
+    (define-key keymap "h" #'helix--backward-char)
+    (define-key keymap "l" #'helix--forward-char)
+    (define-key keymap "j" #'helix--next-line)
+    (define-key keymap "k" #'helix--previous-line)
+    (define-key keymap "w" #'helix--forward-word)
+    (define-key keymap "b" #'helix--backward-word)
     
     ;; Editing commands
-    (define-key keymap "x" 'helix--select-line)
-    (define-key keymap "d" 'helix--kill-thing-at-point)
-    (define-key keymap "y" 'kill-ring-save)
-    (define-key keymap "p" 'yank)
-    (define-key keymap "v" 'helix--begin-selection)
+    (define-key keymap "x" #'helix--select-line)
+    (define-key keymap "d" #'helix--kill-thing-at-point)
+    (define-key keymap "y" #'kill-ring-save)
+    (define-key keymap "p" #'yank)
+    (define-key keymap "v" #'helix--begin-selection)
 
     ;; State switching
-    (define-key keymap "i" 'helix-insert)
-    (define-key keymap [escape] 'helix--cancel)
+    (define-key keymap "i" #'helix-insert)
+    (define-key keymap [escape] #'helix--cancel)
     keymap)
   "Keymap for Helix normal state.")
 
 (defvar helix-insert-state-keymap
   (let ((keymap (make-keymap)))
-    (define-key keymap [escape] 'helix-insert-exit)
+    (define-key keymap [escape] #'helix-insert-exit)
     keymap)
   "Keymap for Helix insert state.")
 
