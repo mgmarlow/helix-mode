@@ -59,14 +59,21 @@
       (funcall mode 1))
     (helix--update-cursor)))
 
+(defun helix--clear-data ()
+  "Clear any intermediate data, e.g. selections/marks."
+  (setq helix--current-selection nil)
+  (deactivate-mark))
+
 (defun helix-insert ()
   "Switch to insert state."
   (interactive)
+  (helix--clear-data)
   (helix--switch-state 'insert))
 
 (defun helix-insert-exit ()
   "Switch to normal state."
   (interactive)
+  (helix--clear-data)
   (helix--switch-state 'normal))
 
 (defun helix--clear-highlights ()
@@ -163,9 +170,17 @@
 (defun helix--cancel ()
   "Clear any selections, reset data, and cancel commands."
   (interactive)
-  (deactivate-mark)
-  (setq helix--current-selection nil)
+  (helix--clear-data)
   (keyboard-quit))
+
+;; TODO: better handling of indentation based on lang mode.
+(defun helix--insert-newline ()
+  "Insert newline and change `helix--current-state' to INSERT mode."
+  (interactive)
+  (helix--clear-data)
+  (end-of-line)
+  (newline)
+  (helix-insert))
 
 (defvar helix-normal-state-keymap
   (let ((keymap (make-keymap)))
@@ -196,6 +211,7 @@
     (define-key keymap "p" #'yank)
     (define-key keymap "v" #'helix--begin-selection)
     (define-key keymap "u" #'undo)
+    (define-key keymap "o" #'helix--insert-newline)
 
     ;; State switching
     (define-key keymap "i" #'helix-insert)
