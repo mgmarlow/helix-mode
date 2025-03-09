@@ -85,27 +85,32 @@
     (deactivate-mark)))
 
 (defun helix-backward-char ()
+  "Move left."
   (interactive)
   (helix--clear-highlights)
   (backward-char))
 
 (defun helix-forward-char ()
+  "Move right."
   (interactive)
   (helix--clear-highlights)
   (forward-char))
 
 (defun helix-next-line ()
+  "Move down."
   (interactive)
   (helix--clear-highlights)
   (next-line))
 
 (defun helix-previous-line ()
+  "Move up."
   (interactive)
   (helix--clear-highlights)
   (previous-line))
 
 ;; TODO handle line breaks more effectively
 (defun helix-forward-word ()
+  "Move to next word."
   (interactive)
   (helix--clear-highlights)
   (unless (use-region-p)
@@ -113,6 +118,7 @@
   (forward-word))
 
 (defun helix-backward-word ()
+  "Move to previous word."
   (interactive)
   (helix--clear-highlights)
   (unless (use-region-p)
@@ -260,6 +266,7 @@
       (helix-normal-mode 1)
     (cond
      (helix-normal-mode (helix-normal-mode -1))
+     ;; TODO: need to clean up any changes to cursor, etc.
      (helix-insert-mode (helix-insert-mode -1)))))
 
 (provide 'helix)
