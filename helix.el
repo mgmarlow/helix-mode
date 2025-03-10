@@ -65,6 +65,7 @@ Nil if no search has taken place while helix-mode is active.")
   "Switch to STATE."
   (unless (eq state helix--current-state)
     (helix--unload-current-state)
+    (helix--clear-data)
     (setq helix--current-state state)
     (let ((mode (alist-get state helix-state-mode-alist)))
       (funcall mode 1))
@@ -78,13 +79,11 @@ Nil if no search has taken place while helix-mode is active.")
 (defun helix-insert ()
   "Switch to insert state."
   (interactive)
-  (helix--clear-data)
   (helix--switch-state 'insert))
 
 (defun helix-insert-exit ()
   "Switch to normal state."
   (interactive)
-  (helix--clear-data)
   (helix--switch-state 'normal))
 
 (defun helix--clear-highlights ()
