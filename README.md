@@ -14,6 +14,28 @@ Point `use-package` to this repository:
   (helix-mode))
 ```
 
+### Global vs. local mode
+
+You can enable Helix mode globally (e.g. for all buffers besides
+minibuffers) via
+
+```lisp
+(helix-mode)
+```
+
+> Warning: Helix mode is still a work in progress, so some special
+> buffer modes like dired will not work nicely with Helix. You can
+> still use Helix globally but note that you may need to manually
+> invoke some commands in these special buffers, like
+> `dired-do-delete`.
+
+Alternatively, you can manually toggle turn Helix mode on/off in local
+buffers by invoking `helix-normal-mode`:
+
+```lisp
+(helix-normal-mode 1)
+```
+
 ## Supported keybindings
 
 Only a subset of [Helix
@@ -36,7 +58,9 @@ supported.
 | p   | Paste                        | N/A                                |
 | v   | Begin selection              | `helix-begin-selection`            |
 | u   | Undo                         | N/A                                |
-| /   | Search                       | N/A                                |
+| /   | Search                       | `helix-search`                     |
+| n   | Continue search forwards     | `helix-search-forward`             |
+| N   | Continue search backwards    | `helix-search-backward`            |
 | o   | Insert newline               | `helix-insert-newline`             |
 | O   | Insert line above            | `helis-insert-prevline`            |
 | i   | Insert mode                  | `helix-insert`                     |

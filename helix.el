@@ -45,6 +45,11 @@
 (defvar helix-global-mode nil
   "Enable Helix mode in all buffers.")
 
+(defvar helix-current-search nil
+  "Current search string, initiated via `helix-search'.
+
+Nil if no search has taken place while helix-mode is active.")
+
 (defun helix--update-cursor ()
   "Update cursor appearance based on modal state."
   (setq cursor-type
@@ -186,6 +191,7 @@
   (keyboard-quit))
 
 ;; TODO: better handling of indentation based on lang mode.
+;; TODO: doesn't work when starting on an empty line.
 (defun helix-insert-newline ()
   "Insert newline and change `helix--current-state' to INSERT mode."
   (interactive)
@@ -202,6 +208,41 @@
   (newline)
   (previous-line)
   (helix-insert))
+
+(defun helix-search (input)
+  "Begin a search for INPUT."
+  (interactive "ssearch:")
+  (setq helix-current-search input)
+  (helix-search-forward))
+
+(defun helix--select-region (start end)
+  "Create a region between START and END, leaving the current point at END."
+  (deactivate-mark)
+  (goto-char start)
+  (set-mark-command nil)
+  (goto-char end))
+
+(defun helix-search-forward ()
+  "When `helix-current-search' is non-nil, search forward."
+  (interactive)
+  (when helix-current-search
+    (search-forward helix-current-search)
+    (helix--select-region (match-beginning 0) (match-end 0))))
+
+(defun helix-search-backward ()
+  "When `helix-current-search' is non-nil, search backward.
+
+Note that the current point is shifted a single character
+backwards before a search takes place so that repeated calls to
+`helix-search-backward' work as expected.  Helix places the
+current point at the end of the matching word in both forward and
+backward searches, while Emacs places the cursor at the beginning
+of the matching word in backward searches."
+  (interactive)
+  (when helix-current-search
+    (backward-char)
+    (search-backward helix-current-search)
+    (helix--select-region (match-beginning 0) (match-end 0))))
 
 (defvar helix-normal-state-keymap
   (let ((keymap (make-keymap)))
@@ -234,7 +275,9 @@
     (define-key keymap "u" #'undo)
     (define-key keymap "o" #'helix-insert-newline)
     (define-key keymap "O" #'helix-insert-prevline)
-    (define-key keymap "/" #'isearch-forward)
+    (define-key keymap "/" #'helix-search)
+    (define-key keymap "n" #'helix-search-forward)
+    (define-key keymap "N" #'helix-search-backward)
 
     ;; State switching
     (define-key keymap "i" #'helix-insert)
@@ -260,7 +303,7 @@
   "Helix NORMAL state minor mode."
   :lighter " helix[N]"
   :init-value nil
-  :interactive nil
+  :interactive t
   :global nil
   :keymap helix-normal-state-keymap)
 
