@@ -194,6 +194,15 @@
   (newline)
   (helix-insert))
 
+(defun helix-insert-prevline ()
+  "Insert line above and change `helix--current-state' to INSERT mode."
+  (interactive)
+  (helix--clear-data)
+  (beginning-of-line)
+  (newline)
+  (previous-line)
+  (helix-insert))
+
 (defvar helix-normal-state-keymap
   (let ((keymap (make-keymap)))
     (define-prefix-command 'helix-goto-map)
@@ -224,6 +233,8 @@
     (define-key keymap "v" #'helix-begin-selection)
     (define-key keymap "u" #'undo)
     (define-key keymap "o" #'helix-insert-newline)
+    (define-key keymap "O" #'helix-insert-prevline)
+    (define-key keymap "/" #'isearch-forward)
 
     ;; State switching
     (define-key keymap "i" #'helix-insert)

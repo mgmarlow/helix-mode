@@ -36,7 +36,9 @@ supported.
 | p   | Paste                        | N/A                                |
 | v   | Begin selection              | `helix-begin-selection`            |
 | u   | Undo                         | N/A                                |
+| /   | Search                       | N/A                                |
 | o   | Insert newline               | `helix-insert-newline`             |
+| O   | Insert line above            | `helis-insert-prevline`            |
 | i   | Insert mode                  | `helix-insert`                     |
 | ESC | Cancel/switch to normal mode | `helix-cancel`/`helix-insert-exit` |
 
