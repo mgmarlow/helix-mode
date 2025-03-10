@@ -2,6 +2,14 @@
 
 Helix keybindings in Emacs.
 
+[Helix](https://helix-editor.com/) is a modal text editor that
+uses a keybinding scheme very similar to
+[Kakoune](https://kakoune.org/why-kakoune/why-kakoune.html). That
+is, keybindings that are reminiscient of vi but flip around the
+verb-object model. This Emacs package implements a subset of
+these keybindings and configures a number of editing conventions
+to align with Helix.
+
 ## Installation
 
 Point `use-package` to this repository:
@@ -29,7 +37,7 @@ minibuffers) via
 > invoke some commands in these special buffers, like
 > `dired-do-delete`.
 
-Alternatively, you can manually toggle turn Helix mode on/off in local
+Alternatively, you can manually toggle Helix mode on/off in local
 buffers by invoking `helix-normal-mode`:
 
 ```lisp
