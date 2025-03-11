@@ -2,23 +2,36 @@
 
 Helix keybindings in Emacs.
 
-[Helix](https://helix-editor.com/) is a modal text editor that
-uses a keybinding scheme very similar to
-[Kakoune](https://kakoune.org/why-kakoune/why-kakoune.html). That
-is, keybindings that are reminiscient of vi but flip around the
-verb-object model. This Emacs package implements a subset of
-these keybindings and configures a number of editing conventions
-to align with Helix.
+[Helix](https://helix-editor.com/) is a modal text editor that uses a
+keybinding scheme very similar to
+[Kakoune](https://kakoune.org/why-kakoune/why-kakoune.html). That is,
+keybindings that are reminiscent of vi but flip around the verb-object
+model. Helix Mode implements a subset of Helix keybindings and
+modes.
 
 ## Installation
 
-Point `use-package` to this repository:
+Clone Helix Mode:
+
+```
+git clone https://github.com/mgmarlow/helix-mode /path/to/helix-mode
+```
+
+Add Helix Mode to your load path and enable it globally:
+
+```lisp
+(add-to-list 'load-path "/path/to/helix-mode")
+(require 'helix)
+(helix-mode)
+```
+
+Or (>= Emacs 30.1) point `use-package` to this repository with the vc
+keyword:
 
 ```lisp
 (use-package helix
   :vc (:url "https://github.com/mgmarlow/helix-mode")
   :config
-  ;; Activate Helix globally
   (helix-mode))
 ```
 
@@ -32,10 +45,9 @@ minibuffers) via
 ```
 
 > Warning: Helix mode is still a work in progress, so some special
-> buffer modes like dired will not work nicely with Helix. You can
-> still use Helix globally but note that you may need to manually
-> invoke some commands in these special buffers, like
-> `dired-do-delete`.
+> buffer modes like dired will not work perfectly. You can still use
+> Helix globally but note that you may need to manually invoke some
+> commands in special buffers.
 
 Alternatively, you can manually toggle Helix mode on/off in local
 buffers by invoking `helix-normal-mode`:
@@ -45,10 +57,6 @@ buffers by invoking `helix-normal-mode`:
 ```
 
 ## Supported keybindings
-
-Only a subset of [Helix
-keybindings](https://docs.helix-editor.com/keymap.html) are currently
-supported.
 
 ### Movement, selection, and editing
 

@@ -4,7 +4,7 @@
 
 ;; Author: Graham Marlow
 ;; Keywords: convenience
-;; Version: 0.1.0
+;; Version: 0.2.0
 ;; Package-Requires: ((emacs "25.1"))
 ;; URL: https://github.com/mgmarlow/helix-mode
 
@@ -159,7 +159,7 @@ Nil if no search has taken place while helix-mode is active.")
 (defun helix-select-line ()
   "Select the current line, moving the cursor to the end."
   (interactive)
-  (if (use-region-p)
+  (if (region-active-p)
       (progn
         (next-line)
         (end-of-line))
@@ -190,7 +190,6 @@ Nil if no search has taken place while helix-mode is active.")
   (keyboard-quit))
 
 ;; TODO: better handling of indentation based on lang mode.
-;; TODO: doesn't work when starting on an empty line.
 (defun helix-insert-newline ()
   "Insert newline and change `helix--current-state' to INSERT mode."
   (interactive)
