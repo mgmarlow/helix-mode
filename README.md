@@ -80,6 +80,9 @@ buffers by invoking `helix-normal-mode`:
 | o   | Insert newline               | `helix-insert-newline`             |
 | O   | Insert line above            | `helis-insert-prevline`            |
 | i   | Insert mode                  | `helix-insert`                     |
+| I   | Insert beginning of line     | `helix-insert-beginning-line`      |
+| a   | Insert after                 | `helix-insert-after`               |
+| A   | Insert end of line           | `helix-insert-after-end-line`      |
 | ESC | Cancel/switch to normal mode | `helix-cancel`/`helix-insert-exit` |
 
 ### Goto mode
