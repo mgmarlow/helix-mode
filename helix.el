@@ -314,13 +314,30 @@ If `helix--current-selection' is nil, replace character at point."
     (yank)
     (helix--clear-data)))
 
+(defvar helix--command-alist
+  '(("w" . (lambda () (call-interactively #'save-buffer)))
+    ("write" . (lambda () (call-interactively #'save-buffer)))
+    ("q" . (lambda () (call-interactively #'save-buffers-kill-terminal)))
+    ("quit" . (lambda () (call-interactively #'save-buffers-kill-terminal)))
+    ("q!" . (lambda () (kill-emacs)))
+    ("quit!" . (lambda () (kill-emacs)))
+    ("write-quit" . (lambda ()
+                      (save-buffer)
+                      (kill-emacs)))
+    ("wq" . (lambda ()
+              (save-buffer)
+              (kill-emacs))))
+  "Alist of commands executed by `helix-execute-command'.")
+
 (defun helix-execute-command (command)
   "Execute COMMAND."
   (interactive "s:")
-  (cond
-   ((string= command "w") (call-interactively #'save-buffer))
-   ((string= command "write") (call-interactively #'save-buffer))
-   (t (message "no such command: \'%s\'" command))))
+  (funcall (alist-get (string-trim command)
+                      helix--command-alist
+                      (lambda ()
+                        (message "no such command: \'%s\'" command))
+                      nil
+                      #'string=)))
 
 (defvar helix-normal-state-keymap
   (let ((keymap (make-keymap)))

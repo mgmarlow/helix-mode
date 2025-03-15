@@ -108,8 +108,8 @@ Normal mode is the default mode. You can return to it by pressing
 
 Accessed by typing `:` in normal mode.
 
-Currently only supports `:w` and `:write` as an alternative way to
-save the current buffer.
+Currently only supports basic save/quit commands, e.g. `write`,
+`write-quit`.
 
 ### Goto mode
 
