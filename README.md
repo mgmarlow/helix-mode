@@ -58,34 +58,51 @@ buffers by invoking `helix-normal-mode`:
 
 ## Supported keybindings
 
-### Movement, selection, and editing
+Normal mode is the default mode. You can return to it by pressing
+`ESC`.
 
-| Key | Description                  | Command                            |
-|:----|:-----------------------------|:-----------------------------------|
-| h   | Move left                    | `helix-backward-char`              |
-| l   | Move right                   | `helix-forward-char`               |
-| j   | Move down                    | `helix-next-line`                  |
-| k   | Move up                      | `helix-previous-line`              |
-| w   | Move next word               | `helix-forward-word`               |
-| b   | Move previous word           | `helix-backward-word`              |
-| x   | Select current line          | `helix-select-line`                |
-| d   | Delete selection             | `helix-kill-thing-at-point`        |
-| y   | Yank selection               | N/A                                |
-| p   | Paste                        | N/A                                |
-| v   | Begin selection              | `helix-begin-selection`            |
-| u   | Undo                         | N/A                                |
-| /   | Search                       | `helix-search`                     |
-| n   | Continue search forwards     | `helix-search-forward`             |
-| N   | Continue search backwards    | `helix-search-backward`            |
-| o   | Insert newline               | `helix-insert-newline`             |
-| O   | Insert line above            | `helis-insert-prevline`            |
-| i   | Insert mode                  | `helix-insert`                     |
-| I   | Insert beginning of line     | `helix-insert-beginning-line`      |
-| a   | Insert after                 | `helix-insert-after`               |
-| A   | Insert end of line           | `helix-insert-after-end-line`      |
-| r   | Replace with a character     | `helix-replace`                    |
-| R   | Replace with yanked text     | `helix-replace-yanked`             |
-| ESC | Cancel/switch to normal mode | `helix-cancel`/`helix-insert-exit` |
+### Movement
+
+| Key | Description        | Command               |
+|:----|:-------------------|:----------------------|
+| h   | Move left          | `helix-backward-char` |
+| l   | Move right         | `helix-forward-char`  |
+| j   | Move down          | `helix-next-line`     |
+| k   | Move up            | `helix-previous-line` |
+| w   | Move next word     | `helix-forward-word`  |
+| b   | Move previous word | `helix-backward-word` |
+
+### Changes
+
+| Key | Description              | Command                       |
+|:----|:-------------------------|:------------------------------|
+| d   | Delete selection         | `helix-kill-thing-at-point`   |
+| y   | Yank selection           | N/A                           |
+| p   | Paste                    | N/A                           |
+| v   | Begin selection          | `helix-begin-selection`       |
+| u   | Undo                     | N/A                           |
+| o   | Insert newline           | `helix-insert-newline`        |
+| O   | Insert line above        | `helis-insert-prevline`       |
+| i   | Insert mode              | `helix-insert`                |
+| I   | Insert beginning of line | `helix-insert-beginning-line` |
+| a   | Insert after             | `helix-insert-after`          |
+| A   | Insert end of line       | `helix-insert-after-end-line` |
+| r   | Replace with a character | `helix-replace`               |
+| R   | Replace with yanked text | `helix-replace-yanked`        |
+
+### Selection
+
+| Key | Description         | Command             |
+|:----|:--------------------|:--------------------|
+| x   | Select current line | `helix-select-line` |
+
+### Search
+
+| Key | Description               | Command                 |
+|:----|:--------------------------|:------------------------|
+| /   | Search                    | `helix-search`          |
+| n   | Continue search forwards  | `helix-search-forward`  |
+| N   | Continue search backwards | `helix-search-backward` |
 
 ### Goto mode
 
