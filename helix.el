@@ -189,6 +189,34 @@ Nil if no search has taken place while helix-mode is active.")
   (helix--clear-data)
   (keyboard-quit))
 
+(defun helix--end-of-line-p ()
+  "Returns non-nil if current point is at the end of the current line."
+  (save-excursion
+    (let ((cur (point))
+          eol)
+      (end-of-line)
+      (setq eol (point))
+      (= cur eol))))
+
+(defun helix-insert-after ()
+  "Swap to insert mode one character beyond current point."
+  (interactive)
+  (unless (helix--end-of-line-p)
+    (forward-char))
+  (helix-insert))
+
+(defun helix-insert-beginning-line ()
+  "Move current point to the beginning of line and enter insert mode."
+  (interactive)
+  (beginning-of-line)
+  (helix-insert))
+
+(defun helix-insert-after-end-line ()
+  "Move current point to the end of line and enter insert mode."
+  (interactive)
+  (end-of-line)
+  (helix-insert))
+
 ;; TODO: better handling of indentation based on lang mode.
 (defun helix-insert-newline ()
   "Insert newline and change `helix--current-state' to INSERT mode."
@@ -279,6 +307,9 @@ of the matching word in backward searches."
 
     ;; State switching
     (define-key keymap "i" #'helix-insert)
+    (define-key keymap "I" #'helix-insert-beginning-line)
+    (define-key keymap "a" #'helix-insert-after)
+    (define-key keymap "A" #'helix-insert-after-end-line)
     (define-key keymap [escape] #'helix-cancel)
     keymap)
   "Keymap for Helix normal state.")
