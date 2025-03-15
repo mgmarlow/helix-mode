@@ -270,6 +270,35 @@ of the matching word in backward searches."
     (search-backward helix-current-search)
     (helix--select-region (match-beginning 0) (match-end 0))))
 
+(defun helix--replace-region (start end text)
+  "Replace region from START to END in-place with TEXT."
+  (delete-region start end)
+  (insert text)
+  (helix--clear-data))
+
+(defun helix-replace (char)
+  "Replace selection with CHAR.
+
+If `helix--current-selection' is nil, replace character at point."
+  (interactive "c")
+  (if helix--current-selection
+      (helix--replace-region helix--current-selection (point)
+                             (make-string (abs (- (point) helix--current-selection)) char))
+    (helix--replace-region (point) (1+ (point)) char)))
+
+(defun helix-replace-yanked ()
+  "Replace selection with the last stretch of killed text.
+
+If `helix--current-selection' is nil, replace character at point."
+  (interactive)
+  (if (= 0 (length kill-ring))
+      (message "nothing to yank")
+    (if helix--current-selection
+        (delete-region helix--current-selection (point))
+      (delete-char 1))
+    (yank)
+    (helix--clear-data)))
+
 (defvar helix-normal-state-keymap
   (let ((keymap (make-keymap)))
     (define-prefix-command 'helix-goto-map)
@@ -304,6 +333,8 @@ of the matching word in backward searches."
     (define-key keymap "/" #'helix-search)
     (define-key keymap "n" #'helix-search-forward)
     (define-key keymap "N" #'helix-search-backward)
+    (define-key keymap "r" #'helix-replace)
+    (define-key keymap "R" #'helix-replace-yanked)
 
     ;; State switching
     (define-key keymap "i" #'helix-insert)

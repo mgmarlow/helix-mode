@@ -83,6 +83,8 @@ buffers by invoking `helix-normal-mode`:
 | I   | Insert beginning of line     | `helix-insert-beginning-line`      |
 | a   | Insert after                 | `helix-insert-after`               |
 | A   | Insert end of line           | `helix-insert-after-end-line`      |
+| r   | Replace with a character     | `helix-replace`                    |
+| R   | Replace with yanked text     | `helix-replace-yanked`             |
 | ESC | Cancel/switch to normal mode | `helix-cancel`/`helix-insert-exit` |
 
 ### Goto mode
