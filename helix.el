@@ -115,22 +115,37 @@ Nil if no search has taken place while helix-mode is active.")
   (helix--clear-highlights)
   (previous-line))
 
-;; TODO handle line breaks more effectively
+(defun helix--select-thing-at-point (dir &optional thing)
+  "Create a region around the THING at point, relative to DIR.
+
+If THING is nil, the syntactic entity defaults to 'word."
+  (let ((bounds (bounds-of-thing-at-point (or thing 'word))))
+    (when bounds
+      (push-mark
+       (if (eq dir 'backward) (cdr bounds) (car bounds))
+       t 'activate))))
+
 (defun helix-forward-word ()
-  "Move to next word."
+  "Move to next word.
+
+If `helix--current-selection' is nil, create a region around the word at
+point.  Otherwise, continue the existing region."
   (interactive)
   (helix--clear-highlights)
+  (forward-word)
   (unless (use-region-p)
-    (set-mark-command nil))
-  (forward-word))
+    (helix--select-thing-at-point 'forward)))
 
 (defun helix-backward-word ()
-  "Move to previous word."
+  "Move to previous word.
+
+If `helix--current-selection' is nil, create a region around the word at
+point. Otherwise, continue the existing region."
   (interactive)
   (helix--clear-highlights)
+  (backward-word)
   (unless (use-region-p)
-    (set-mark-command nil))
-  (backward-word))
+    (helix--select-thing-at-point 'backward)))
 
 (defun helix-go-beginning-line ()
   "Go to beginning of line"
