@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.0 (2025-03-15)
+
+New features:
+
+- Replacements, accessed via `r` or `R`.
+- More insert-mode state switchers (`a`, `A`, `I`).
+- Colon commands (currently only `:w` and `:write` supported).
+
 ## 0.2.0 (2025-03-10)
 
 Added a custom searching mode that replaces the previous usage of
