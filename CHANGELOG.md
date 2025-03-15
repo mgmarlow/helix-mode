@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.1 (2025-03-15)
+
+Fix:
+
+- Add `helix-normal-mode` to autoloads.
+
 ## 0.3.0 (2025-03-15)
 
 New features:
