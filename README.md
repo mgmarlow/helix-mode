@@ -104,6 +104,13 @@ Normal mode is the default mode. You can return to it by pressing
 | n   | Continue search forwards  | `helix-search-forward`  |
 | N   | Continue search backwards | `helix-search-backward` |
 
+### Command mode
+
+Accessed by typing `:` in normal mode.
+
+Currently only supports `:w` and `:write` as an alternative way to
+save the current buffer.
+
 ### Goto mode
 
 Accessed by typing `g` in normal mode.

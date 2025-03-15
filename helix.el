@@ -299,6 +299,14 @@ If `helix--current-selection' is nil, replace character at point."
     (yank)
     (helix--clear-data)))
 
+(defun helix-execute-command (command)
+  "Execute COMMAND."
+  (interactive "s:")
+  (cond
+   ((string= command "w") (call-interactively #'save-buffer))
+   ((string= command "write") (call-interactively #'save-buffer))
+   (t (message "no such command: \'%s\'" command))))
+
 (defvar helix-normal-state-keymap
   (let ((keymap (make-keymap)))
     (define-prefix-command 'helix-goto-map)
@@ -341,6 +349,7 @@ If `helix--current-selection' is nil, replace character at point."
     (define-key keymap "I" #'helix-insert-beginning-line)
     (define-key keymap "a" #'helix-insert-after)
     (define-key keymap "A" #'helix-insert-after-end-line)
+    (define-key keymap ":" #'helix-execute-command)
     (define-key keymap [escape] #'helix-cancel)
     keymap)
   "Keymap for Helix normal state.")
