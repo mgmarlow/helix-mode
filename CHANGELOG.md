@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.3.2 (2025-03-15)
+
+Fix:
+
+- Vastly improve word selection during
+  navigation. `helix-forward-word` and `helix-backward-word` will now
+  reliably select the word navigated as a "thing at point", ignoring
+  special characters. In short, the behavior is improved for
+  programming language modes.
+
 ## 0.3.1 (2025-03-15)
 
 Fix:
