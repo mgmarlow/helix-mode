@@ -368,6 +368,7 @@ If `helix--current-selection' is nil, replace character at point."
   :global nil
   :keymap helix-insert-state-keymap)
 
+;;;###autoload
 (define-minor-mode helix-normal-mode
   "Helix NORMAL state minor mode."
   :lighter " helix[N]"
