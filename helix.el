@@ -204,6 +204,9 @@ point. Otherwise, continue the existing region."
   (helix--clear-data)
   (keyboard-quit))
 
+;; C-g should clear out Helix selection data as well.
+(advice-add #'keyboard-quit :before #'helix--clear-data)
+
 (defun helix--end-of-line-p ()
   "Returns non-nil if current point is at the end of the current line."
   (save-excursion
