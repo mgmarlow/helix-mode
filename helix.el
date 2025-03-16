@@ -76,6 +76,9 @@ Nil if no search has taken place while helix-mode is active.")
   (setq helix--current-selection nil)
   (deactivate-mark))
 
+;; Ensure `keyboard-quit' clears out intermediate Helix state.
+(advice-add #'keyboard-quit :before #'helix--clear-data)
+
 (defun helix-insert ()
   "Switch to insert state."
   (interactive)
@@ -197,15 +200,6 @@ point. Otherwise, continue the existing region."
         (setq helix--current-selection (region-beginning))
       (set-mark-command nil)
       (setq helix--current-selection (point)))))
-
-(defun helix-cancel ()
-  "Clear any selections, reset data, and cancel commands."
-  (interactive)
-  (helix--clear-data)
-  (keyboard-quit))
-
-;; C-g should clear out Helix selection data as well.
-(advice-add #'keyboard-quit :before #'helix--clear-data)
 
 (defun helix--end-of-line-p ()
   "Returns non-nil if current point is at the end of the current line."
@@ -385,7 +379,7 @@ If `helix--current-selection' is nil, replace character at point."
     (define-key keymap "a" #'helix-insert-after)
     (define-key keymap "A" #'helix-insert-after-end-line)
     (define-key keymap ":" #'helix-execute-command)
-    (define-key keymap [escape] #'helix-cancel)
+    (define-key keymap [escape] #'keyboard-quit)
     keymap)
   "Keymap for Helix normal state.")
 
