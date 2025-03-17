@@ -381,7 +381,8 @@ If `helix--current-selection' is nil, replace character at point."
     (define-key keymap "a" #'helix-insert-after)
     (define-key keymap "A" #'helix-insert-after-end-line)
     (define-key keymap ":" #'helix-execute-command)
-    (define-key keymap [escape] #'keyboard-quit)
+    (define-key keymap (kbd "ESC") #'keyboard-quit)
+    (define-key keymap (kbd "DEL") (lambda () (interactive)))
     keymap)
   "Keymap for Helix normal state.")
 
