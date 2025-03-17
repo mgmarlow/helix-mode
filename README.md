@@ -71,6 +71,9 @@ Normal mode is the default mode. You can return to it by pressing
 | k   | Move up            | `helix-previous-line` |
 | w   | Move next word     | `helix-forward-word`  |
 | b   | Move previous word | `helix-backward-word` |
+| G   | Go to line         | N/A                   |
+| C-b | Move page up       | N/A                   |
+| C-f | Move page down     | N/A                   |
 
 ### Changes
 
@@ -89,6 +92,7 @@ Normal mode is the default mode. You can return to it by pressing
 | A   | Insert end of line       | `helix-insert-after-end-line` |
 | r   | Replace with a character | `helix-replace`               |
 | R   | Replace with yanked text | `helix-replace-yanked`        |
+| C-c | Comment line             | N/A                           |
 
 ### Selection
 

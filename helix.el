@@ -341,6 +341,7 @@ If `helix--current-selection' is nil, replace character at point."
 (defvar helix-normal-state-keymap
   (let ((keymap (make-keymap)))
     (define-prefix-command 'helix-goto-map)
+    (define-prefix-command 'helix-view-map)
     (suppress-keymap keymap t)
 
     ;; Movement keys
@@ -350,8 +351,11 @@ If `helix--current-selection' is nil, replace character at point."
     (define-key keymap "k" #'helix-previous-line)
     (define-key keymap "w" #'helix-forward-word)
     (define-key keymap "b" #'helix-backward-word)
+    (define-key keymap "G" #'goto-line)
+    (define-key keymap (kbd "C-f") #'scroll-up-command)
+    (define-key keymap (kbd "C-b") #'scroll-down-command)
 
-    ;; Go-to menu
+    ;; Goto mode
     (define-key keymap "g" 'helix-goto-map)
     (define-key helix-goto-map "l" #'helix-go-end-line)
     (define-key helix-goto-map "h" #'helix-go-beginning-line)
@@ -359,6 +363,10 @@ If `helix--current-selection' is nil, replace character at point."
     (define-key helix-goto-map "e" #'helix-go-end-buffer)
     (define-key helix-goto-map "j" #'helix-next-line)
     (define-key helix-goto-map "k" #'helix-previous-line)
+
+    ;; View mode
+    (define-key keymap "z" 'helix-view-map)
+    (define-key helix-view-map "z" #'recenter-top-bottom)
     
     ;; Editing commands
     (define-key keymap "x" #'helix-select-line)
@@ -374,6 +382,7 @@ If `helix--current-selection' is nil, replace character at point."
     (define-key keymap "N" #'helix-search-backward)
     (define-key keymap "r" #'helix-replace)
     (define-key keymap "R" #'helix-replace-yanked)
+    (define-key keymap (kbd "C-c") #'comment-line)
 
     ;; State switching
     (define-key keymap "i" #'helix-insert)
