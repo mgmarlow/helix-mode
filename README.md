@@ -126,6 +126,22 @@ Accessed by typing `g` in normal mode.
 | l   | Go to end of line       | `helix-go-end-line`         |
 | h   | Go to beginning of line | `helix-go-beginning-line`   |
 
+### Window mode
+
+Accessed by typing `C-w` in normal mode.
+
+| Key | Description              | Command |
+|:----|:-------------------------|:--------|
+| w   | Switch to next window    | N/A     |
+| v   | Vertical right split     | N/A     |
+| s   | Horizontal bottom split  | N/A     |
+| h   | Move to left split       | N/A     |
+| j   | Move to split below      | N/A     |
+| k   | Move to split above      | N/A     |
+| l   | Move to right split      | N/A     |
+| q   | Close current window     | N/A     |
+| o   | Only keep current window | N/A     |
+
 ### Space mode
 
 Accessed by typing `space` in normal mode.

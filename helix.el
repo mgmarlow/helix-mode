@@ -384,7 +384,6 @@ If `helix--current-selection' is nil, replace character at point."
     (define-key helix-window-map "j" #'windmove-down)
     (define-key helix-window-map "k" #'windmove-up)
     (define-key helix-window-map "w" #'other-window)
-    (define-key helix-window-map "C-w" #'other-window)
     (define-key helix-window-map "v" #'split-window-right)
     (define-key helix-window-map "s" #'split-window-below)
     (define-key helix-window-map "q" #'delete-window)
