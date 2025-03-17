@@ -312,29 +312,31 @@ If `helix--current-selection' is nil, replace character at point."
     (helix--clear-data)))
 
 (defvar helix--command-alist
-  '(("w" . (lambda () (call-interactively #'save-buffer)))
-    ("write" . (lambda () (call-interactively #'save-buffer)))
-    ("q" . (lambda () (call-interactively #'save-buffers-kill-terminal)))
-    ("quit" . (lambda () (call-interactively #'save-buffers-kill-terminal)))
-    ("q!" . (lambda () (kill-emacs)))
-    ("quit!" . (lambda () (kill-emacs)))
-    ("write-quit" . (lambda ()
-                      (save-buffer)
-                      (kill-emacs)))
-    ("wq" . (lambda ()
-              (save-buffer)
-              (kill-emacs))))
+  '((("w" "write") . (lambda () (call-interactively #'save-buffer)))
+    (("q" "quit") . (lambda () (call-interactively #'save-buffers-kill-terminal)))
+    (("q!" "quit!") . kill-emacs)
+    (("wq" "write-quit") . (lambda ()
+                             (save-buffer)
+                             (kill-emacs)))
+    (("o" "open" "e" "edit") . (lambda () (call-interactively #'find-file)))
+    (("n" "new") . scratch-buffer)
+    (("rl" "reload") . revert-buffer-quick)
+    (("pwd" "show-directory") . pwd)
+    (("vs" "vsplit") . split-window-right)
+    (("hs" "hsplit") . split-window-below)
+    (("config-open") . (lambda () (find-file user-init-file))))
   "Alist of commands executed by `helix-execute-command'.")
 
-(defun helix-execute-command (command)
-  "Execute COMMAND."
+(defun helix-execute-command (input)
+  "Look for INPUT in `helix--command-alist' and execute it, if present."
   (interactive "s:")
-  (funcall (alist-get (string-trim command)
-                      helix--command-alist
-                      (lambda ()
-                        (message "no such command: \'%s\'" command))
-                      nil
-                      #'string=)))
+  (let ((command (string-trim input)))
+    (funcall (alist-get command
+                        helix--command-alist
+                        (lambda ()
+                          (message "no such command \'%s\'" command))
+                        nil
+                        #'seq-contains-p))))
 
 (defvar helix-normal-state-keymap
   (let ((keymap (make-keymap)))
