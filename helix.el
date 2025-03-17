@@ -343,6 +343,7 @@ If `helix--current-selection' is nil, replace character at point."
     (define-prefix-command 'helix-goto-map)
     (define-prefix-command 'helix-view-map)
     (define-prefix-command 'helix-space-map)
+    (define-prefix-command 'helix-window-map)
     (suppress-keymap keymap t)
 
     ;; Movement keys
@@ -375,6 +376,19 @@ If `helix--current-selection' is nil, replace character at point."
     (define-key helix-space-map "b" #'project-switch-to-buffer)
     (define-key helix-space-map "j" #'project-switch-project)
     (define-key helix-space-map "/" #'project-find-regexp)
+
+    ;; Window mode
+    (define-key keymap (kbd "C-w") 'helix-window-map)
+    (define-key helix-window-map "h" #'windmove-left)
+    (define-key helix-window-map "l" #'windmove-right)
+    (define-key helix-window-map "j" #'windmove-down)
+    (define-key helix-window-map "k" #'windmove-up)
+    (define-key helix-window-map "w" #'other-window)
+    (define-key helix-window-map "C-w" #'other-window)
+    (define-key helix-window-map "v" #'split-window-right)
+    (define-key helix-window-map "s" #'split-window-below)
+    (define-key helix-window-map "q" #'delete-window)
+    (define-key helix-window-map "o" #'delete-other-windows)
     
     ;; Editing commands
     (define-key keymap "x" #'helix-select-line)
