@@ -342,6 +342,7 @@ If `helix--current-selection' is nil, replace character at point."
   (let ((keymap (make-keymap)))
     (define-prefix-command 'helix-goto-map)
     (define-prefix-command 'helix-view-map)
+    (define-prefix-command 'helix-space-map)
     (suppress-keymap keymap t)
 
     ;; Movement keys
@@ -367,6 +368,13 @@ If `helix--current-selection' is nil, replace character at point."
     ;; View mode
     (define-key keymap "z" 'helix-view-map)
     (define-key helix-view-map "z" #'recenter-top-bottom)
+
+    ;; Space mode
+    (define-key keymap (kbd "SPC") 'helix-space-map)
+    (define-key helix-space-map "f" #'project-find-file)
+    (define-key helix-space-map "b" #'project-switch-to-buffer)
+    (define-key helix-space-map "j" #'project-switch-project)
+    (define-key helix-space-map "/" #'project-find-regexp)
     
     ;; Editing commands
     (define-key keymap "x" #'helix-select-line)

@@ -126,6 +126,17 @@ Accessed by typing `g` in normal mode.
 | l   | Go to end of line       | `helix-go-end-line`         |
 | h   | Go to beginning of line | `helix-go-beginning-line`   |
 
+### Space mode
+
+Accessed by typing `space` in normal mode.
+
+| Key | Description               | Command |
+|:----|:--------------------------|:--------|
+| f   | Find file at project root | N/A     |
+| b   | Switch to project buffer  | N/A     |
+| j   | Switch project            | N/A     |
+| /   | Search within project     | N/A     |
+
 ## License
 
 Licensed under GPLv3.
