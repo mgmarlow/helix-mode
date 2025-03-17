@@ -390,7 +390,9 @@ If `helix--current-selection' is nil, replace character at point."
     (define-key keymap "a" #'helix-insert-after)
     (define-key keymap "A" #'helix-insert-after-end-line)
     (define-key keymap ":" #'helix-execute-command)
-    ;; TODO: For some reason (kbd "ESC") breaks M-x. Is this a bug?
+    ;; ESC is defined as the meta-prefix-key, so we can't simply
+    ;; rebind "ESC".  Instead, rebind [escape].  More info:
+    ;; https://emacs.stackexchange.com/questions/14755/how-to-remove-bindings-to-the-esc-prefix-key
     (define-key keymap [escape] #'keyboard-quit)
     (define-key keymap (kbd "DEL") (lambda () (interactive)))
     keymap)
