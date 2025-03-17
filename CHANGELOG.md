@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.4.0 (2025-03-17)
+
+Note: Minimum Emacs version increased to 27.1.
+
+New features:
+
+- Add a bunch more colon commands (`:new`, `:open`, `:config-open`, etc.).
+- Add Space mode (accessed by hitting `space`). Use this mode to jump
+  around via `project.el`.
+- `G` lets you jump to a particular line.
+- `C-b` and `C-f` scroll the buffer up and down respectively.
+- `C-c` comments the current line or region.
+
+Fix:
+
+- Ensure `C-g` clears out intermediate data in the same way as `ESC`.
+- Backspace no longer deletes characters in normal mode.
+
 ## 0.3.2 (2025-03-15)
 
 Fix:
