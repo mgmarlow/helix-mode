@@ -31,7 +31,7 @@
   "Custom group for Helix."
   :group 'helix)
 
-(defvar helix--current-state 'normal
+(defvar-local helix--current-state 'normal
   "Current modal state, one of normal or insert.")
 
 (defvar helix-state-mode-alist
@@ -50,13 +50,6 @@
 
 Nil if no search has taken place while helix-mode is active.")
 
-(defun helix--update-cursor ()
-  "Update cursor appearance based on modal state."
-  (setq cursor-type
-        (cond
-          ((eq helix--current-state 'insert) 'bar)
-          ((eq helix--current-state 'normal) 'box))))
-
 (defun helix--unload-current-state ()
   (let ((mode (alist-get helix--current-state helix-state-mode-alist)))
     (funcall mode -1)))
@@ -66,10 +59,9 @@ Nil if no search has taken place while helix-mode is active.")
   (unless (eq state helix--current-state)
     (helix--unload-current-state)
     (helix--clear-data)
-    (setq helix--current-state state)
+    (setq-local helix--current-state state)
     (let ((mode (alist-get state helix-state-mode-alist)))
-      (funcall mode 1))
-    (helix--update-cursor)))
+      (funcall mode 1))))
 
 (defun helix--clear-data ()
   "Clear any intermediate data, e.g. selections/marks."
@@ -431,7 +423,12 @@ If `helix--current-selection' is nil, replace character at point."
   :init-value nil
   :interactive nil
   :global nil
-  :keymap helix-insert-state-keymap)
+  :keymap helix-insert-state-keymap
+  (if helix-insert-mode
+      (progn
+        (setq-local helix--current-state 'insert)
+        (setq cursor-type 'bar))
+    (setq-local helix--current-state 'normal)))
 
 ;;;###autoload
 (define-minor-mode helix-normal-mode
@@ -440,7 +437,11 @@ If `helix--current-selection' is nil, replace character at point."
   :init-value nil
   :interactive t
   :global nil
-  :keymap helix-normal-state-keymap)
+  :keymap helix-normal-state-keymap
+  (if helix-normal-mode
+      (progn
+        (setq-local helix--current-state 'normal)
+        (setq cursor-type 'box))))
 
 (add-hook 'after-change-major-mode-hook #'helix-mode-maybe-activate)
 
