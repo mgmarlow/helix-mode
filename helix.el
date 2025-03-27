@@ -319,7 +319,7 @@ If FORCE is non-nil, don't prompt for save when killing Emacs."
     (("q!" "quit!") . (lambda () (helix-quit t)))
     (("wq" "write-quit") . (lambda ()
                              (save-buffer)
-                             (kill-emacs)))
+                             (helix-quit)))
     (("o" "open" "e" "edit") . (lambda () (call-interactively #'find-file)))
     (("n" "new") . scratch-buffer)
     (("rl" "reload") . revert-buffer-quick)
