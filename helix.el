@@ -303,10 +303,20 @@ If `helix--current-selection' is nil, replace character at point."
     (yank)
     (helix--clear-data)))
 
+(defun helix-quit (&optional force)
+  "Kill Emacs if there's only one window active, otherwise quit the current window.
+
+If FORCE is non-nil, don't prompt for save when killing Emacs."
+  (if (one-window-p)
+      (if force
+          (kill-emacs)
+        (call-interactively #'save-buffers-kill-terminal))
+    (delete-window)))
+
 (defvar helix--command-alist
   '((("w" "write") . (lambda () (call-interactively #'save-buffer)))
-    (("q" "quit") . (lambda () (call-interactively #'save-buffers-kill-terminal)))
-    (("q!" "quit!") . kill-emacs)
+    (("q" "quit") . helix-quit)
+    (("q!" "quit!") . (lambda () (helix-quit t)))
     (("wq" "write-quit") . (lambda ()
                              (save-buffer)
                              (kill-emacs)))
