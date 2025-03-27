@@ -383,6 +383,8 @@ has a readable file."
     (define-key helix-goto-map "e" #'helix-go-end-buffer)
     (define-key helix-goto-map "j" #'helix-next-line)
     (define-key helix-goto-map "k" #'helix-previous-line)
+    (define-key helix-goto-map "r" #'xref-find-references)
+    (define-key helix-goto-map "d" #'xref-find-definitions)
 
     ;; View mode
     (define-key keymap "z" 'helix-view-map)
