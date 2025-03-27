@@ -48,9 +48,10 @@
 (defvar helix-current-search nil
   "Current search string, initiated via `helix-search'.
 
-Nil if no search has taken place while helix-mode is active.")
+Nil if no search has taken place while `helix-mode' is active.")
 
 (defun helix--unload-current-state ()
+  "Deactivate the minor mode described by `helix--current-state'."
   (let ((mode (alist-get helix--current-state helix-state-mode-alist)))
     (funcall mode -1)))
 
@@ -64,7 +65,7 @@ Nil if no search has taken place while helix-mode is active.")
       (funcall mode 1))))
 
 (defun helix--clear-data ()
-  "Clear any intermediate data, e.g. selections/marks."
+  "Clear any intermediate data, e.g. selections/mark."
   (setq helix--current-selection nil)
   (deactivate-mark))
 
@@ -82,7 +83,7 @@ Nil if no search has taken place while helix-mode is active.")
   (helix--switch-state 'normal))
 
 (defun helix--clear-highlights ()
-  "Clear any active highlights, unless `helix--current-state' is non-nil."
+  "Clear any active highlight, unless `helix--current-state' is non-nil."
   (unless helix--current-selection
     (deactivate-mark)))
 
@@ -135,7 +136,7 @@ point.  Otherwise, continue the existing region."
   "Move to previous word.
 
 If `helix--current-selection' is nil, create a region around the word at
-point. Otherwise, continue the existing region."
+point.  Otherwise, continue the existing region."
   (interactive)
   (helix--clear-highlights)
   (backward-word)
@@ -143,13 +144,13 @@ point. Otherwise, continue the existing region."
     (helix--select-thing-at-point 'backward)))
 
 (defun helix-go-beginning-line ()
-  "Go to beginning of line"
+  "Go to beginning of line."
   (interactive)
   (helix--clear-highlights)
   (beginning-of-line))
 
 (defun helix-go-end-line ()
-  "Go to end of line"
+  "Go to end of line."
   (interactive)
   (helix--clear-highlights)
   (end-of-line))
@@ -194,7 +195,7 @@ point. Otherwise, continue the existing region."
       (setq helix--current-selection (point)))))
 
 (defun helix--end-of-line-p ()
-  "Returns non-nil if current point is at the end of the current line."
+  "Return non-nil if current point is at the end of the current line."
   (save-excursion
     (let ((cur (point))
           eol)
@@ -314,8 +315,7 @@ If FORCE is non-nil, don't prompt for save when killing Emacs."
     (delete-window)))
 
 (defun helix-revert-all-buffers-quick ()
-  "Call `revert-buffer-quick' on every buffer in `buffer-list' that
-has a readable file."
+  "Execute `revert-buffer-quick' on all file-associated buffers."
   (let ((target-buffers (seq-filter
                          (lambda (buf)
                            (and
@@ -480,14 +480,13 @@ has a readable file."
 
 ;;;###autoload
 (defun helix-mode ()
-  "Toggle global Helix mode"
+  "Toggle global Helix mode."
   (interactive)
   (setq helix-global-mode (not helix-global-mode))
   (if helix-global-mode
       (helix-normal-mode 1)
     (cond
      (helix-normal-mode (helix-normal-mode -1))
-     ;; TODO: need to clean up any changes to cursor, etc.
      (helix-insert-mode (helix-insert-mode -1)))))
 
 (provide 'helix)
