@@ -5,7 +5,7 @@
 ;; Author: Graham Marlow
 ;; Keywords: convenience
 ;; Version: 0.4.0
-;; Package-Requires: ((emacs "27.1"))
+;; Package-Requires: ((emacs "28.1"))
 ;; URL: https://github.com/mgmarlow/helix-mode
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -313,6 +313,21 @@ If FORCE is non-nil, don't prompt for save when killing Emacs."
         (call-interactively #'save-buffers-kill-terminal))
     (delete-window)))
 
+(defun helix-revert-all-buffers-quick ()
+  "Call `revert-buffer-quick' on every buffer in `buffer-list' that
+has a readable file."
+  (let ((target-buffers (seq-filter
+                         (lambda (buf)
+                           (and
+                            (buffer-file-name buf)
+                            (file-readable-p (buffer-file-name buf))))
+                         (buffer-list))))
+    (mapc (lambda (buf)
+            (with-current-buffer buf
+              (revert-buffer-quick)))
+          target-buffers)
+    (message "Reverted %s buffers" (length target-buffers))))
+
 (defvar helix--command-alist
   '((("w" "write") . (lambda () (call-interactively #'save-buffer)))
     (("q" "quit") . helix-quit)
@@ -323,6 +338,7 @@ If FORCE is non-nil, don't prompt for save when killing Emacs."
     (("o" "open" "e" "edit") . (lambda () (call-interactively #'find-file)))
     (("n" "new") . scratch-buffer)
     (("rl" "reload") . revert-buffer-quick)
+    (("reload-all") . helix-revert-all-buffers-quick)
     (("pwd" "show-directory") . pwd)
     (("vs" "vsplit") . split-window-right)
     (("hs" "hsplit") . split-window-below)
