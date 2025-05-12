@@ -473,10 +473,28 @@ If FORCE is non-nil, don't prompt for save when killing Emacs."
 
 (add-hook 'after-change-major-mode-hook #'helix-mode-maybe-activate)
 
-(defun helix-mode-maybe-activate ()
-  "Activate `helix-normal-mode' when appropriate."
+(defun helix-mode-maybe-activate (&optional status)
+  "Activate `helix-normal-mode' if `helix-global-mode' is non-nil.
+
+A non-nil value of STATUS can be passed into `helix-normal-mode' for
+disabling."
   (when (and (not (minibufferp)) helix-global-mode)
-    (helix-normal-mode 1)))
+    (helix-normal-mode (if status status 1))))
+
+;;;###autoload
+(defun helix-mode-all (&optional status)
+  "Activate `helix-normal-mode' in all buffers. STATUS is passed through
+to `helix-mode-maybe-activate'."
+  (interactive)
+  ;; Set global mode to t before iterating over the buffers so that we
+  ;; send the status directly to `helix-normal-mode' (which checks for
+  ;; a non-nil value of `helix-global-mode'.
+  (setq helix-global-mode t)
+  (mapc (lambda (buf)
+          (with-current-buffer buf
+            (helix-mode-maybe-activate status)))
+        (buffer-list))
+  (setq helix-global-mode (if status status 1)))
 
 ;;;###autoload
 (defun helix-mode ()
