@@ -170,7 +170,7 @@ point.  Otherwise, continue the existing region."
 (defun helix-select-line ()
   "Select the current line, moving the cursor to the end."
   (interactive)
-  (if (region-active-p)
+  (if (and (region-active-p) (= (point) (pos-eol)))
       (progn
         (next-line)
         (end-of-line))
