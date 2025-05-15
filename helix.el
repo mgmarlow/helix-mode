@@ -31,8 +31,18 @@
   "Custom group for Helix."
   :group 'helix)
 
+(defcustom helix-jj-timeout nil
+  "Timeout in seconds for the 'jj' key sequence to exit insert mode.
+
+Defaults to nil, which disables 'jj' exit functionality. A short value
+like 0.2 is recommended."
+  :group 'helix)
+
 (defvar-local helix--current-state 'normal
   "Current modal state, one of normal or insert.")
+
+(defvar-local helix--jj-timer nil
+  "Timer for detecting 'jj' key sequence in insert mode.")
 
 (defvar helix-state-mode-alist
   `((insert . helix-insert-mode)
@@ -67,7 +77,10 @@ Nil if no search has taken place while `helix-mode' is active.")
 (defun helix--clear-data ()
   "Clear any intermediate data, e.g. selections/mark."
   (setq helix--current-selection nil)
-  (deactivate-mark))
+  (deactivate-mark)
+  (when helix--jj-timer
+    (cancel-timer helix--jj-timer)
+    (setq helix--jj-timer nil)))
 
 ;; Ensure `keyboard-quit' clears out intermediate Helix state.
 (advice-add #'keyboard-quit :before #'helix--clear-data)
@@ -81,6 +94,26 @@ Nil if no search has taken place while `helix-mode' is active.")
   "Switch to normal state."
   (interactive)
   (helix--switch-state 'normal))
+
+;; TODO: eventually support key combinations other than "jj".
+(defun helix--maybe-key-combo-exit ()
+  "When `helix-jj-timeout' is non-nil, allow existing `helix-insert-mode' via 'jj'.
+
+The timeout set by `helix-jj-timeout' determines how long `helix-mode' waits
+before inserting a 'j' character and giving up on existing `helix-insert-mode'."
+  (interactive)
+  (if helix-jj-timeout
+        (if helix--jj-timer
+            (progn
+              (cancel-timer helix--jj-timer)
+              (setq helix--jj-timer nil)
+              (helix-insert-exit))
+          (setq helix--jj-timer
+                (run-with-timer helix-jj-timeout nil
+                                (lambda ()
+                                  (setq helix--jj-timer nil)
+                                  (self-insert-command 1)))))
+    (self-insert-command 1)))
 
 (defun helix--clear-highlights ()
   "Clear any active highlight, unless `helix--current-state' is non-nil."
@@ -442,6 +475,7 @@ If FORCE is non-nil, don't prompt for save when killing Emacs."
 (defvar helix-insert-state-keymap
   (let ((keymap (make-keymap)))
     (define-key keymap [escape] #'helix-insert-exit)
+    (define-key keymap "j" #'helix--maybe-key-combo-exit)
     keymap)
   "Keymap for Helix insert state.")
 
