@@ -1,15 +1,22 @@
 # Helix Mode
 
-Helix keybindings in Emacs.
+Postmodern keybindings for a premodern
+editor: [Helix](https://helix-editor.com/) keybindings in Emacs.
 
-[Helix](https://helix-editor.com/) is a modal text editor that uses a
-keybinding scheme very similar to
-[Kakoune](https://kakoune.org/why-kakoune/why-kakoune.html). That is,
-keybindings that are reminiscent of vi but flip around the verb-object
-model. Helix Mode implements a subset of Helix keybindings and
-modes.
+Helix is a modal text editor with keybindings similar to vi, but with
+some [noteworthy
+differences](https://docs.helix-editor.com/from-vim.html). Helix Mode
+supports a small subset of Helix functionality with the goal of
+recreating the editor navigation/selection experience in Helix while
+leaving the hard problems (like directory navigation and searching) to
+Emacs.  The result is a small keybinding layer that supports Vim-like
+hjkl motion commands, while retaining Helix's selection-first model.
+
+Helix Mode integrates nicely with `project.el` and `xref`.
 
 ## Installation
+
+Emacs >= 29.1 required.
 
 Clone Helix Mode:
 
@@ -44,17 +51,24 @@ minibuffers) via
 (helix-mode)
 ```
 
-> Warning: Helix mode is still a work in progress, so some special
-> buffer modes like dired will not work perfectly. You can still use
-> Helix globally but note that you may need to manually invoke some
-> commands in special buffers.
-
 Alternatively, you can manually toggle Helix mode on/off in local
 buffers by invoking `helix-normal-mode`:
 
 ```lisp
 (helix-normal-mode 1)
 ```
+
+### Configuration options
+
+Helix Mode supports remapping "jj" as escape for the purpose of
+exiting Insert Mode:
+
+```lisp
+(setq helix-jj-timeout 0.2)
+```
+
+The timeout specifies how long Helix Mode will wait for a followup
+keypress before inserting the first "j" key.
 
 ## Supported keybindings
 
