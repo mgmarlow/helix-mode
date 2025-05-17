@@ -255,13 +255,12 @@ point.  Otherwise, continue the existing region."
   (end-of-line)
   (helix-insert))
 
-;; TODO: better handling of indentation based on lang mode.
 (defun helix-insert-newline ()
   "Insert newline and change `helix--current-state' to INSERT mode."
   (interactive)
   (helix--clear-data)
   (end-of-line)
-  (newline)
+  (newline-and-indent)
   (helix-insert))
 
 (defun helix-insert-prevline ()
@@ -269,8 +268,10 @@ point.  Otherwise, continue the existing region."
   (interactive)
   (helix--clear-data)
   (beginning-of-line)
-  (newline)
-  (previous-line)
+  (let ((electric-indent-mode nil))
+    (newline nil t)
+    (previous-line)
+    (indent-according-to-mode))
   (helix-insert))
 
 (defun helix-search (input)
