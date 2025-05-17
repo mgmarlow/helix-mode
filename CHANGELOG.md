@@ -1,5 +1,33 @@
 # Changelog
 
+## 0.5.0 (2025-05-17)
+
+Note: Minimum Emacs version increased to 29.1.
+
+New features:
+
+- New Goto command: `g-r` find references.
+- New Goto command: `g-d` find definitions.
+- New colon command: `:reload-all`, which reloads all buffers.
+- New autoloaded function: `helix-mode-all`, which activates Helix
+  Mode in all buffers.
+- Add "jj" support for exiting Insert Mode.
+
+You can activate "jj" support by defining the following custom
+variable:
+
+```lisp
+(setq helix-jj-timeout 0.2)
+```
+
+Fix:
+
+- `o`/`O` now properly resume indentation.
+- `x` expands current selection if the current selection doesn't
+  contain the entire line (e.g. if I press `x` after a search).
+- `:q`/`:wq` now close the current window if a split is active, rather
+  than closing Emacs.
+
 ## 0.4.0 (2025-03-17)
 
 Note: Minimum Emacs version increased to 27.1.

@@ -139,6 +139,8 @@ Accessed by typing `g` in normal mode.
 | e   | Go to end of file       | `helix-go-end-buffer`       |
 | l   | Go to end of line       | `helix-go-end-line`         |
 | h   | Go to beginning of line | `helix-go-beginning-line`   |
+| r   | Find references         | N/A                         |
+| d   | Find definitions        | N/A                         |
 
 ### Window mode
 
