@@ -34,7 +34,7 @@
 (defcustom helix-jj-timeout nil
   "Timeout in seconds for the 'jj' key sequence to exit insert mode.
 
-Defaults to nil, which disables 'jj' exit functionality. A short value
+Defaults to nil, which disables 'jj' exit functionality.  A short value
 like 0.2 is recommended."
   :group 'helix)
 
@@ -114,6 +114,29 @@ before inserting a 'j' character and giving up on existing `helix-insert-mode'."
                                   (setq helix--jj-timer nil)
                                   (self-insert-command 1)))))
     (self-insert-command 1)))
+
+(defun helix--maybe-abort-key-combo-exit ()
+  "Used in a `pre-command-hook' to escape early from a 'jj' sequence.
+
+If a non-j character is typed, immediately escape from a 'jj' sequence
+and remain in `helix-insert-mode'."
+  (when (and helix-jj-timeout
+             (eq this-command 'self-insert-command)
+             (characterp last-command-event)
+             (not (eq last-command-event ?j))
+             helix--jj-timer)
+    (insert "j")
+    (cancel-timer helix--jj-timer)
+    (setq helix--jj-timer nil)))
+
+(defun helix-jj-setup (&optional timeout)
+  "Set up 'jj' as an alternative way to exit `helix-insert-mode'.
+
+TIMEOUT is passed `helix-jj-timeout', defaulting to 0.2.  The timeout
+controls how many seconds `helix-insert-mode' waits for a second j
+keypress to escape to normal mode."
+  (setq helix-jj-timeout (or timeout 0.2))
+  (add-hook 'pre-command-hook #'helix--maybe-abort-key-combo-exit))
 
 (defun helix--clear-highlights ()
   "Clear any active highlight, unless `helix--current-state' is non-nil."
@@ -518,8 +541,9 @@ disabling."
 
 ;;;###autoload
 (defun helix-mode-all (&optional status)
-  "Activate `helix-normal-mode' in all buffers. STATUS is passed through
-to `helix-mode-maybe-activate'."
+  "Activate `helix-normal-mode' in all buffers.
+
+Argument STATUS is passed through to `helix-mode-maybe-activate'."
   (interactive)
   ;; Set global mode to t before iterating over the buffers so that we
   ;; send the status directly to `helix-normal-mode' (which checks for
