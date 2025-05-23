@@ -1,5 +1,26 @@
 # Changelog
 
+## 0.5.1 (2025-05-23)
+
+New features:
+
+- Add `helix-jj-setup` as an easier means to configure jj as an exit
+  combination.
+
+Fix:
+
+- When the jj exit combination is active, any non-j keypress following
+  an initial j keypress will immediately abort the timeout. This makes
+  the experience of using jj way smoother when typing words that
+  include j (like "project").
+
+  This fix requires using the new jj setup function `helix-jj-setup`,
+  since that function registers a `pre-command-hook` on the user's
+  behalf.
+
+  In a future minor release, `helix-jj-timeout` might be renamed to
+  `helix--jj-timeout` so folks know to use the new setup function.
+
 ## 0.5.0 (2025-05-17)
 
 Note: Minimum Emacs version increased to 29.1.

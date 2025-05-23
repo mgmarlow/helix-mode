@@ -61,10 +61,10 @@ buffers by invoking `helix-normal-mode`:
 ### Configuration options
 
 Helix Mode supports remapping "jj" as escape for the purpose of
-exiting Insert Mode:
+exiting Insert Mode. Invoke `helix-jj-setup` to activate jj-mode.
 
 ```lisp
-(setq helix-jj-timeout 0.2)
+(helix-jj-setup)
 ```
 
 The timeout specifies how long Helix Mode will wait for a followup
