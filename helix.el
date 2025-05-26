@@ -27,8 +27,6 @@
 
 ;;; Code:
 
-(require 'simple)
-
 (defgroup helix nil
   "Custom group for Helix."
   :group 'helix)
@@ -213,8 +211,8 @@ point.  Otherwise, continue the existing region."
   (helix--clear-highlights)
   (end-of-line))
 
-(defun helix-go-first-non-blank-in-line ()
-  "Go to first non blank character in line."
+(defun helix-go-first-nonwhitespace ()
+  "Go to first non-whitespace character in line."
   (interactive)
   (helix--clear-highlights)
   (back-to-indentation))
@@ -444,7 +442,7 @@ If FORCE is non-nil, don't prompt for save when killing Emacs."
     (define-key keymap "g" 'helix-goto-map)
     (define-key helix-goto-map "l" #'helix-go-end-line)
     (define-key helix-goto-map "h" #'helix-go-beginning-line)
-    (define-key helix-goto-map "s" #'helix-go-first-non-blank-in-line)
+    (define-key helix-goto-map "s" #'helix-go-first-nonwhitespace)
     (define-key helix-goto-map "g" #'helix-go-beginning-buffer)
     (define-key helix-goto-map "e" #'helix-go-end-buffer)
     (define-key helix-goto-map "j" #'helix-next-line)
