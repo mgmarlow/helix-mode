@@ -566,5 +566,8 @@ Argument STATUS is passed through to `helix-mode-maybe-activate'."
      (helix-normal-mode (helix-normal-mode -1))
      (helix-insert-mode (helix-insert-mode -1)))))
 
+;; Extensions
+(require 'helix-multiple-cursors)
+
 (provide 'helix)
 ;;; helix.el ends here
