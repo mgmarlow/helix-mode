@@ -311,6 +311,12 @@ If `helix--current-selection' is nil, replace character at point."
     (yank)
     (helix--clear-data)))
 
+(defun helix-kill-ring-save ()
+  "Save region to kill-ring and clear Helix selection data."
+  (interactive)
+  (call-interactively #'kill-ring-save)
+  (helix--clear-data))
+
 (defun helix-quit (&optional force)
   "Kill Emacs if there's only one window active, otherwise quit the current window.
 
@@ -420,7 +426,7 @@ If FORCE is non-nil, don't prompt for save when killing Emacs."
     ;; Editing commands
     (define-key keymap "x" #'helix-select-line)
     (define-key keymap "d" #'helix-kill-thing-at-point)
-    (define-key keymap "y" #'kill-ring-save)
+    (define-key keymap "y" #'helix-kill-ring-save)
     (define-key keymap "p" #'yank)
     (define-key keymap "v" #'helix-begin-selection)
     (define-key keymap "u" #'undo)

@@ -119,7 +119,7 @@ Normal mode is the default mode. You can return to it by pressing
 | Key | Description              | Command                       |
 |:----|:-------------------------|:------------------------------|
 | d   | Delete selection         | `helix-kill-thing-at-point`   |
-| y   | Yank selection           | N/A                           |
+| y   | Yank selection           | `helix-kill-ring-save`        |
 | p   | Paste                    | N/A                           |
 | v   | Begin selection          | `helix-begin-selection`       |
 | u   | Undo                     | N/A                           |
