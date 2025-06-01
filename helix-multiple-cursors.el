@@ -32,23 +32,34 @@
 
 (defvar helix-multiple-cursors-run-for-all-commands
   '(helix-forward-char
+    helix-forward-word
     helix-backward-char
+    helix-backward-word
     helix-next-line
     helix-previous-line
-    helix-kill-thing-at-point)
+    helix-go-beginning-line
+    helix-go-end-line
+    helix-kill-thing-at-point
+    helix-insert
+    helix-insert-beginning-line
+    helix-insert-after
+    helix-insert-after-end-line)
   "Helix Mode commands that are run for all cursors.")
 
-(defun helix-multiple-cursors-select-all ()
+(defun helix-multiple-cursors-select-regex ()
   "Mark every match of selection within region."
   (interactive)
-  (call-interactively #'mc/mark-all-in-region))
+  (call-interactively #'mc/mark-all-in-region-regexp))
 
 ;;;###autoload
 (defun helix-multiple-cursors-setup ()
   "Set up Helix Mode keybindings for multiple-cursors."
   (dolist (cmd helix-multiple-cursors-run-for-all-commands)
     (add-to-list 'mc/cmds-to-run-for-all cmd))
-  (define-key helix-normal-state-keymap "s" #'helix-multiple-cursors-select-all))
+  (advice-add #'mc/keyboard-quit :before #'helix--clear-data)
+  (define-key helix-normal-state-keymap "s" #'helix-multiple-cursors-select-regex)
+  (define-key helix-normal-state-keymap "," #'mc/keyboard-quit)
+  (define-key helix-normal-state-keymap [escape] #'mc/keyboard-quit))
 
 (provide 'helix-multiple-cursors)
 ;;; helix-multiple-cursors.el ends here
