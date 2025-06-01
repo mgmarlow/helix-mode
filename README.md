@@ -87,11 +87,13 @@ Helix Mode supports remapping "jj" as escape for the purpose of
 exiting Insert Mode. Invoke `helix-jj-setup` to activate jj-mode.
 
 ```lisp
-(helix-jj-setup)
+(helix-jj-setup 0.2)
 ```
 
-The timeout specifies how long Helix Mode will wait for a followup
-keypress before inserting the first "j" key.
+By default, `helix-jj-setup` configures a 0.2 second timeout that
+waits for a second "j" keypress before canceling. You can configure
+different timeouts by passing your desired timeout as an argument to
+`helix-jj-setup`.
 
 ## Supported keybindings
 
