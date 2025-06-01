@@ -156,14 +156,15 @@ Currently only supports basic save/quit commands, e.g. `write`,
 
 Accessed by typing `g` in normal mode.
 
-| Key | Description             | Command                     |
-|:----|:------------------------|:----------------------------|
-| g   | Go to beginning of file | `helix-go-beginning-buffer` |
-| e   | Go to end of file       | `helix-go-end-buffer`       |
-| l   | Go to end of line       | `helix-go-end-line`         |
-| h   | Go to beginning of line | `helix-go-beginning-line`   |
-| r   | Find references         | N/A                         |
-| d   | Find definitions        | N/A                         |
+| Key | Description                          | Command                        |
+|:----|:-------------------------------------|:-------------------------------|
+| g   | Go to beginning of file              | `helix-go-beginning-buffer`    |
+| e   | Go to end of file                    | `helix-go-end-buffer`          |
+| l   | Go to end of line                    | `helix-go-end-line`            |
+| h   | Go to beginning of line              | `helix-go-beginning-line`      |
+| s   | Go to first non-whitespace character | `helix-go-first-nonwhitespace` |
+| r   | Find references                      | N/A                            |
+| d   | Find definitions                     | N/A                            |
 
 ### Window mode
 
