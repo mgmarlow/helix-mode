@@ -40,6 +40,7 @@
     helix-go-beginning-line
     helix-go-end-line
     helix-kill-thing-at-point
+    helix-insert-exit
     helix-insert
     helix-insert-beginning-line
     helix-insert-after
