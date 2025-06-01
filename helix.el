@@ -189,7 +189,8 @@ point.  Otherwise, continue the existing region."
   (interactive)
   (if (use-region-p)
       (kill-region (region-beginning) (region-end))
-    (delete-char 1)))
+    (delete-char 1))
+  (helix--clear-data))
 
 (defun helix-begin-selection ()
   "Begin selection at existing region or current point."
