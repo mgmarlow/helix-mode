@@ -318,6 +318,18 @@ If `helix--current-selection' is nil, replace character at point."
   (call-interactively #'kill-ring-save)
   (helix--clear-data))
 
+(defun helix-indent-left ()
+  "Indent region leftward and clear Helix selection data."
+  (interactive)
+  (call-interactively #'indent-rigidly-left)
+  (helix--clear-data))
+
+(defun helix-indent-right ()
+  "Indent region rightward and clear Helix selection data."
+  (interactive)
+  (call-interactively #'indent-rigidly-right)
+  (helix--clear-data))
+
 (defun helix-quit (&optional force)
   "Kill Emacs if there's only one window active, otherwise quit the current window.
 
@@ -438,6 +450,8 @@ If FORCE is non-nil, don't prompt for save when killing Emacs."
     (define-key keymap "N" #'helix-search-backward)
     (define-key keymap "r" #'helix-replace)
     (define-key keymap "R" #'helix-replace-yanked)
+    (define-key keymap "<" #'helix-indent-left)
+    (define-key keymap ">" #'helix-indent-right)
     (define-key keymap (kbd "C-c") #'comment-line)
 
     ;; State switching
