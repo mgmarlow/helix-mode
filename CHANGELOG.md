@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.6.0 (2025-06-01)
+
+New features:
+
+- Experimental multiple-cursors support. Requires the
+  [multiple-cursors](https://github.com/magnars/multiple-cursors.el)
+  package.
+- New Goto command: `g-s` go to first non-whitespace.
+
+Contributor kudos:
+
+- @dpassen for implementing goto-non-whitespace.
+
 ## 0.5.1 (2025-05-23)
 
 New features:
