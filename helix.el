@@ -313,7 +313,7 @@ If `helix--current-selection' is nil, replace character at point."
     (helix--clear-data)))
 
 (defun helix-kill-ring-save ()
-  "Save region to kill-ring and clear Helix selection data."
+  "Save region to `kill-ring' and clear Helix selection data."
   (interactive)
   (call-interactively #'kill-ring-save)
   (helix--clear-data))
