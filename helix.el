@@ -371,6 +371,17 @@ If FORCE is non-nil, don't prompt for save when killing Emacs."
     (("config-open") . (lambda () (find-file user-init-file))))
   "Alist of commands executed by `helix-execute-command'.")
 
+(defun helix-define-typable-command (command callback)
+  "Add COMMAND to `helix--command-alist' that can be invoked via ':<command>'.
+
+Argument CALLBACK is a lambda or function quote defining the behavior
+for the typable command.
+
+Example that defines the typable command ':format':
+\(helix-define-typable-command \"format\" #'format-all-buffer)"
+  (add-to-list 'helix--command-alist
+               (cons (if (listp command) command (list command)) callback)))
+
 (defun helix-execute-command (input)
   "Look for INPUT in `helix--command-alist' and execute it, if present."
   (interactive "s:")
