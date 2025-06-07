@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.6.1 (2025-06-07)
+
+New features:
+
+- Extension functions for adding keys or typable commands. See
+  `helix-define-key` and `helix-define-typable-command` for more info.
+- Simple indentation keybindings on `<` and `>` that indent a single
+  space.
+
+Fix:
+
+- When yanking or killing text, clear Helix selection. This resolves
+  issues where killing/yanking text would prevent visual mode from
+  creating a new mark.
+
 ## 0.6.0 (2025-06-01)
 
 New features:
