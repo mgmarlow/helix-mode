@@ -95,6 +95,32 @@ waits for a second "j" keypress before canceling. You can configure
 different timeouts by passing your desired timeout as an argument to
 `helix-jj-setup`.
 
+## Extension
+
+### Keys
+
+You can add new keys to the Helix keymaps via `helix-define-key`:
+
+Example:
+
+```lisp
+(helix-define-key 'space "w" #'do-something-cool)
+```
+
+The first argument to `helix-define-key` is a Helix state. The valid
+options are: insert, normal, space, view, goto, and window.
+
+### Typable commands
+
+You can create new typable commands (invoked via ":command-name") with
+`helix-define-typable-command`.
+
+Example:
+
+```lisp
+(helix-define-typable-command "format" #'format-all-buffer)
+```
+
 ## Supported keybindings
 
 Normal mode is the default mode. You can return to it by pressing
