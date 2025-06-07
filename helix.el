@@ -123,6 +123,10 @@ thingatpt.  Defaults to 'word."
       (goto-char (cdr bounds))
       (activate-mark))))
 
+;; TODO: wrap word/symbol movements in a macro, e.g. helix-define-movement
+(defmacro helix-define-movement ())
+
+;; TODO: better handling of newlines
 (defvar helix--word-boundary-regexp
   "\\([[:alnum:]]+\\s-*\\)\\|\\([[:punct:]]+\\s-*\\)"
   "Regular expression used by `helix-forward-word' and `helix-backward-word'.")
@@ -160,6 +164,25 @@ point.  Otherwise, continue the existing region."
       (if (match-string 1)
           (skip-syntax-backward "\\w")
         (skip-syntax-backward "\\s_\\s(\\s)")))
+    (unless (use-region-p)
+      (push-mark current t 'activate))))
+
+;; TODO: docs
+(defun helix-forward-symbol ()
+  "Move to next long-word."
+  (interactive)
+  (helix--clear-highlights)
+  (let ((current (point)))
+    (call-interactively #'forward-symbol)
+    (unless (use-region-p)
+      (push-mark current t 'activate))))
+
+(defun helix-backward-symbol ()
+  "Move to previous long-word."
+  (interactive)
+  (helix--clear-highlights)
+  (let ((current (point)))
+    (forward-symbol -1)
     (unless (use-region-p)
       (push-mark current t 'activate))))
 
@@ -428,6 +451,8 @@ Example that defines the typable command ':format':
     (define-key keymap "k" #'helix-previous-line)
     (define-key keymap "w" #'helix-forward-word)
     (define-key keymap "b" #'helix-backward-word)
+    (define-key keymap "W" #'helix-forward-symbol)
+    (define-key keymap "B" #'helix-backward-symbol)
     (define-key keymap "G" #'goto-line)
     (define-key keymap (kbd "C-f") #'scroll-up-command)
     (define-key keymap (kbd "C-b") #'scroll-down-command)
