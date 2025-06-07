@@ -175,10 +175,8 @@ Normal mode is the default mode. You can return to it by pressing
 
 ### Command mode
 
-Accessed by typing `:` in normal mode.
-
-Currently only supports basic save/quit commands, e.g. `write`,
-`write-quit`.
+Accessed by typing `:` in normal mode. Accepts typable commands like
+`:write`, `:quit`, and so on.
 
 ### Goto mode
 
