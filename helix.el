@@ -111,15 +111,21 @@ Nil if no search has taken place while `helix-mode' is active.")
   (helix--clear-highlights)
   (previous-line))
 
-(defun helix--select-thing-at-point (dir &optional thing)
-  "Create a region around the THING at point, relative to DIR.
+;; TODO: for use in mark mode
+(defun helix--surround-thing-at-point (&optional thing)
+  "Construct a region around THING at point.
 
-If THING is nil, the syntactic entity defaults to 'word."
+Argument THING must be one of the things identified by the package
+thingatpt.  Defaults to 'word."
   (let ((bounds (bounds-of-thing-at-point (or thing 'word))))
     (when bounds
-      (push-mark
-       (if (eq dir 'backward) (cdr bounds) (car bounds))
-       t 'activate))))
+      (set-mark (car bounds))
+      (goto-char (cdr bounds))
+      (activate-mark))))
+
+(defvar helix--word-boundary-regexp
+  "\\([[:alnum:]]+\\s-*\\)\\|\\([[:punct:]]+\\s-*\\)"
+  "Regular expression used by `helix-forward-word' and `helix-backward-word'.")
 
 (defun helix-forward-word ()
   "Move to next word.
@@ -128,9 +134,10 @@ If `helix--current-selection' is nil, create a region around the word at
 point.  Otherwise, continue the existing region."
   (interactive)
   (helix--clear-highlights)
-  (forward-word)
-  (unless (use-region-p)
-    (helix--select-thing-at-point 'forward)))
+  (let ((current (point)))
+    (re-search-forward helix--word-boundary-regexp nil 'move)
+    (unless (use-region-p)
+      (push-mark current t 'activate))))
 
 (defun helix-backward-word ()
   "Move to previous word.
@@ -139,9 +146,22 @@ If `helix--current-selection' is nil, create a region around the word at
 point.  Otherwise, continue the existing region."
   (interactive)
   (helix--clear-highlights)
-  (backward-word)
-  (unless (use-region-p)
-    (helix--select-thing-at-point 'backward)))
+  (let ((current (point)))
+    (when (re-search-backward helix--word-boundary-regexp nil 'move)
+      ;; Backward searches will place point at the end of the match,
+      ;; the opposite of what we want.  To instead place the point at
+      ;; the beginning, match characters are skipped via
+      ;; `skip-syntax-backward'.  We can't combine both alphanumeric
+      ;; and symbolic characters in the same call to
+      ;; `skip-syntax-backward', because it would combine the
+      ;; boundaries into a single selection (hence the additional
+      ;; capture groups and the check based on (match-string 1), or
+      ;; "is an alnum match".
+      (if (match-string 1)
+          (skip-syntax-backward "\\w")
+        (skip-syntax-backward "\\s_\\s(\\s)")))
+    (unless (use-region-p)
+      (push-mark current t 'activate))))
 
 (defun helix-go-beginning-line ()
   "Go to beginning of line."
