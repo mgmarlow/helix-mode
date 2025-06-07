@@ -80,7 +80,7 @@ controls how many seconds `helix-insert-mode' waits for a second j
 keypress to escape to normal mode."
   (setq helix-jj-timeout (or timeout 0.2))
   (add-hook 'pre-command-hook #'helix-jj--maybe-abort-key-combo-exit)
-  (define-key helix-insert-state-keymap "j" #'helix-jj--maybe-key-combo-exit))
+  (helix-define-key 'insert "j" #'helix-jj--maybe-key-combo-exit))
 
 (provide 'helix-jj)
 ;;; helix-jj.el ends here

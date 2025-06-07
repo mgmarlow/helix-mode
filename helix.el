@@ -485,6 +485,33 @@ Example that defines the typable command ':format':
     keymap)
   "Keymap for Helix insert state.")
 
+(defvar helix--state-to-keymap-alist
+  `((insert . ,helix-insert-state-keymap)
+    (normal . ,helix-normal-state-keymap)
+    (view . ,helix-view-map)
+    (goto . ,helix-goto-map)
+    (window . ,helix-window-map)
+    (space . ,helix-space-map))
+  "Alist mapping a state symbol to a Helix keymap.")
+
+(defun helix-define-key (state key def)
+  "Define a new Helix command mapping KEY to the keymap associated with STATE.
+
+Argument STATE must be one of:
+
+- insert
+- normal
+- view
+- goto
+- window
+- space
+
+Argument DEF should be an interactive function, matching the usage
+pattern of `define-key'."
+  (if-let (keymap (alist-get state helix--state-to-keymap-alist))
+      (define-key keymap key def)
+    (error "Invalid state %s" state)))
+
 (define-minor-mode helix-insert-mode
   "Helix INSERT state minor mode."
   :lighter " helix[I]"

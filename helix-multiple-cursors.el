@@ -60,9 +60,9 @@
   (dolist (cmd helix-multiple-cursors-run-for-all-commands)
     (add-to-list 'mc/cmds-to-run-for-all cmd))
   (advice-add #'mc/keyboard-quit :before #'helix--clear-data)
-  (define-key helix-normal-state-keymap "s" #'helix-multiple-cursors-select-regex)
-  (define-key helix-normal-state-keymap "," #'mc/keyboard-quit)
-  (define-key helix-normal-state-keymap [escape] #'mc/keyboard-quit))
+  (helix-define-key 'normal "s" #'helix-multiple-cursors-select-regex)
+  (helix-define-key 'normal "," #'mc/keyboard-quit)
+  (helix-define-key 'normal [escape] #'mc/keyboard-quit))
 
 (provide 'helix-multiple-cursors)
 ;;; helix-multiple-cursors.el ends here
