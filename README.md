@@ -219,6 +219,38 @@ Accessed by typing `space` in normal mode.
 | j   | Switch project            | N/A     |
 | /   | Search within project     | N/A     |
 
+## Roadmap
+
+Helix Mode isn't designed to completely re-implement Helix in Emacs,
+but rather serve as a compatibility layer that connects many of the
+Helix keybindings to Emacs functions. I expect most users to still
+rely on Emacs fundamentals like isearch, Eglot, consult, or vertico.
+
+Goals:
+
+- Core editing, navigation, and selection behaviors.
+- A framework for surrounding contexts (word, paragraph, etc.).
+- Tree-sitter navigation.
+- Simple multiple cursors (via
+  [multiple-cursors](https://github.com/magnars/multiple-cursors.el)
+  integration).
+- LSP (via [Eglot](https://github.com/joaotavora/eglot) integration).
+- Extensibility for custom keybindings/typable commands.
+
+Non-goals:
+
+- Search (Helix Mode provides a simple search, but I think most folks
+  are better off using [consult](https://github.com/minad/consult)).
+- Pickers.
+- Extensive configuration options like the Helix config/languages TOML
+  files.
+- Completion (I use
+  [completion-preview](https://github.com/emacs-mirror/emacs/blob/master/lisp/completion-preview.el)
+  and it works perfectly with Helix Mode).
+- Advanced multiple-cursors + selection behaviors. I'll do my best to
+  support keybindings for multiple-cursors, but I'm unsure how deep I
+  want to dive into overhauling the Emacs selection framework.
+
 ## License
 
 Licensed under GPLv3.
