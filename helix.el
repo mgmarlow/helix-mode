@@ -130,10 +130,8 @@ backwards ARG times if negative."
   (if (natnump arg)
       (when (re-search-forward "\\( \\S-\\)" (- (pos-eol) 1) 'move)
         (backward-char 2))
-    (while (not (zerop arg))
-      (when (re-search-backward "\\( \\S-\\)" (pos-bol) 'move)
-        (forward-char))
-      (setq arg (1+ arg)))))
+    (when (re-search-backward "\\( \\S-\\)" (pos-bol) 'move)
+      (forward-char))))
 
 (defun helix-forward-word ()
   "Move to next word.
