@@ -121,6 +121,20 @@ If THING is nil, the syntactic entity defaults to 'word."
        (if (eq dir 'backward) (cdr bounds) (car bounds))
        t 'activate))))
 
+(defun helix--search-long-word (arg)
+  "Move point to the next position that is the end of a long word.
+A long word is any sequence of non-whitespace characters.
+With prefix argument ARG, do it ARG times if positive, or move
+backwards ARG times if negative."
+  (interactive "^p")
+  (if (natnump arg)
+      (when (re-search-forward "\\( \\S-\\)" (- (pos-eol) 1) 'move)
+        (backward-char 2))
+    (while (not (zerop arg))
+      (when (re-search-backward "\\( \\S-\\)" (pos-bol) 'move)
+        (forward-char))
+      (setq arg (1+ arg)))))
+
 (defun helix-forward-word ()
   "Move to next word.
 
@@ -142,6 +156,37 @@ point.  Otherwise, continue the existing region."
   (backward-word)
   (unless (use-region-p)
     (helix--select-thing-at-point 'backward)))
+
+(defun helix-forward-long-word ()
+  "Move to next long word.
+
+If `helix--current-selection' is nil, create a region around the word at
+point.  Otherwise, continue the existing region."
+  (interactive)
+  (helix--clear-highlights)
+  (when (eq (pos-eol) (point))
+    (re-search-forward "\\(.\\)")
+    (beginning-of-line))
+  (let ((beg (point)))
+    (helix--search-long-word 1)
+    (unless (use-region-p)
+      (set-mark beg))))
+
+(defun helix-backward-long-word ()
+  "Move to previous long word.
+
+If `helix--current-selection' is nil, create a region around the word at
+point.  Otherwise, continue the existing region."
+  (interactive)
+  (helix--clear-highlights)
+  (let ((beg (if (eq (pos-bol) (point))
+                 (progn
+                   (re-search-backward "\\(\\S-$\\)" nil)
+                   (pos-eol))
+               (point))))
+    (helix--search-long-word -1)
+    (unless (use-region-p)
+      (set-mark beg))))
 
 (defun helix-go-beginning-line ()
   "Go to beginning of line."
@@ -446,7 +491,7 @@ Example that defines the typable command ':format':
     (define-key helix-window-map "s" #'split-window-below)
     (define-key helix-window-map "q" #'delete-window)
     (define-key helix-window-map "o" #'delete-other-windows)
-    
+
     ;; Editing commands
     (define-key keymap "x" #'helix-select-line)
     (define-key keymap "d" #'helix-kill-thing-at-point)
