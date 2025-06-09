@@ -179,11 +179,10 @@ If `helix--current-selection' is nil, create a region around the word at
 point.  Otherwise, continue the existing region."
   (interactive)
   (helix--clear-highlights)
-  (let ((beg (if (eq (pos-bol) (point))
-                 (progn
-                   (re-search-backward "\\(\\S-$\\)" nil)
-                   (pos-eol))
-               (point))))
+  (when (eq (pos-bol) (point))
+    (re-search-backward "\\(.\\)")
+    (end-of-line))
+  (let ((beg (point)))
     (helix--search-long-word -1)
     (unless (use-region-p)
       (set-mark beg))))
