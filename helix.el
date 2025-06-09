@@ -157,8 +157,11 @@ point.  Otherwise, continue the existing region."
 (defun helix-forward-long-word ()
   "Move to next long word.
 
-If `helix--current-selection' is nil, create a region around the word at
-point.  Otherwise, continue the existing region."
+If `helix--current-selection' is nil, create a region to the next
+long word at point.  Otherwise, continue the existing region.
+
+If the point is at the end of a line, it first searches for
+the next character before moving to the next long word."
   (interactive)
   (helix--clear-highlights)
   (when (= (pos-eol) (point))
@@ -172,8 +175,11 @@ point.  Otherwise, continue the existing region."
 (defun helix-backward-long-word ()
   "Move to previous long word.
 
-If `helix--current-selection' is nil, create a region around the word at
-point.  Otherwise, continue the existing region."
+If `helix--current-selection' is nil, create a region to the previous
+long word at point.  Otherwise, continue the existing region.
+
+If the point is at the beginning of a line, it first searches for
+the previous character before moving to the previous long word."
   (interactive)
   (helix--clear-highlights)
   (when (= (pos-bol) (point))
