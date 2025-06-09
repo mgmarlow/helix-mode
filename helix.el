@@ -121,6 +121,17 @@ If THING is nil, the syntactic entity defaults to 'word."
        (if (eq dir 'backward) (cdr bounds) (car bounds))
        t 'activate))))
 
+(defun helix--search-long-word (arg)
+  "Move point to the next position that is the end of a long word.
+A long word is any sequence of non-whitespace characters.  With prefix
+argument ARG, move forward if positive, or move backwards if negative."
+  (interactive "^p")
+  (if (natnump arg)
+      (when (re-search-forward "\\( \\S-\\)" (- (pos-eol) 1) 'move)
+        (backward-char 2))
+    (when (re-search-backward "\\( \\S-\\)" (pos-bol) 'move)
+      (forward-char))))
+
 (defun helix-forward-word ()
   "Move to next word.
 
@@ -142,6 +153,42 @@ point.  Otherwise, continue the existing region."
   (backward-word)
   (unless (use-region-p)
     (helix--select-thing-at-point 'backward)))
+
+(defun helix-forward-long-word ()
+  "Move to next long word.
+
+If `helix--current-selection' is nil, create a region to the next
+long word at point.  Otherwise, continue the existing region.
+
+If the point is at the end of a line, it first searches for
+the next character before moving to the next long word."
+  (interactive)
+  (helix--clear-highlights)
+  (when (= (pos-eol) (point))
+    (re-search-forward "\\(.\\)")
+    (beginning-of-line))
+  (let ((beg (point)))
+    (helix--search-long-word 1)
+    (unless (use-region-p)
+      (set-mark beg))))
+
+(defun helix-backward-long-word ()
+  "Move to previous long word.
+
+If `helix--current-selection' is nil, create a region to the previous
+long word at point.  Otherwise, continue the existing region.
+
+If the point is at the beginning of a line, it first searches for
+the previous character before moving to the previous long word."
+  (interactive)
+  (helix--clear-highlights)
+  (when (= (pos-bol) (point))
+    (re-search-backward "\\(.\\)")
+    (end-of-line))
+  (let ((beg (point)))
+    (helix--search-long-word -1)
+    (unless (use-region-p)
+      (set-mark beg))))
 
 (defun helix-go-beginning-line ()
   "Go to beginning of line."
@@ -407,7 +454,9 @@ Example that defines the typable command ':format':
     (define-key keymap "j" #'helix-next-line)
     (define-key keymap "k" #'helix-previous-line)
     (define-key keymap "w" #'helix-forward-word)
+    (define-key keymap "W" #'helix-forward-long-word)
     (define-key keymap "b" #'helix-backward-word)
+    (define-key keymap "B" #'helix-backward-long-word)
     (define-key keymap "G" #'goto-line)
     (define-key keymap (kbd "C-f") #'scroll-up-command)
     (define-key keymap (kbd "C-b") #'scroll-down-command)
@@ -446,7 +495,7 @@ Example that defines the typable command ':format':
     (define-key helix-window-map "s" #'split-window-below)
     (define-key helix-window-map "q" #'delete-window)
     (define-key helix-window-map "o" #'delete-other-windows)
-    
+
     ;; Editing commands
     (define-key keymap "x" #'helix-select-line)
     (define-key keymap "d" #'helix-kill-thing-at-point)
