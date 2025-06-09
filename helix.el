@@ -123,9 +123,8 @@ If THING is nil, the syntactic entity defaults to 'word."
 
 (defun helix--search-long-word (arg)
   "Move point to the next position that is the end of a long word.
-A long word is any sequence of non-whitespace characters.
-With prefix argument ARG, do it ARG times if positive, or move
-backwards ARG times if negative."
+A long word is any sequence of non-whitespace characters.  With prefix
+argument ARG, move forward if positive, or move backwards if negative."
   (interactive "^p")
   (if (natnump arg)
       (when (re-search-forward "\\( \\S-\\)" (- (pos-eol) 1) 'move)
@@ -162,7 +161,7 @@ If `helix--current-selection' is nil, create a region around the word at
 point.  Otherwise, continue the existing region."
   (interactive)
   (helix--clear-highlights)
-  (when (eq (pos-eol) (point))
+  (when (= (pos-eol) (point))
     (re-search-forward "\\(.\\)")
     (beginning-of-line))
   (let ((beg (point)))
@@ -177,7 +176,7 @@ If `helix--current-selection' is nil, create a region around the word at
 point.  Otherwise, continue the existing region."
   (interactive)
   (helix--clear-highlights)
-  (when (eq (pos-bol) (point))
+  (when (= (pos-bol) (point))
     (re-search-backward "\\(.\\)")
     (end-of-line))
   (let ((beg (point)))
