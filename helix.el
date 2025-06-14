@@ -171,10 +171,8 @@ point.  Otherwise, continue the existing region."
   "Move to next long-word."
   (interactive)
   (helix--clear-highlights)
-  (while (and (eolp) (not (eobp)))
-    (forward-char))
   (let ((current (point)))
-    (re-search-forward "[^\s\n]+" nil 'move)
+    (re-search-forward "^[ ]+\\|[^ ]+[ ]*" (unless (eolp) (line-end-position)) 'move)
     (unless (use-region-p)
       (push-mark current t 'activate))))
 
@@ -182,10 +180,8 @@ point.  Otherwise, continue the existing region."
   "Move to previous long-word."
   (interactive)
   (helix--clear-highlights)
-  (while (and (bolp) (not (bobp)))
-    (backward-char))
   (let ((current (point)))
-    (when (re-search-backward "[^\s\n]+" nil 'move)
+    (when (re-search-backward "^[ ]+\\|[^ ]+[ ]*" (unless (bolp) (line-beginning-position)) 'move)
       (skip-syntax-backward "^\s\n"))
     (unless (use-region-p)
       (push-mark current t 'activate))))
