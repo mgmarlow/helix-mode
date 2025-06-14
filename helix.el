@@ -160,8 +160,9 @@ If a region is already active, no new region is created."
   "Move to previous long-word."
   (interactive)
   (helix--with-movement-surround
-    (when (re-search-backward "^[ ]+\\|[^ ]+[ ]*" (unless (bolp) (line-beginning-position)) 'move)
-      (skip-syntax-backward "^\s\n"))))
+   (when (re-search-backward "^[ ]+\\|[^ ]+[ ]*"
+                             (unless (bolp) (line-beginning-position)) 'move)
+     (skip-syntax-backward "^\s\n"))))
 
 (defun helix-go-beginning-line ()
   "Go to beginning of line."
