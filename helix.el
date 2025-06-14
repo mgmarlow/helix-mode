@@ -112,7 +112,7 @@ Nil if no search has taken place while `helix-mode' is active.")
   (previous-line))
 
 ;; TODO: for use in mark mode
-(defun helix--surround-thing-at-point (&optional thing)
+(defun helix-surround-thing-at-point (&optional thing)
   "Construct a region around THING at point.
 
 Argument THING must be one of the things identified by the package
