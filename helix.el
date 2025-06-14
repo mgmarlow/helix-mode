@@ -5,7 +5,7 @@
 ;; Author: Graham Marlow
 ;; Keywords: convenience
 ;; Version: 0.6.1
-;; Package-Requires: ((emacs "29.1"))
+;; Package-Requires: ((emacs "28.1"))
 ;; URL: https://github.com/mgmarlow/helix-mode
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -196,7 +196,7 @@ If a region is already active, no new region is created."
 (defun helix-select-line ()
   "Select the current line, moving the cursor to the end."
   (interactive)
-  (if (and (region-active-p) (= (point) (pos-eol)))
+  (if (and (region-active-p) (eolp))
       (progn
         (next-line)
         (end-of-line))
