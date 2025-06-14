@@ -123,68 +123,45 @@ thingatpt.  Defaults to 'word."
       (goto-char (cdr bounds))
       (activate-mark))))
 
-;; TODO: wrap word/symbol movements in a macro, e.g. helix-define-movement
-(defmacro helix-define-movement ())
+(defmacro helix--with-movement-surround (&rest body)
+  "Create a region around movement defined in BODY.
 
-;; TODO: better handling of newlines
-(defvar helix--word-boundary-regexp
-  "\\([[:alnum:]]+\\s-*\\)\\|\\([[:punct:]]+\\s-*\\)"
-  "Regular expression used by `helix-forward-word' and `helix-backward-word'.")
+If a region is already active, no new region is created."
+  `(progn
+     (helix--clear-highlights)
+     (let ((current (point)))
+       ,@body
+       (unless (use-region-p)
+         (push-mark current t 'activate)))))
 
 (defun helix-forward-word ()
-  "Move to next word.
-
-If `helix--current-selection' is nil, create a region around the word at
-point.  Otherwise, continue the existing region."
+  "Move to next word."
   (interactive)
-  (helix--clear-highlights)
-  (let ((current (point)))
-    (re-search-forward helix--word-boundary-regexp nil 'move)
-    (unless (use-region-p)
-      (push-mark current t 'activate))))
+  (helix--with-movement-surround
+   (re-search-forward "[[:alnum:]]+[ ]*\\|[[:punct:]]+[ ]*"
+                      (unless (eolp) (line-end-position)) 'move)))
 
 (defun helix-backward-word ()
-  "Move to previous word.
-
-If `helix--current-selection' is nil, create a region around the word at
-point.  Otherwise, continue the existing region."
+  "Move to previous word."
   (interactive)
-  (helix--clear-highlights)
-  (let ((current (point)))
-    (when (re-search-backward helix--word-boundary-regexp nil 'move)
-      ;; Backward searches will place point at the end of the match,
-      ;; the opposite of what we want.  To instead place the point at
-      ;; the beginning, match characters are skipped via
-      ;; `skip-syntax-backward'.  We can't combine both alphanumeric
-      ;; and symbolic characters in the same call to
-      ;; `skip-syntax-backward', because it would combine the
-      ;; boundaries into a single selection (hence the additional
-      ;; capture groups and the check based on (match-string 1), or
-      ;; "is an alnum match".
-      (if (match-string 1)
-          (skip-syntax-backward "\\w")
-        (skip-syntax-backward "\\s_\\s(\\s)")))
-    (unless (use-region-p)
-      (push-mark current t 'activate))))
+  (helix--with-movement-surround
+   (when (re-search-backward "[[:alnum:]]+[ ]*\\|[[:punct:]]+[ ]*"
+                             (unless (bolp) (line-beginning-position)) 'move)
+     (skip-syntax-backward "w.()"))))
 
 (defun helix-forward-long-word ()
   "Move to next long-word."
   (interactive)
-  (helix--clear-highlights)
-  (let ((current (point)))
-    (re-search-forward "^[ ]+\\|[^ ]+[ ]*" (unless (eolp) (line-end-position)) 'move)
-    (unless (use-region-p)
-      (push-mark current t 'activate))))
+  (helix--with-movement-surround
+   (re-search-forward "^[ ]+\\|[^ ]+[ ]*"
+                      (unless (eolp) (line-end-position)) 'move)))
 
 (defun helix-backward-long-word ()
   "Move to previous long-word."
   (interactive)
-  (helix--clear-highlights)
-  (let ((current (point)))
+  (helix--with-movement-surround
     (when (re-search-backward "^[ ]+\\|[^ ]+[ ]*" (unless (bolp) (line-beginning-position)) 'move)
-      (skip-syntax-backward "^\s\n"))
-    (unless (use-region-p)
-      (push-mark current t 'activate))))
+      (skip-syntax-backward "^\s\n"))))
 
 (defun helix-go-beginning-line ()
   "Go to beginning of line."
