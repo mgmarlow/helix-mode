@@ -144,9 +144,11 @@ If a region is already active, no new region is created."
   "Move to previous word."
   (interactive)
   (helix--with-movement-surround
-   (when (re-search-backward "[[:alnum:]]+[ ]*\\|[[:punct:]]+[ ]*\\|\n" nil 'move)
+   (when (re-search-backward "\\([[:alnum:]]+[ ]*\\)\\|\\([[:punct:]]+[ ]*\\)\\|\n" nil 'move)
      (or (eq (char-after (match-beginning 0)) ?\n)
-         (skip-syntax-backward "w.()")))))
+         (if (match-string 1)
+             (skip-syntax-backward "w")
+           (skip-syntax-backward ".()"))))))
 
 (defun helix-go-beginning-line ()
   "Go to beginning of line."
