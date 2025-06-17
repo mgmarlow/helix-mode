@@ -138,28 +138,15 @@ If a region is already active, no new region is created."
   "Move to next word."
   (interactive)
   (helix--with-movement-surround
-   (re-search-forward "[[:alnum:]]+[ ]*\\|[[:punct:]]+[ ]*"
-                      (unless (eolp) (line-end-position)) 'move)))
+   (re-search-forward "[[:alnum:]]+[ ]*\\|[[:punct:]]+[ ]*\\|\n" nil 'move)))
 
 (defun helix-backward-word ()
   "Move to previous word."
   (interactive)
   (helix--with-movement-surround
-   (when (re-search-backward "[[:alnum:]]+[ ]*\\|[[:punct:]]+[ ]*"
-                             (unless (bolp) (line-beginning-position)) 'move)
-     (skip-syntax-backward "w.()"))))
-
-(defun helix-forward-long-word ()
-  "Move to next long-word."
-  (interactive)
-  (helix--with-movement-surround
-   (forward-whitespace 1)))
-
-(defun helix-backward-long-word ()
-  "Move to previous long-word."
-  (interactive)
-  (helix--with-movement-surround
-   (forward-whitespace -1)))
+   (when (re-search-backward "[[:alnum:]]+[ ]*\\|[[:punct:]]+[ ]*\\|\n" nil 'move)
+     (or (eq (char-after (match-beginning 0)) ?\n)
+         (skip-syntax-backward "w.()")))))
 
 (defun helix-go-beginning-line ()
   "Go to beginning of line."
