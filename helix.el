@@ -5,7 +5,7 @@
 ;; Author: Graham Marlow
 ;; Keywords: convenience
 ;; Version: 0.6.1
-;; Package-Requires: ((emacs "29.1"))
+;; Package-Requires: ((emacs "28.1"))
 ;; URL: https://github.com/mgmarlow/helix-mode
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -111,37 +111,42 @@ Nil if no search has taken place while `helix-mode' is active.")
   (helix--clear-highlights)
   (previous-line))
 
-(defun helix--select-thing-at-point (dir &optional thing)
-  "Create a region around the THING at point, relative to DIR.
+;; TODO: for use in mark mode
+(defun helix-surround-thing-at-point (&optional thing)
+  "Construct a region around THING at point.
 
-If THING is nil, the syntactic entity defaults to 'word."
+Argument THING must be one of the things identified by the package
+thingatpt.  Defaults to 'word."
   (let ((bounds (bounds-of-thing-at-point (or thing 'word))))
     (when bounds
-      (push-mark
-       (if (eq dir 'backward) (cdr bounds) (car bounds))
-       t 'activate))))
+      (set-mark (car bounds))
+      (goto-char (cdr bounds))
+      (activate-mark))))
+
+(defmacro helix--with-movement-surround (&rest body)
+  "Create a region around movement defined in BODY.
+
+If a region is already active, no new region is created."
+  `(progn
+     (helix--clear-highlights)
+     (let ((current (point)))
+       ,@body
+       (unless (use-region-p)
+         (push-mark current t 'activate)))))
 
 (defun helix-forward-word ()
-  "Move to next word.
-
-If `helix--current-selection' is nil, create a region around the word at
-point.  Otherwise, continue the existing region."
+  "Move to next word."
   (interactive)
-  (helix--clear-highlights)
-  (forward-word)
-  (unless (use-region-p)
-    (helix--select-thing-at-point 'forward)))
+  (helix--with-movement-surround
+   (re-search-forward "[[:alnum:]]+[ ]*\\|[[:punct:]]+[ ]*\\|\n" nil 'move)))
 
 (defun helix-backward-word ()
-  "Move to previous word.
-
-If `helix--current-selection' is nil, create a region around the word at
-point.  Otherwise, continue the existing region."
+  "Move to previous word."
   (interactive)
-  (helix--clear-highlights)
-  (backward-word)
-  (unless (use-region-p)
-    (helix--select-thing-at-point 'backward)))
+  (helix--with-movement-surround
+   (when (re-search-backward "[[:alnum:]]+[ ]*\\|[[:punct:]]+[ ]*\\|\n" nil 'move)
+     (or (eq (char-after (match-beginning 0)) ?\n)
+         (skip-syntax-backward "w.()")))))
 
 (defun helix-go-beginning-line ()
   "Go to beginning of line."
@@ -176,7 +181,7 @@ point.  Otherwise, continue the existing region."
 (defun helix-select-line ()
   "Select the current line, moving the cursor to the end."
   (interactive)
-  (if (and (region-active-p) (= (point) (pos-eol)))
+  (if (and (region-active-p) (eolp))
       (progn
         (next-line)
         (end-of-line))
