@@ -252,7 +252,17 @@
     (insert "first second third")
     (goto-char 1)
     (helix-forward-long-word)
-    (should (eql (- (region-end) (region-beginning)) 5))))
+    (should (eql (- (region-end) (region-beginning)) 6))
+    (helix-forward-long-word)
+    (should (eql (- (region-end) (region-beginning)) 7))))
+
+(ert-deftest helix-test-forward-long-word-with-region-at-eol ()
+  "Test forward movement surrounding behavior."
+  (with-temp-buffer
+    (insert "first\nsecond third")
+    (goto-char 5) ; before end of line
+    (helix-forward-long-word)
+    (should (eql (- (region-end) (region-beginning)) 6))))
 
 (ert-deftest helix-test-backward-long-word-with-region ()
   "Test backward movement surrounding behavior."
@@ -260,7 +270,17 @@
     (insert "first second third")
     (goto-char 18)
     (helix-backward-long-word)
-    (should (eql (- (region-end) (region-beginning)) 5))))
+    (should (eql (- (region-end) (region-beginning)) 5))
+    (helix-backward-long-word)
+    (should (eql (- (region-end) (region-beginning)) 7))))
+
+(ert-deftest helix-test-backward-long-word-with-region-at-bol ()
+  "Test backward movement surrounding behavior."
+  (with-temp-buffer
+    (insert "first second\nthird")
+    (goto-char 13) ; start of second line
+    (helix-backward-long-word)
+    (should (eql (- (region-end) (region-beginning)) 6))))
 
 ;; Run all tests
 (ert-run-tests-interactively "helix")
