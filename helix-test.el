@@ -282,6 +282,5 @@
     (helix-backward-long-word)
     (should (eql (- (region-end) (region-beginning)) 6))))
 
-;; Run all tests
-(ert-run-tests-interactively "helix")
+(provide 'helix-test)
 ;;; helix-test.el ends here
