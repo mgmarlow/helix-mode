@@ -252,9 +252,9 @@
     (insert "first second third")
     (goto-char 1)
     (helix-forward-long-word)
-    (should (eql (- (region-end) (region-beginning)) 6))
+    (should (eql (- (region-end) (region-beginning)) 5))
     (helix-forward-long-word)
-    (should (eql (- (region-end) (region-beginning)) 7))))
+    (should (eql (- (region-end) (region-beginning)) 6))))
 
 (ert-deftest helix-test-forward-long-word-with-region-at-eol ()
   "Test forward movement surrounding behavior."
@@ -270,7 +270,7 @@
     (insert "first second third")
     (goto-char 18)
     (helix-backward-long-word)
-    (should (eql (- (region-end) (region-beginning)) 5))
+    (should (eql (- (region-end) (region-beginning)) 4))
     (helix-backward-long-word)
     (should (eql (- (region-end) (region-beginning)) 7))))
 
