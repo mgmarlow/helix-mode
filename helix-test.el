@@ -1,9 +1,9 @@
-;;; helix.el --- A minor mode emulating Helix keybindings  -*- lexical-binding: t; -*-
+;;; helix.el --- Tests for Helix minor mode  -*- lexical-binding: t; -*-
 
-;;(C) 2025  Graham Marlow
+;; Copyright (C) 2025  Graham Marlow
 
 ;; Author: Graham Marlow
-;; Keywords: convenience
+;; Keywords: tests
 ;; Version: 0.6.1
 ;; Package-Requires: ((emacs "28.1"))
 ;; URL: https://github.com/mgmarlow/helix-mode
