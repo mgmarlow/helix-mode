@@ -30,124 +30,237 @@
 (require 'ert)
 (require 'helix)
 
-(ert-deftest helix-test-forward-long-word ()
-  "Test `helix-forward-long-word' functionality with various scenarios."
-  ;; Word case
+;;; Forward long word tests
+
+(ert-deftest helix-test-forward-long-word-basic-movement ()
+  "Test basic forward movement between words."
   (with-temp-buffer
-    (insert "This is a test-string to verify helix functionality.")
+    (insert "hello world test")
     (goto-char (point-min))
     (helix-forward-long-word)
-    (should (equal (point) (string-match "is a" (buffer-string)))))
+    (should (= (point) 6)) ; before "world"
+    (helix-forward-long-word)
+    (should (= (point) 12)) ; before "test"
+    (helix-forward-long-word)
+    (should (= (point) (- (point-max) 1))))) ; before end of line
 
-  ;; Long word case
+(ert-deftest helix-test-forward-long-word-hyphenated-words ()
+  "Test forward movement with hyphenated words (long words)."
   (with-temp-buffer
-    (insert "This-is a test-string to verify helix functionality.")
+    (insert "this test-string-example works")
     (goto-char (point-min))
     (helix-forward-long-word)
-    (should (equal (point) (string-match "a " (buffer-string)))))
-
-  ;; On whitespace skip it
-  (with-temp-buffer
-    (insert "This is a test-string to verify helix functionality.")
-    (goto-char 5)
+    (should (= (point) 5)) ; before "test-string-example"
     (helix-forward-long-word)
-    (should (equal (- (region-end) (region-beginning)) 2))
-    (should (equal (point) (string-match "a " (buffer-string)))))
+    (should (= (point) 25)))) ; before "works"
 
-  ;; Case at end of line
+(ert-deftest helix-test-forward-long-word-skip-whitespace ()
+  "Test that forward movement skips over whitespace."
   (with-temp-buffer
-    (insert "This is a test sentence.\n\nNext sentence follows.")
-    (goto-char 11)
+    (insert "word   \t  next")
+    (goto-char 5) ; on the whitespace
     (helix-forward-long-word)
-    (should (equal (point) (string-match "sentence" (buffer-string))))))
+    (should (= (point) 10)))) ; start of "next"
 
-(ert-deftest helix-test-forward-long-word-before-eol ()
-  "Test `helix-forward-long-word' behavior before end of line."
+(ert-deftest helix-test-forward-long-word-multiple-lines ()
+  "Test forward movement across multiple lines."
   (with-temp-buffer
-    (insert "This is a test sentence.\n\nNext sentence follows.")
-    (goto-char 16)
+    (insert "first line\nsecond line\nthird")
+    (goto-char 1) ; start of buffer
     (helix-forward-long-word)
-    (should (equal (point) (string-match "\n" (buffer-string))))))
+    (should (= (point) 6)) ; before "line"
+    (helix-forward-long-word)
+    (should (= (point) 10)) ; before end of first line
+    (helix-forward-long-word)
+    (should (= (point) 18)))) ; before "line" of second line
 
-
-(ert-deftest helix-test-forward-long-word-at-eob ()
-  "Test `helix-forward-long-word' behavior at the end of the buffer."
+(ert-deftest helix-test-forward-long-word-empty-lines ()
+  "Test forward movement with empty lines."
   (with-temp-buffer
-    (insert "This is a test string.")
+    (insert "first\n\n\nsecond")
+    (goto-char 5) ; before end of first line
+    (helix-forward-long-word)
+    (should (= (point) (- (point-max) 1))))) ; before end of second line
+
+(ert-deftest helix-test-forward-long-word-at-end-of-buffer ()
+  "Test that forward movement at end of buffer doesn't move."
+  (with-temp-buffer
+    (insert "test word")
     (goto-char (point-max))
     (let ((initial-point (point)))
       (helix-forward-long-word)
-      (should (equal (point) initial-point)))))
+      (should (= (point) initial-point)))))
 
-(ert-deftest helix-test-forward-long-word-whitespaces-between-lines ()
-  "Test `helix-forward-long-word' behavior with line full of whitespaces.
-It should select only the whitespaces."
+(ert-deftest helix-test-forward-long-word-mixed-separators ()
+  "Test forward movement with mixed word separators."
   (with-temp-buffer
-    (insert "This is a test sentence.\n   \nNext sentence follows.")
-    (goto-char 24)
+    (insert "word1_part2-part3.part4 next")
+    (goto-char (point-min))
     (helix-forward-long-word)
-    (should (equal (- (region-end) (region-beginning)) 2))
-    (should (equal (point) (string-match "\nNext" (buffer-string))))))
+    (should (= (point) 24)))) ; before "next"
 
-(ert-deftest helix-test-backward-long-word ()
-  "Test `helix-backward-long-word' functionality with various scenarios."
-  ;; Word case
+(ert-deftest helix-test-forward-long-word-punctuation ()
+  "Test forward movement with punctuation."
   (with-temp-buffer
-    (insert "This is a test string to verify helix functionality.")
+    (insert "Hello, world! How are you?")
+    (goto-char (point-min))
+    (helix-forward-long-word)
+    (should (= (point) 7)) ; before "world!"
+    (helix-forward-long-word)
+    (should (= (point) 14)))) ; before "How"
+
+;;; Backward long word tests
+
+(ert-deftest helix-test-backward-long-word-basic-movement ()
+  "Test basic backward movement between words."
+  (with-temp-buffer
+    (insert "hello world test")
     (goto-char (point-max))
     (helix-backward-long-word)
-    ;; Check if point moved correctly
-    (should (equal (point) (string-match "unctionality." (buffer-string)))))
+    (should (= (point) 13)) ; start of "test"
+    (helix-backward-long-word)
+    (should (= (point) 7)) ; start of "world"
+    (helix-backward-long-word)
+    (should (= (point) 1)))) ; start of "hello"
 
-  ;; Long word case
+(ert-deftest helix-test-backward-long-word-hyphenated-words ()
+  "Test backward movement with hyphenated words (long words)."
   (with-temp-buffer
-    (insert "This is a test string to verify helix_functionality.")
+    (insert "this test-string-example works")
     (goto-char (point-max))
     (helix-backward-long-word)
-    ;; Check if point moved correctly
-    (should (equal (point) (string-match "elix_functionality." (buffer-string)))))
-
-  ;; On whitespace keep it
-  (with-temp-buffer
-    (insert "This is a test-string to verify helix functionality.")
-    (goto-char 8)
+    (should (= (point) 26)) ; start of "works"
     (helix-backward-long-word)
-    (should (equal (- (region-end) (region-beginning)) 3))
-    (should (equal (point) (string-match "s a" (buffer-string)))))
+    (should (= (point) 6)))) ; start of "test-string-example"
 
-  ;; Case at beginning of line
+(ert-deftest helix-test-backward-long-word-skip-whitespace ()
+  "Test that backward movement skips over whitespace."
   (with-temp-buffer
-    (insert "First line.\n\nSecond line follows.")
-    (goto-char 13)
+    (insert "word   \t  next")
+    (goto-char 10) ; in the whitespace
     (helix-backward-long-word)
-    (should (equal (point) (string-match "ine." (buffer-string))))))
+    (should (= (point) 1)))) ; start of "word"
 
-(ert-deftest helix-test-backward-long-word-before-bol ()
-  "Test `helix-backward-long-word' behavior before beginning of line."
+(ert-deftest helix-test-backward-long-word-multiple-lines ()
+  "Test backward movement across multiple lines."
   (with-temp-buffer
-    (insert "This is a test sentence.\n\nNext sentence follows.")
-    (goto-char 28)
+    (insert "first line\nsecond line\nthird")
+    (goto-char (point-max))
     (helix-backward-long-word)
-    (should (equal (point) (string-match "ext" (buffer-string))))))
+    (should (= (point) 24)) ; start of "third"
+    (helix-backward-long-word)
+    (should (= (point) 19)) ; start of "line"
+    (helix-backward-long-word)
+    (should (= (point) 12)))) ; start of "second"
 
-(ert-deftest helix-test-backward-long-word-at-bob ()
-  "Test `helix-backward-long-word' behavior at the beginning of the buffer."
+(ert-deftest helix-test-backward-long-word-empty-lines ()
+  "Test backward movement with empty lines."
   (with-temp-buffer
-    (insert "This is a test string.")
+    (insert "first\n\n\nsecond")
+    (goto-char (point-max))
+    (helix-backward-long-word)
+    (should (= (point) 9)) ; start of "second"
+    (helix-backward-long-word)
+    (should (= (point) 1)))) ; start of "first"
+
+(ert-deftest helix-test-backward-long-word-at-beginning-of-buffer ()
+  "Test that backward movement at beginning of buffer doesn't move."
+  (with-temp-buffer
+    (insert "test word")
     (goto-char (point-min))
     (let ((initial-point (point)))
       (helix-backward-long-word)
-      (should (equal (point) initial-point)))))
+      (should (= (point) initial-point)))))
 
-(ert-deftest helix-test-backward-long-word-whitespaces-between-lines ()
-  "Test `helix-backward-long-word' behavior with line full of whitespaces.
-It should select only the whitespaces."
+(ert-deftest helix-test-backward-long-word-mixed-separators ()
+  "Test backward movement with mixed word separators."
   (with-temp-buffer
-    (insert "This is a test sentence.\n   \nNext sentence follows.")
-    (goto-char 29)
+    (insert "word1_part2-part3.part4 next")
+    (goto-char (point-max))
     (helix-backward-long-word)
-    (should (equal (- (region-end) (region-beginning)) 2))
-    (should (equal (point) (string-match "\n" (buffer-string))))))
+    (should (= (point) 25)) ; start of "next"
+    (helix-backward-long-word)
+    (should (= (point) 1)))) ; start of "word1_part2-part3.part4"
+
+(ert-deftest helix-test-backward-long-word-punctuation ()
+  "Test backward movement with punctuation."
+  (with-temp-buffer
+    (insert "Hello, world! How are you?")
+    (goto-char (point-max))
+    (helix-backward-long-word)
+    (should (= (point) 23)) ; start of "you?"
+    (helix-backward-long-word)
+    (should (= (point) 19)))) ; start of "are"
+
+;;; Edge case tests
+
+(ert-deftest helix-test-forward-long-word-empty-buffer ()
+  "Test forward movement in empty buffer."
+  (with-temp-buffer
+    (let ((initial-point (point)))
+      (helix-forward-long-word)
+      (should (= (point) initial-point)))))
+
+(ert-deftest helix-test-backward-long-word-empty-buffer ()
+  "Test backward movement in empty buffer."
+  (with-temp-buffer
+    (let ((initial-point (point)))
+      (helix-backward-long-word)
+      (should (= (point) initial-point)))))
+
+(ert-deftest helix-test-forward-long-word-only-whitespace ()
+  "Test forward movement in buffer with only whitespace."
+  (with-temp-buffer
+    (insert "   \t\n  ")
+    (goto-char 1)
+    (helix-forward-long-word)
+    (should (= (point) 4)))) ; before end of first line
+
+(ert-deftest helix-test-backward-long-word-only-whitespace ()
+  "Test backward movement in buffer with only whitespace."
+  (with-temp-buffer
+    (insert "   \t\n  ")
+    (goto-char (point-max))
+    (helix-backward-long-word)
+    (should (= (point) 6)))) ; start of second line
+
+(ert-deftest helix-test-forward-long-word-single-character ()
+  "Test forward movement with single character words."
+  (with-temp-buffer
+    (insert "a b c d")
+    (goto-char (point-min))
+    (helix-forward-long-word)
+    (should (= (point) 2)) ; before "b"
+    (helix-forward-long-word)
+    (should (= (point) 4)))) ; before "c"
+
+(ert-deftest helix-test-backward-long-word-single-character ()
+  "Test backward movement with single character words."
+  (with-temp-buffer
+    (insert "a b c d")
+    (goto-char (point-max))
+    (helix-backward-long-word)
+    (should (= (point) 7)) ; start of "d"
+    (helix-backward-long-word)
+    (should (= (point) 5)))) ; start of "c"
+
+;;; Region/selection tests
+
+(ert-deftest helix-test-forward-long-word-with-region ()
+  "Test forward movement surrounding behavior."
+  (with-temp-buffer
+    (insert "first second third")
+    (goto-char 1)
+    (helix-forward-long-word)
+    (should (eql (- (region-end) (region-beginning)) 5))))
+
+(ert-deftest helix-test-backward-long-word-with-region ()
+  "Test backward movement surrounding behavior."
+  (with-temp-buffer
+    (insert "first second third")
+    (goto-char 18)
+    (helix-backward-long-word)
+    (should (eql (- (region-end) (region-beginning)) 5))))
 
 ;; Run all tests
 (ert-run-tests-interactively "helix")
