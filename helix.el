@@ -5,7 +5,7 @@
 ;; Author: Graham Marlow
 ;; Keywords: convenience
 ;; Version: 0.6.1
-;; Package-Requires: ((emacs "28.1"))
+;; Package-Requires: ((emacs "29.1"))
 ;; URL: https://github.com/mgmarlow/helix-mode
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -149,6 +149,29 @@ If a region is already active, no new region is created."
          (if (match-string 1)
              (skip-syntax-backward "w")
            (skip-syntax-backward ".()"))))))
+
+(defun helix-forward-long-word ()
+  "Move to next long word.
+If the point is at the end of a line, it first searches for the
+non-empty line before moving to the next long word."
+  (interactive)
+  (unless (eobp)
+    (when (eql (char-after (point)) ?\s) (forward-char))
+    (while (looking-at-p ".?$") (forward-line))
+    (helix--with-movement-surround
+     (when (re-search-forward "[ \t]+\\S-" (- (pos-eol) 1) 'move)
+       (backward-char 2)))))
+
+(defun helix-backward-long-word ()
+  "Move to previous long word.
+If the point is at the beginning of a line, it first searches for the
+previous character before moving to the previous long word."
+  (interactive)
+  (unless (bobp)
+    (when (bolp) (re-search-backward "[^\n]"))
+    (helix--with-movement-surround
+     (when (re-search-backward "[ \t]+\\S-" (pos-bol) 'move)
+       (forward-char)))))
 
 (defun helix-go-beginning-line ()
   "Go to beginning of line."
@@ -414,7 +437,9 @@ Example that defines the typable command ':format':
     (define-key keymap "j" #'helix-next-line)
     (define-key keymap "k" #'helix-previous-line)
     (define-key keymap "w" #'helix-forward-word)
+    (define-key keymap "W" #'helix-forward-long-word)
     (define-key keymap "b" #'helix-backward-word)
+    (define-key keymap "B" #'helix-backward-long-word)
     (define-key keymap "G" #'goto-line)
     (define-key keymap (kbd "C-f") #'scroll-up-command)
     (define-key keymap (kbd "C-b") #'scroll-down-command)
@@ -453,7 +478,7 @@ Example that defines the typable command ':format':
     (define-key helix-window-map "s" #'split-window-below)
     (define-key helix-window-map "q" #'delete-window)
     (define-key helix-window-map "o" #'delete-other-windows)
-    
+
     ;; Editing commands
     (define-key keymap "x" #'helix-select-line)
     (define-key keymap "d" #'helix-kill-thing-at-point)
