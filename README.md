@@ -16,7 +16,7 @@ Helix Mode integrates nicely with `project.el` and `xref`.
 
 ## Installation
 
-Emacs >= 28.1 required.
+Emacs >= 29.1 required.
 
 Clone Helix Mode:
 
