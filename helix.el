@@ -134,17 +134,6 @@ If a region is already active, no new region is created."
        (unless (use-region-p)
          (push-mark current t 'activate)))))
 
-(defun helix--search-long-word (arg)
-  "Move point to the next position that is the end of a long word.
-A long word is any sequence of non-whitespace characters.  With prefix
-argument ARG, move forward if positive, or move backwards if negative."
-  (interactive "^p")
-  (if (natnump arg)
-      (when (re-search-forward "[ \t]+\\S-" (- (pos-eol) 1) 'move arg)
-        (backward-char 2))
-    (when  (re-search-backward "[ \t]+\\S-" (pos-bol) 'move)
-      (forward-char))))
-
 (defun helix-forward-word ()
   "Move to next word."
   (interactive)
@@ -170,7 +159,8 @@ non-empty line before moving to the next long word."
     (when (eql (char-after (point)) ?\s) (forward-char))
     (while (looking-at-p ".?$") (forward-line))
     (helix--with-movement-surround
-     (helix--search-long-word 1))))
+     (when (re-search-forward "[ \t]+\\S-" (- (pos-eol) 1) 'move)
+       (backward-char 2)))))
 
 (defun helix-backward-long-word ()
   "Move to previous long word.
@@ -180,7 +170,8 @@ previous character before moving to the previous long word."
   (unless (bobp)
     (when (bolp) (re-search-backward "[^\n]"))
     (helix--with-movement-surround
-     (helix--search-long-word -1))))
+     (when (re-search-backward "[ \t]+\\S-" (pos-bol) 'move)
+       (forward-char)))))
 
 (defun helix-go-beginning-line ()
   "Go to beginning of line."
