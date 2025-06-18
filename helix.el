@@ -178,8 +178,7 @@ If the point is at the beginning of a line, it first searches for the
 previous character before moving to the previous long word."
   (interactive)
   (unless (bobp)
-    (when (use-region-p) (backward-char))
-    (while (bolp) (re-search-backward "[^\n]"))
+    (when (bolp) (re-search-backward "[^\n]"))
     (helix--with-movement-surround
      (helix--search-long-word -1))))
 
