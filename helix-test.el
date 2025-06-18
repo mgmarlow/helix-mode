@@ -3,6 +3,7 @@
 ;; Copyright (C) 2025  Graham Marlow
 
 ;; Author: Graham Marlow
+;;         Corentin Roy
 ;; Keywords: tests
 ;; Version: 0.6.1
 ;; Package-Requires: ((emacs "28.1"))
