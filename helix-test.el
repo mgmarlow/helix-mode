@@ -5,7 +5,7 @@
 ;; Author: Graham Marlow
 ;;         Corentin Roy
 ;; Keywords: tests
-;; Version: 0.6.1
+;; Version: 0
 ;; Package-Requires: ((emacs "28.1"))
 ;; URL: https://github.com/mgmarlow/helix-mode
 
