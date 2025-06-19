@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.7.0 (2025-06-19)
+
+Navigation overhaul! Navigating via word/long-word (w/b/W/B) now
+behaves more similarly to Helix.
+
+We also now have a
+[roadmap](https://github.com/mgmarlow/helix-mode?tab=readme-ov-file#roadmap)
+outlining the focus of Helix Mode development going forward.
+
+New features:
+
+- Long word navigation ("W" and "B").
+- Overhaul of normal word navigation ("w" and "b").
+
+Contributor kudos:
+
+- @roy-corentin for implementing long-word navigation and adding a
+  test suite!
+
 ## 0.6.1 (2025-06-07)
 
 New features:
