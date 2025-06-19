@@ -56,7 +56,7 @@
 (defun helix-multiple-cursors-setup ()
   "Set up Helix Mode keybindings for multiple-cursors."
   (unless (featurep 'multiple-cursors)
-    (error "requires the multiple-cursors package"))
+    (error "Requires the multiple-cursors package"))
   (dolist (cmd helix-multiple-cursors-run-for-all-commands)
     (add-to-list 'mc/cmds-to-run-for-all cmd))
   (advice-add #'mc/keyboard-quit :before #'helix--clear-data)

@@ -1,13 +1,14 @@
 ## Developing Helix Mode
 
-Make sure the package compiles without errors (don't forget to clean
-up the output afterwards: `make clean-elc`):
+Run the linter and fix any byte compilation errors or documentation
+inconsistencies (don't forget to clean up the output afterwards: `make
+clean-elc`):
 
 ```
-make compile
+make lint
 ```
 
-Run the test suite via:
+Run the test suite:
 
 ```
 make test

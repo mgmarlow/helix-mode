@@ -5,7 +5,7 @@ EMACS_BATCH=${EMACS} -Q -batch
 all: clean-elc compile test
 
 compile: clean-elc
-	${EMACS} -Q -L . -batch -f batch-byte-compile *.el
+	${EMACS} -Q -L . -batch -f batch-byte-compile helix.el
 
 clean-elc:
 	rm -f *.elc
@@ -21,4 +21,14 @@ test:
 		 --eval "(ert-run-tests-batch-and-exit '${TEST_SELECTOR})" \
 		 && echo "OK"
 
-.PHONY:	all compile clean-elc test
+FILES = helix-multiple-cursors.el helix-jj.el helix.el
+
+CHECKDOC="(dolist (file '(${FILES})) \
+	(checkdoc-file (symbol-name file)))"
+
+checkdoc:
+	@${EMACS_BATCH} --eval ${CHECKDOC}
+
+lint: compile checkdoc
+
+.PHONY:	all compile clean-elc test lint checkdoc

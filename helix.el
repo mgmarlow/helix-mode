@@ -50,6 +50,13 @@
 
 Nil if no search has taken place while `helix-mode' is active.")
 
+;; These Helix Minor keymap modes are assigned keymaps during
+;; `helix-normal-mode' initialization.
+(defvar helix-goto-map nil "Keymap for Goto mode.")
+(defvar helix-view-map nil "Keymap for View mode.")
+(defvar helix-space-map nil "Keymap for Space mode.")
+(defvar helix-window-map nil "Keymap for Window mode.")
+
 (defun helix--unload-current-state ()
   "Deactivate the minor mode described by `helix--current-state'."
   (let ((mode (alist-get helix--current-state helix-state-mode-alist)))
@@ -103,20 +110,20 @@ Nil if no search has taken place while `helix-mode' is active.")
   "Move down."
   (interactive)
   (helix--clear-highlights)
-  (next-line))
+  (call-interactively #'next-line))
 
 (defun helix-previous-line ()
   "Move up."
   (interactive)
   (helix--clear-highlights)
-  (previous-line))
+  (call-interactively #'previous-line))
 
 ;; TODO: for use in mark mode
 (defun helix-surround-thing-at-point (&optional thing)
   "Construct a region around THING at point.
 
 Argument THING must be one of the things identified by the package
-thingatpt.  Defaults to 'word."
+thingatpt.  Defaults to \\='word."
   (let ((bounds (bounds-of-thing-at-point (or thing 'word))))
     (when bounds
       (set-mark (car bounds))
@@ -195,20 +202,20 @@ previous character before moving to the previous long word."
   "Go to beginning of buffer."
   (interactive)
   (helix--clear-highlights)
-  (beginning-of-buffer))
+  (call-interactively #'beginning-of-buffer))
 
 (defun helix-go-end-buffer ()
   "Go to end of buffer."
   (interactive)
   (helix--clear-highlights)
-  (end-of-buffer))
+  (call-interactively #'end-of-buffer))
 
 (defun helix-select-line ()
   "Select the current line, moving the cursor to the end."
   (interactive)
   (if (and (region-active-p) (eolp))
       (progn
-        (next-line)
+        (call-interactively #'next-line)
         (end-of-line))
     (beginning-of-line)
     (set-mark-command nil)
@@ -274,7 +281,7 @@ previous character before moving to the previous long word."
   (beginning-of-line)
   (let ((electric-indent-mode nil))
     (newline nil t)
-    (previous-line)
+    (call-interactively #'previous-line)
     (indent-according-to-mode))
   (helix-insert))
 
@@ -408,7 +415,7 @@ Argument CALLBACK is a lambda or function quote defining the behavior
 for the typable command.
 
 Example that defines the typable command ':format':
-\(helix-define-typable-command \"format\" #'format-all-buffer)"
+\(helix-define-typable-command \"format\" #\\='format-all-buffer)"
   (add-to-list 'helix--command-alist
                (cons (if (listp command) command (list command)) callback)))
 
