@@ -1,3 +1,18 @@
+## Developing Helix Mode
+
+Make sure the package compiles without errors (don't forget to clean
+up the output afterwards: `make clean-elc`):
+
+```
+make compile
+```
+
+Run the test suite via:
+
+```
+make test
+```
+
 ## Pull Requests
 
 - Follow the [Emacs Lisp Style
