@@ -14,6 +14,7 @@ TEST_SELECTOR ?= t
 test:
 	@echo "---- Run unit tests"
 	@${EMACS_BATCH} \
+		 -l helix-core.el \
 		 -l helix-multiple-cursors.el \
 		 -l helix-jj.el \
 		 -l helix.el \
@@ -21,7 +22,7 @@ test:
 		 --eval "(ert-run-tests-batch-and-exit '${TEST_SELECTOR})" \
 		 && echo "OK"
 
-FILES = helix-multiple-cursors.el helix-jj.el helix.el
+FILES = helix-core.el helix-multiple-cursors.el helix-jj.el helix.el
 
 CHECKDOC="(dolist (file '(${FILES})) \
 	(checkdoc-file (symbol-name file)))"
