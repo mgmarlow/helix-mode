@@ -16,13 +16,10 @@ TEST_SELECTOR ?= t
 test:
 	@echo "---- Run unit tests"
 	@${EMACS_BATCH} \
-		 -l helix-core.el \
-		 -l helix-multiple-cursors.el \
-		 -l helix-jj.el \
-		 -l helix.el \
-		 -l helix-test.el \
-		 --eval "(ert-run-tests-batch-and-exit '${TEST_SELECTOR})" \
-		 && echo "OK"
+		$(addprefix -l ,$(FILES)) \
+		-l helix-test.el \
+		--eval "(ert-run-tests-batch-and-exit '${TEST_SELECTOR})" \
+		&& echo "OK"
 
 CHECKDOC="(dolist (file '(${FILES})) \
 	(checkdoc-file (symbol-name file)))"
