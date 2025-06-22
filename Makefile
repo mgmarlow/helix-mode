@@ -2,10 +2,12 @@ EMACS ?= emacs
 
 EMACS_BATCH=${EMACS} -Q -batch
 
+FILES = helix-core.el helix-multiple-cursors.el helix-jj.el helix.el
+
 all: clean-elc compile test
 
 compile: clean-elc
-	${EMACS} -Q -L . -batch -f batch-byte-compile helix.el
+	${EMACS} -Q -L . -batch -f batch-byte-compile ${FILES}
 
 clean-elc:
 	rm -f *.elc
@@ -21,8 +23,6 @@ test:
 		 -l helix-test.el \
 		 --eval "(ert-run-tests-batch-and-exit '${TEST_SELECTOR})" \
 		 && echo "OK"
-
-FILES = helix-core.el helix-multiple-cursors.el helix-jj.el helix.el
 
 CHECKDOC="(dolist (file '(${FILES})) \
 	(checkdoc-file (symbol-name file)))"
