@@ -29,21 +29,23 @@
 (require 'helix-core)
 
 (defcustom helix-jj-timeout nil
-  "Timeout in seconds for the 'jj' key sequence to exit insert mode.
+  "Timeout in seconds for the `j j' key sequence to exit insert mode.
 
-Defaults to nil, which disables 'jj' exit functionality.  A short value
+Defaults to nil, which disables `j j' exit functionality.  A short value
 like 0.2 is recommended."
-  :group 'helix)
+  :group 'helix
+  :type 'float)
 
 (defvar-local helix-jj--timer nil
-  "Timer for detecting 'jj' key sequence in insert mode.")
+  "Timer for detecting `j j' key sequence in insert mode.")
 
 ;; TODO: eventually support key combinations other than "jj".
 (defun helix-jj--maybe-key-combo-exit ()
-  "When `helix-jj-timeout' is non-nil, allow existing `helix-insert-mode' via 'jj'.
+  "Exit `helix-insert-mode' when `helix-jj-timeout' is non-nil.
 
-The timeout set by `helix-jj-timeout' determines how long `helix-mode' waits
-before inserting a 'j' character and giving up on existing `helix-insert-mode'."
+The timeout set by `helix-jj-timeout' determines how long `helix-mode'
+waits before inserting a j character and giving up on existing
+`helix-insert-mode'."
   (interactive)
   (if helix-jj-timeout
         (if helix-jj--timer
@@ -59,9 +61,9 @@ before inserting a 'j' character and giving up on existing `helix-insert-mode'."
     (self-insert-command 1)))
 
 (defun helix-jj--maybe-abort-key-combo-exit ()
-  "Used in a `pre-command-hook' to escape early from a 'jj' sequence.
+  "Used in a `pre-command-hook' to escape early from a `j j' sequence.
 
-If a non-j character is typed, immediately escape from a 'jj' sequence
+If a non-j character is typed, immediately escape from a `j j' sequence
 and remain in `helix-insert-mode'."
   (when (and helix-jj-timeout
              (eq this-command 'self-insert-command)
@@ -74,7 +76,7 @@ and remain in `helix-insert-mode'."
 
 ;;;###autoload
 (defun helix-jj-setup (&optional timeout)
-  "Set up 'jj' as an alternative way to exit `helix-insert-mode'.
+  "Set up `j j' as an alternative way to exit `helix-insert-mode'.
 
 TIMEOUT is passed `helix-jj-timeout', defaulting to 0.2.  The timeout
 controls how many seconds `helix-insert-mode' waits for a second j
