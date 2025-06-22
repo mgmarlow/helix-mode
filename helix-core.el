@@ -74,9 +74,6 @@ Nil if no search has taken place while `helix-mode' is active.")
   (setq helix--current-selection nil)
   (deactivate-mark))
 
-;; Ensure `keyboard-quit' clears out intermediate Helix state.
-(advice-add #'keyboard-quit :before #'helix--clear-data)
-
 (defun helix-insert ()
   "Switch to insert state."
   (interactive)
@@ -575,8 +572,6 @@ pattern of `define-key'."
         (setq-local helix--current-state 'normal)
         (setq cursor-type 'box))))
 
-(add-hook 'after-change-major-mode-hook #'helix-mode-maybe-activate)
-
 (defun helix-mode-maybe-activate (&optional status)
   "Activate `helix-normal-mode' if `helix-global-mode' is non-nil.
 
@@ -607,10 +602,16 @@ Argument STATUS is passed through to `helix-mode-maybe-activate'."
   (interactive)
   (setq helix-global-mode (not helix-global-mode))
   (if helix-global-mode
-      (helix-normal-mode 1)
+      (progn
+        ;; Ensure `keyboard-quit' clears out intermediate Helix state.
+        (advice-add #'keyboard-quit :before #'helix--clear-data)
+        (add-hook 'after-change-major-mode-hook #'helix-mode-maybe-activate)
+        (helix-normal-mode 1))
     (cond
      (helix-normal-mode (helix-normal-mode -1))
-     (helix-insert-mode (helix-insert-mode -1)))))
+     (helix-insert-mode (helix-insert-mode -1)))
+    (advice-remove #'keyboard-quit #'helix--clear-data)
+    (remove-hook 'after-change-major-mode-hook #'helix-mode-maybe-activate)))
 
 (provide 'helix-core)
 ;;; helix-core.el ends here
