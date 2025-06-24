@@ -54,11 +54,19 @@
     (helix-forward-long-word)
     (should (= (point) 25)))) ; before "works"
 
-(ert-deftest helix-test-forward-long-word-skip-whitespace ()
+(ert-deftest helix-test-forward-long-word-on-whitespace ()
+  "Test that forward movement skips over whitespace."
+  (with-temp-buffer
+    (insert "word next")
+    (goto-char 5) ; on the first whitespace
+    (helix-forward-long-word)
+    (should (= (point) (- (point-max) 1))))) ; before end of line
+
+(ert-deftest helix-test-forward-long-word-on-whitespaces ()
   "Test that forward movement skips over whitespace."
   (with-temp-buffer
     (insert "word   \t  next")
-    (goto-char 5) ; on the whitespace
+    (goto-char 5) ; on the first whitespace
     (helix-forward-long-word)
     (should (= (point) 10)))) ; start of "next"
 
@@ -133,11 +141,19 @@
     (helix-backward-long-word)
     (should (= (point) 6)))) ; start of "test-string-example"
 
-(ert-deftest helix-test-backward-long-word-skip-whitespace ()
+(ert-deftest helix-test-backward-long-word-on-whitespace ()
+  "Test that backward movement skips over whitespace."
+  (with-temp-buffer
+    (insert "word next")
+    (goto-char 5) ; on whitespace
+    (helix-backward-long-word)
+    (should (= (point) 1)))) ; start of "word"
+
+(ert-deftest helix-test-backward-long-word-on-whitespaces ()
   "Test that backward movement skips over whitespace."
   (with-temp-buffer
     (insert "word   \t  next")
-    (goto-char 10) ; in the whitespace
+    (goto-char 10) ; on the last whitespace
     (helix-backward-long-word)
     (should (= (point) 1)))) ; start of "word"
 
@@ -264,6 +280,22 @@
     (helix-forward-long-word)
     (should (eql (- (region-end) (region-beginning)) 6))))
 
+(ert-deftest helix-test-forward-long-word-on-whitespace-with-region ()
+  "Test forward movement surrounding behavior."
+  (with-temp-buffer
+    (insert "first second third")
+    (goto-char 6) ; on whitespace
+    (helix-forward-long-word)
+    (should (eql (- (region-end) (region-beginning)) 6))))
+
+(ert-deftest helix-test-forward-long-word-on-whitespaces-with-region ()
+  "Test forward movement surrounding behavior."
+  (with-temp-buffer
+    (insert "first   second third") ; three whitespaces
+    (goto-char 6) ; on first whitespace
+    (helix-forward-long-word)
+    (should (eql (- (region-end) (region-beginning)) 2))))
+
 (ert-deftest helix-test-backward-long-word-with-region ()
   "Test backward movement surrounding behavior."
   (with-temp-buffer
@@ -281,6 +313,22 @@
     (goto-char 13) ; start of second line
     (helix-backward-long-word)
     (should (eql (- (region-end) (region-beginning)) 6))))
+
+(ert-deftest helix-test-backward-long-word-on-whitespace-with-region ()
+  "Test backward movement surrounding behavior."
+  (with-temp-buffer
+    (insert "first second third")
+    (goto-char 6) ; on whitespace
+    (helix-backward-long-word)
+    (should (eql (- (region-end) (region-beginning)) 5))))
+
+(ert-deftest helix-test-backward-long-word-on-whitespaces-with-region ()
+  "Test backward movement surrounding behavior."
+  (with-temp-buffer
+    (insert "first   second third") ; three whitespaces
+    (goto-char 8) ; on last whitespace
+    (helix-backward-long-word)
+    (should (eql (- (region-end) (region-beginning)) 7))))
 
 (provide 'helix-test)
 ;;; helix-test.el ends here

@@ -158,7 +158,7 @@ If the point is at the end of a line, it first searches for the
 non-empty line before moving to the next long word."
   (interactive)
   (unless (eobp)
-    (when (eql (char-after (point)) ?\s) (forward-char))
+    (when (looking-at-p "\\s-\\S-") (forward-char))
     (while (looking-at-p ".?$") (forward-line))
     (helix--with-movement-surround
      (when (re-search-forward "[ \t]+\\S-" (- (pos-eol) 1) 'move)
