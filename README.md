@@ -128,19 +128,22 @@ Normal mode is the default mode. You can return to it by pressing
 
 ### Movement
 
-| Key | Description        | Command                   |
-|:----|:-------------------|:--------------------------|
-| h   | Move left          | `helix-backward-char`     |
-| l   | Move right         | `helix-forward-char`      |
-| j   | Move down          | `helix-next-line`         |
-| k   | Move up            | `helix-previous-line`     |
-| w   | Move next word     | `helix-forward-word`      |
-| W   | Move next WORD     | `helix-forward-long-word` |
-| b   | Move previous word | `helix-backward-word`     |
-| B   | Move previous WORD | `helix-backward-long-word`|
-| G   | Go to line         | N/A                       |
-| C-b | Move page up       | N/A                       |
-| C-f | Move page down     | N/A                       |
+| Key | Description               | Command                    |
+|:----|:--------------------------|:---------------------------|
+| h   | Move left                 | `helix-backward-char`      |
+| l   | Move right                | `helix-forward-char`       |
+| j   | Move down                 | `helix-next-line`          |
+| k   | Move up                   | `helix-previous-line`      |
+| w   | Move next word            | `helix-forward-word`       |
+| W   | Move next WORD            | `helix-forward-long-word`  |
+| b   | Move previous word        | `helix-backward-word`      |
+| B   | Move previous WORD        | `helix-backward-long-word` |
+| t   | Find 'till next char      | `helix-find-till-char`     |
+| f   | Find next char            | `helix-find-next-char`     |
+| M-. | Repeat last motion (f, t) | `helix-find-repeat`        |
+| G   | Go to line                | N/A                        |
+| C-b | Move page up              | N/A                        |
+| C-f | Move page down            | N/A                        |
 
 ### Changes
 
