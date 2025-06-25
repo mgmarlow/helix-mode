@@ -504,6 +504,8 @@ Example that defines the typable command ':format':
     (define-key keymap "G" #'goto-line)
     (define-key keymap "f" #'helix-find-next-char)
     (define-key keymap "t" #'helix-find-till-char)
+    (define-key keymap "F" #'helix-find-prev-char)
+    (define-key keymap "T" #'helix-find-prev-till-char)
     (define-key keymap "M-." #'helix-find-repeat)
     (define-key keymap (kbd "C-f") #'scroll-up-command)
     (define-key keymap (kbd "C-b") #'scroll-down-command)
