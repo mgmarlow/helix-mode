@@ -44,7 +44,7 @@
   "Enable Helix mode in all buffers.")
 
 (defvar helix-current-search nil
-  "Current search string, initiated via `helix-search'.
+  "Current search string, initiated via `helix-search-forward' or `helix-search-backward'.
 
 Nil if no search has taken place while `helix-mode' is active.")
 
