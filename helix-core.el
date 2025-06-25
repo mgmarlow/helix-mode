@@ -25,6 +25,8 @@
 
 ;;; Code:
 
+(require 'flymake)
+(require 'eglot)
 (require 'isearch)
 
 (defgroup helix nil
@@ -484,6 +486,8 @@ Example that defines the typable command ':format':
     (define-key helix-goto-map "k" #'helix-previous-line)
     (define-key helix-goto-map "r" #'xref-find-references)
     (define-key helix-goto-map "d" #'xref-find-definitions)
+    (define-key helix-goto-map "y" #'eglot-find-typeDefinition)
+    (define-key helix-goto-map "i" #'eglot-find-implementation)
 
     ;; View mode
     (define-key keymap "z" 'helix-view-map)
@@ -495,6 +499,7 @@ Example that defines the typable command ':format':
     (define-key helix-space-map "b" #'project-switch-to-buffer)
     (define-key helix-space-map "j" #'project-switch-project)
     (define-key helix-space-map "/" #'project-find-regexp)
+    (define-key helix-space-map "a" #'eglot-code-action-quickfix)
 
     ;; Window mode
     (define-key keymap (kbd "C-w") 'helix-window-map)
@@ -526,6 +531,10 @@ Example that defines the typable command ':format':
     (define-key keymap "<" #'helix-indent-left)
     (define-key keymap ">" #'helix-indent-right)
     (define-key keymap (kbd "C-c") #'comment-line)
+
+    ;; Unimpared
+    (define-key keymap (kbd "]d") #'flymake-goto-next-error)
+    (define-key keymap (kbd "[d") #'flymake-goto-prev-error)
 
     ;; State switching
     (define-key keymap "i" #'helix-insert)
