@@ -18,7 +18,7 @@ INIT_PACKAGES="(progn \
 
 EMACS_BATCH=${EMACS} -Q -batch --eval ${INIT_PACKAGES}
 
-all: clean-elc compile test
+all: clean-elc compile lint test
 
 compile: clean-elc
 	${EMACS} -Q -L . -batch -f batch-byte-compile ${FILES}
