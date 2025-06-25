@@ -333,7 +333,7 @@
 ;; Find char
 
 (ert-deftest helix-test-find-next-char ()
-  "Test find char go to char and select to it."
+  "Test finding next character and selecting from current position to it."
   (with-temp-buffer
     (insert "first second third")
     (goto-char 1)
@@ -342,7 +342,7 @@
     (should (eql (- (region-end) (region-beginning)) 12))))
 
 (ert-deftest helix-test-find-next-char-two-line ()
-  "Test find on multi lines char go to char and select to it."
+  "Test finding next character across multiple lines and selecting to it."
   (with-temp-buffer
     (insert "first\nsecond\nthird")
     (goto-char 1)
@@ -351,7 +351,7 @@
     (should (eql (- (region-end) (region-beginning)) 12))))
 
 (ert-deftest helix-test-find-till-char ()
-  "Test find char go to char and select to it."
+  "Test finding till character and selecting from current position to before it."
   (with-temp-buffer
     (insert "first second third")
     (goto-char 1)
@@ -360,7 +360,7 @@
     (should (eql (- (region-end) (region-beginning)) 11))))
 
 (ert-deftest helix-test-find-till-char-two-line ()
-  "Test find on multi lines char go to char and select to it."
+  "Test finding till character across multiple lines and selecting to before it."
   (with-temp-buffer
     (insert "first\nsecond\nthird")
     (goto-char 1)
@@ -369,7 +369,7 @@
     (should (eql (- (region-end) (region-beginning)) 11))))
 
 (ert-deftest helix-test-find-till-char-repeat ()
-  "Test find char go to char and select to it."
+  "Test repeating find till character operation to next occurrence."
   (with-temp-buffer
     (insert "first second third")
     (goto-char 1)
@@ -379,7 +379,7 @@
     (should (eql (- (region-end) (region-beginning)) 6))))
 
 (ert-deftest helix-test-find-next-char-repeat ()
-  "Test find char go to char and select to it."
+  "Test repeating find next character operation to next occurrence."
   (with-temp-buffer
     (insert "first second third")
     (goto-char 1)
