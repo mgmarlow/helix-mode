@@ -327,12 +327,26 @@ of the matching word in backward searches."
   (helix--clear-highlights)
   (helix--find-next-char char))
 
+(defun helix-find-prev-char (char)
+  "Goto next CHAR."
+  (interactive "c")
+  (setq helix-current-find (cons #'helix-find-prev-char char))
+  (helix--clear-highlights)
+  (helix--find-prev-char char))
+
 (defun helix-find-till-char (char)
   "Goto till CHAR."
   (interactive "c")
   (setq helix-current-find (cons #'helix-find-till-char char))
   (helix--clear-highlights)
   (helix--find-next-char char t))
+
+(defun helix-find-prev-till-char (char)
+  "Goto till CHAR."
+  (interactive "c")
+  (setq helix-current-find (cons #'helix-find-prev-till-char char))
+  (helix--clear-highlights)
+  (helix--find-prev-char char t))
 
 (defun helix-find-repeat ()
   "Repeat the last helix find method."
@@ -348,6 +362,16 @@ Place cursor on character found if TILL set to t."
     (when (looking-at-p char) (forward-char))
     (when (and (search-forward char) till)
       (backward-char))
+    (helix--select-region current (point))))
+
+(defun helix--find-prev-char (char &optional till)
+  "Goto prev CHAR.
+Place cursor on character found if TILL set to t."
+  (let ((current (point))
+        (char (make-string 1 char)))
+    (when (char-before (point)) (backward-char))
+    (when (and (search-backward char) till)
+      (forward-char))
     (helix--select-region current (point))))
 
 (defun helix--replace-region (start end text)
