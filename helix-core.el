@@ -321,14 +321,14 @@ of the matching word in backward searches."
     (helix--select-region (match-beginning 0) (match-end 0))))
 
 (defun helix-find-next-char (char)
-  "Goto next CHAR found."
+  "Goto next CHAR."
   (interactive "c")
   (setq helix-current-find (cons #'helix-find-next-char char))
   (helix--clear-highlights)
   (helix--find-next-char char))
 
 (defun helix-find-till-char (char)
-  "Goto till CHAR found."
+  "Goto till CHAR."
   (interactive "c")
   (setq helix-current-find (cons #'helix-find-till-char char))
   (helix--clear-highlights)
@@ -341,7 +341,7 @@ of the matching word in backward searches."
     (funcall (car helix-current-find) (cdr helix-current-find))))
 
 (defun helix--find-next-char (char &optional till)
-  "Goto fisrt CHAR.
+  "Goto next CHAR.
 Place cursor on character found if TILL set to t."
   (let ((current (point))
         (char (make-string 1 char)))
