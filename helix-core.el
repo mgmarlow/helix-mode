@@ -25,6 +25,8 @@
 
 ;;; Code:
 
+(require 'isearch)
+
 (defgroup helix nil
   "Custom group for Helix."
   :group 'helix)
