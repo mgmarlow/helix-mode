@@ -382,5 +382,13 @@
     (helix-find-repeat)
     (should (eql (point) 19))))
 
+(ert-deftest helix-test-empty-find-repeat ()
+  "Test find repeat when nothing to repeat."
+  (with-temp-buffer
+    (insert "first second third")
+    (goto-char 1)
+    (helix-find-repeat)
+    (should (eql (point) 1))))
+
 (provide 'helix-test)
 ;;; helix-test.el ends here
