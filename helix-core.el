@@ -284,13 +284,13 @@ previous character before moving to the previous long word."
     (indent-according-to-mode))
   (helix-insert))
 
-(defun helix-reset-search-forward ()
+(defun helix-search-forward-begin ()
   "Begin a new forward search."
   (interactive)
   (setq helix-current-search nil)
   (helix-search-forward))
 
-(defun helix-reset-search-backward ()
+(defun helix-search-backward-begin ()
   "Begin a new backward search."
   (interactive)
   (setq helix-current-search nil)
@@ -522,8 +522,8 @@ Example that defines the typable command ':format':
     (define-key keymap "u" #'undo)
     (define-key keymap "o" #'helix-insert-newline)
     (define-key keymap "O" #'helix-insert-prevline)
-    (define-key keymap "/" #'helix-reset-search-forward)
-    (define-key keymap (kbd "?") #'helix-reset-search-backward)
+    (define-key keymap "/" #'helix-search-forward-begin)
+    (define-key keymap (kbd "?") #'helix-search-backward-begin)
     (define-key keymap "n" #'helix-search-forward)
     (define-key keymap "N" #'helix-search-backward)
     (define-key keymap "r" #'helix-replace)
