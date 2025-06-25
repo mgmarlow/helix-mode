@@ -48,6 +48,11 @@
 
 Nil if no search has taken place while `helix-mode' is active.")
 
+(defvar helix-current-find nil
+  "Current find (method . charracter), initiated via `helix-find-next-char' or `helix-find-till-char'.
+
+Nil if no find has taken place while `helix-mode' is active.")
+
 ;; These Helix Minor keymap modes are assigned keymaps during
 ;; `helix-normal-mode' initialization.
 (defvar helix-goto-map nil "Keymap for Goto mode.")
@@ -315,6 +320,35 @@ of the matching word in backward searches."
     (search-backward helix-current-search)
     (helix--select-region (match-beginning 0) (match-end 0))))
 
+(defun helix-find-next-char (char)
+  "Goto next CHAR found."
+  (interactive "c")
+  (setq helix-current-find (cons #'helix-find-next-char char))
+  (helix--clear-highlights)
+  (helix--find-next-char char))
+
+(defun helix-find-till-char (char)
+  "Goto till CHAR found."
+  (interactive "c")
+  (setq helix-current-find (cons #'helix-find-till-char char))
+  (helix--clear-highlights)
+  (helix--find-next-char char t))
+
+(defun helix-find-repeat ()
+  "Repeat the last helix find method."
+  (interactive)
+  (funcall (car helix-current-find) (cdr helix-current-find)))
+
+(defun helix--find-next-char (char &optional till)
+  "Goto fisrt CHAR.
+Place cursor on character found if TILL set to t."
+  (let ((current (point))
+        (char (make-string 1 char)))
+    (when (looking-at-p char) (forward-char))
+    (when (and (search-forward char) till)
+      (backward-char))
+    (helix--select-region current (point))))
+
 (defun helix--replace-region (start end text)
   "Replace region from START to END in-place with TEXT."
   (delete-region start end)
@@ -443,6 +477,9 @@ Example that defines the typable command ':format':
     (define-key keymap "b" #'helix-backward-word)
     (define-key keymap "B" #'helix-backward-long-word)
     (define-key keymap "G" #'goto-line)
+    (define-key keymap "f" #'helix-find-next-char)
+    (define-key keymap "t" #'helix-find-till-char)
+    (define-key keymap "M-." #'helix-find-repeat)
     (define-key keymap (kbd "C-f") #'scroll-up-command)
     (define-key keymap (kbd "C-b") #'scroll-down-command)
 
