@@ -308,7 +308,7 @@ previous character before moving to the previous long word."
   (interactive)
   (helix--clear-highlights)
   (if helix-current-search
-      (when (search-forward-regexp isearch-message)
+      (when (search-forward-regexp helix-current-search)
         (helix--select-region (match-beginning 0) (match-end 0)))
     (let ((isearch-message-function #'helix--search-prompt))
       (isearch-forward t))
