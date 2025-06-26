@@ -310,8 +310,7 @@ previous character before moving to the previous long word."
   (if helix-current-search
       (when (search-forward-regexp isearch-message)
         (helix--select-region (match-beginning 0) (match-end 0)))
-    (let ((isearch-message-function #'helix--search-prompt)
-          (search-highlight-submatches nil))
+    (let ((isearch-message-function #'helix--search-prompt))
       (isearch-forward t))
     (when isearch-success
       (setq helix-current-search isearch-message)
@@ -332,8 +331,7 @@ of the matching word in backward searches."
       (when (or (backward-char)
                 (search-backward-regexp helix-current-search))
         (helix--select-region (match-beginning 0) (match-end 0)))
-    (let ((isearch-message-function #'helix--search-prompt)
-          (search-highlight-submatches nil))
+    (let ((isearch-message-function #'helix--search-prompt))
       (isearch-backward t))
     (when isearch-success
       (setq helix-current-search isearch-message)
@@ -342,7 +340,6 @@ of the matching word in backward searches."
 (defun helix--search-prompt (&optional c-q-hack ellipsis)
   "Helix custom search prompt.  C-Q-HACK and ELLIPSIS aren't used."
   (message "search:%s" isearch-message))
-
 
 (defun helix--replace-region (start end text)
   "Replace region from START to END in-place with TEXT."
