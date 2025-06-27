@@ -566,6 +566,7 @@ pattern of `define-key'."
   :keymap helix-insert-state-keymap
   (if helix-insert-mode
       (progn
+        (setq-local display-line-numbers t)
         (setq-local helix--current-state 'insert)
         (setq cursor-type 'bar))
     (setq-local helix--current-state 'normal)))
@@ -580,6 +581,7 @@ pattern of `define-key'."
   :keymap helix-normal-state-keymap
   (if helix-normal-mode
       (progn
+        (setq-local display-line-numbers 'relative)
         (setq-local helix--current-state 'normal)
         (setq cursor-type 'box))))
 
