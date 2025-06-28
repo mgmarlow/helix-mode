@@ -332,28 +332,24 @@ of the matching word in backward searches."
   "Goto next CHAR."
   (interactive "c")
   (setq helix-current-find (cons #'helix-find-next-char char))
-  (helix--clear-highlights)
   (helix--find-next-char char))
 
 (defun helix-find-prev-char (char)
   "Goto next CHAR."
   (interactive "c")
   (setq helix-current-find (cons #'helix-find-prev-char char))
-  (helix--clear-highlights)
   (helix--find-prev-char char))
 
 (defun helix-find-till-char (char)
   "Goto till CHAR."
   (interactive "c")
   (setq helix-current-find (cons #'helix-find-till-char char))
-  (helix--clear-highlights)
   (helix--find-next-char char t))
 
 (defun helix-find-prev-till-char (char)
   "Goto till CHAR."
   (interactive "c")
   (setq helix-current-find (cons #'helix-find-prev-till-char char))
-  (helix--clear-highlights)
   (helix--find-prev-char char t))
 
 (defun helix-find-repeat ()
@@ -365,22 +361,26 @@ of the matching word in backward searches."
 (defun helix--find-next-char (char &optional till)
   "Goto next CHAR.
 Place cursor on character found if TILL set to t."
-  (let ((current (point))
-        (char (make-string 1 char)))
-    (when (looking-at-p char) (forward-char))
-    (when (and (search-forward char) till)
-      (backward-char))
-    (helix--select-region current (point))))
+  (helix--with-movement-surround
+   ;; If what we're searching for is the same as character under point,
+   ;; advance forward for the next search.
+   (when (eq (char-after) char)
+     (forward-char))
+   (let ((case-fold-search (if (char-uppercase-p char) nil case-fold-search)))
+     (when (and (search-forward (char-to-string char)) till)
+       (backward-char)))))
 
 (defun helix--find-prev-char (char &optional till)
   "Goto prev CHAR.
 Place cursor on character found if TILL set to t."
-  (let ((current (point))
-        (char (make-string 1 char)))
-    (when (char-before (point)) (backward-char))
-    (when (and (search-backward char) till)
-      (forward-char))
-    (helix--select-region current (point))))
+  (helix--with-movement-surround
+   ;; If what we're searching for is the same as character under point,
+   ;; advance backward for the next search.
+   (when (eq (char-before) char)
+     (backward-char))
+   (let ((case-fold-search (if (char-uppercase-p char) nil case-fold-search)))
+     (when (and (search-backward (char-to-string char)) till)
+       (forward-char)))))
 
 (defun helix--replace-region (start end text)
   "Replace region from START to END in-place with TEXT."
