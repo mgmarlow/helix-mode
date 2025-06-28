@@ -367,8 +367,8 @@ Place cursor on character found if TILL set to t."
    (when (eq (char-after) char)
      (forward-char))
    (let ((case-fold-search (if (char-uppercase-p char) nil case-fold-search)))
-     (when (and (search-forward (char-to-string char)) till)
-       (backward-char)))))
+     (search-forward (char-to-string char))
+     (when till (backward-char)))))
 
 (defun helix--find-prev-char (char &optional till)
   "Goto prev CHAR.
@@ -379,8 +379,8 @@ Place cursor on character found if TILL set to t."
    (when (eq (char-before) char)
      (backward-char))
    (let ((case-fold-search (if (char-uppercase-p char) nil case-fold-search)))
-     (when (and (search-backward (char-to-string char)) till)
-       (forward-char)))))
+     (search-backward (char-to-string char))
+     (when till (forward-char)))))
 
 (defun helix--replace-region (start end text)
   "Replace region from START to END in-place with TEXT."
