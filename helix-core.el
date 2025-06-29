@@ -353,7 +353,7 @@ of the matching word in backward searches."
   (helix--find-prev-char char t))
 
 (defun helix-find-repeat ()
-  "Repeat the last helix find method."
+  "Repeat the last helix find command."
   (interactive)
   (when helix-current-find
     (funcall (car helix-current-find) (cdr helix-current-find))))
