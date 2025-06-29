@@ -331,25 +331,25 @@ of the matching word in backward searches."
 (defun helix-find-next-char (char)
   "Goto next CHAR."
   (interactive "c")
-  (setq helix-current-find (cons #'helix-find-next-char char))
+  (setq helix--current-find (cons #'helix-find-next-char char))
   (helix--find-next-char char))
 
 (defun helix-find-prev-char (char)
   "Goto next CHAR."
   (interactive "c")
-  (setq helix-current-find (cons #'helix-find-prev-char char))
+  (setq helix--current-find (cons #'helix-find-prev-char char))
   (helix--find-prev-char char))
 
 (defun helix-find-till-char (char)
   "Goto till CHAR."
   (interactive "c")
-  (setq helix-current-find (cons #'helix-find-till-char char))
+  (setq helix--current-find (cons #'helix-find-till-char char))
   (helix--find-next-char char t))
 
 (defun helix-find-prev-till-char (char)
   "Goto till CHAR."
   (interactive "c")
-  (setq helix-current-find (cons #'helix-find-prev-till-char char))
+  (setq helix--current-find (cons #'helix-find-prev-till-char char))
   (helix--find-prev-char char t))
 
 (defun helix-find-repeat ()
