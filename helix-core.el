@@ -51,6 +51,15 @@
 
 Nil if no search has taken place while `helix-mode' is active.")
 
+(defvar helix--current-find nil
+  "Current find (method . character), initiated via different helix find methods.
+
+Stores a cons cell where the car is the find method function and the cdr is
+the target character.  Methods include `helix-find-next-char',
+`helix-find-till-char', `helix-find-prev-char', and `helix-find-prev-till-char'.
+
+Nil if no find has taken place while `helix-mode' is active.")
+
 ;; These Helix Minor keymap modes are assigned keymaps during
 ;; `helix-normal-mode' initialization.
 (defvar helix-goto-map nil "Keymap for Goto mode.")
@@ -319,6 +328,60 @@ of the matching word in backward searches."
     (search-backward helix-current-search)
     (helix--select-region (match-beginning 0) (match-end 0))))
 
+(defun helix-find-next-char (char)
+  "Goto next CHAR."
+  (interactive "c")
+  (setq helix--current-find (cons #'helix-find-next-char char))
+  (helix--find-next-char char))
+
+(defun helix-find-prev-char (char)
+  "Goto next CHAR."
+  (interactive "c")
+  (setq helix--current-find (cons #'helix-find-prev-char char))
+  (helix--find-prev-char char))
+
+(defun helix-find-till-char (char)
+  "Goto till CHAR."
+  (interactive "c")
+  (setq helix--current-find (cons #'helix-find-till-char char))
+  (helix--find-next-char char t))
+
+(defun helix-find-prev-till-char (char)
+  "Goto till CHAR."
+  (interactive "c")
+  (setq helix--current-find (cons #'helix-find-prev-till-char char))
+  (helix--find-prev-char char t))
+
+(defun helix-find-repeat ()
+  "Repeat the last helix find command."
+  (interactive)
+  (when helix--current-find
+    (funcall (car helix--current-find) (cdr helix--current-find))))
+
+(defun helix--find-next-char (char &optional till)
+  "Goto next CHAR.
+Place cursor on character found if TILL set to t."
+  (helix--with-movement-surround
+   ;; If what we're searching for is the same as character under point,
+   ;; advance forward for the next search.
+   (when (eq (char-after) char)
+     (forward-char))
+   (let ((case-fold-search (if (char-uppercase-p char) nil case-fold-search)))
+     (search-forward (char-to-string char))
+     (when till (backward-char)))))
+
+(defun helix--find-prev-char (char &optional till)
+  "Goto prev CHAR.
+Place cursor on character found if TILL set to t."
+  (helix--with-movement-surround
+   ;; If what we're searching for is the same as character under point,
+   ;; advance backward for the next search.
+   (when (eq (char-before) char)
+     (backward-char))
+   (let ((case-fold-search (if (char-uppercase-p char) nil case-fold-search)))
+     (search-backward (char-to-string char))
+     (when till (forward-char)))))
+
 (defun helix--replace-region (start end text)
   "Replace region from START to END in-place with TEXT."
   (delete-region start end)
@@ -447,6 +510,11 @@ Example that defines the typable command ':format':
     (define-key keymap "b" #'helix-backward-word)
     (define-key keymap "B" #'helix-backward-long-word)
     (define-key keymap "G" #'goto-line)
+    (define-key keymap "f" #'helix-find-next-char)
+    (define-key keymap "t" #'helix-find-till-char)
+    (define-key keymap "F" #'helix-find-prev-char)
+    (define-key keymap "T" #'helix-find-prev-till-char)
+    (define-key keymap "M-." #'helix-find-repeat)
     (define-key keymap (kbd "C-f") #'scroll-up-command)
     (define-key keymap (kbd "C-b") #'scroll-down-command)
 
