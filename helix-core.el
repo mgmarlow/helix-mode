@@ -355,8 +355,8 @@ of the matching word in backward searches."
 (defun helix-find-repeat ()
   "Repeat the last helix find command."
   (interactive)
-  (when helix-current-find
-    (funcall (car helix-current-find) (cdr helix-current-find))))
+  (when helix--current-find
+    (funcall (car helix--current-find) (cdr helix--current-find))))
 
 (defun helix--find-next-char (char &optional till)
   "Goto next CHAR.
