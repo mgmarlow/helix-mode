@@ -51,7 +51,7 @@
 
 Nil if no search has taken place while `helix-mode' is active.")
 
-(defvar helix-current-find nil
+(defvar helix--current-find nil
   "Current find (method . character), initiated via different helix find methods.
 
 Stores a cons cell where the car is the find method function and the cdr is
