@@ -358,7 +358,7 @@ of the matching word in backward searches."
      (backward-char))))
 
 (defun helix-find-prev-till-char (char)
-  "Go to till CHAR."
+  "Go to prev till CHAR."
   (interactive "c")
   (setq helix--current-find (cons #'helix-find-prev-till-char char))
   ;; If what we're searching for is the same as character under point,
