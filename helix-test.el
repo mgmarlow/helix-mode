@@ -345,7 +345,7 @@
     (helix-find-till-char ?d)
     (helix-find-repeat)
     (should (eql (point) 18))
-    (should (eql (- (region-end) (region-beginning)) 6))))
+    (should (eql (- (region-end) (region-beginning)) 5))))
 
 (ert-deftest helix-test-find-next-char-repeat ()
   "Test repeating find next character operation to next occurrence."
@@ -362,56 +362,56 @@
   (with-temp-buffer
     (insert "first second third")
     (goto-char (point-max))
-    (helix-find-prev-char ?d)
-    (should (eql (point) 12))
-    (should (eql (- (region-end) (region-beginning)) 7))))
+    (helix-find-prev-char ?s)
+    (should (eql (point) 7))
+    (should (eql (- (region-end) (region-beginning)) 12))))
 
 (ert-deftest helix-test-find-prev-char-multiple-lines ()
   "Test finding previous character across multiple lines and selecting to it."
   (with-temp-buffer
     (insert "first\nsecond\nthird")
     (goto-char (point-max))
-    (helix-find-prev-char ?d)
-    (should (eql (point) 12))
-    (should (eql (- (region-end) (region-beginning)) 7))))
+    (helix-find-prev-char ?s)
+    (should (eql (point) 7))
+    (should (eql (- (region-end) (region-beginning)) 12))))
 
 (ert-deftest helix-test-find-prev-till-char ()
   "Test finding previous character and selecting till (after) it."
   (with-temp-buffer
     (insert "first second third")
     (goto-char (point-max))
-    (helix-find-prev-till-char ?d)
-    (should (eql (point) 13))
-    (should (eql (- (region-end) (region-beginning)) 6))))
+    (helix-find-prev-till-char ?s)
+    (should (eql (point) 8))
+    (should (eql (- (region-end) (region-beginning)) 11))))
 
 (ert-deftest helix-test-find-prev-till-char-multiple-lines ()
   "Test finding previous character across multiple lines and selecting till (after) it."
   (with-temp-buffer
     (insert "first\nsecond\nthird")
     (goto-char (point-max))
-    (helix-find-prev-till-char ?d)
-    (should (eql (point) 13))
-    (should (eql (- (region-end) (region-beginning)) 6))))
+    (helix-find-prev-till-char ?s)
+    (should (eql (point) 8))
+    (should (eql (- (region-end) (region-beginning)) 11))))
 
 (ert-deftest helix-test-find-prev-char-repeat ()
   "Test repeating previous character find operation and extending selection."
   (with-temp-buffer
-    (insert "dirst second third")
+    (insert "first second third")
     (goto-char (point-max))
-    (helix-find-prev-char ?d)
+    (helix-find-prev-char ?s)
     (helix-find-repeat)
-    (should (eql (point) 1))
-    (should (eql (- (region-end) (region-beginning)) 11))))
+    (should (eql (point) 4))
+    (should (eql (- (region-end) (region-beginning)) 3))))
 
 (ert-deftest helix-test-find-prev-till-char-repeat ()
   "Test repeating previous till character find operation and extending selection."
   (with-temp-buffer
-    (insert "dirst second third")
+    (insert "first second third")
     (goto-char (point-max))
-    (helix-find-prev-till-char ?d)
+    (helix-find-prev-till-char ?s)
     (helix-find-repeat)
-    (should (eql (point) 2))
-    (should (eql (- (region-end) (region-beginning)) 11))))
+    (should (eql (point) 5))
+    (should (eql (- (region-end) (region-beginning)) 2))))
 
 (ert-deftest helix-test-empty-find-repeat ()
   "Test find repeat when nothing to repeat."
