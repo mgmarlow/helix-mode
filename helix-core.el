@@ -329,7 +329,7 @@ of the matching word in backward searches."
     (helix--select-region (match-beginning 0) (match-end 0))))
 
 (defun helix-find-next-char (char)
-  "Goto next CHAR."
+  "Go to next CHAR."
   (interactive "c")
   (setq helix--current-find (cons #'helix-find-next-char char))
   (helix--with-movement-surround
@@ -337,7 +337,7 @@ of the matching word in backward searches."
      (search-forward (char-to-string char)))))
 
 (defun helix-find-prev-char (char)
-  "Goto next CHAR."
+  "Go to next CHAR."
   (interactive "c")
   (setq helix--current-find (cons #'helix-find-prev-char char))
   (helix--with-movement-surround
@@ -345,7 +345,7 @@ of the matching word in backward searches."
      (search-backward (char-to-string char)))))
 
 (defun helix-find-till-char (char)
-  "Goto till CHAR."
+  "Go to till CHAR."
   (interactive "c")
   (setq helix--current-find (cons #'helix-find-till-char char))
   ;; If what we're searching for is the same as character under point,
@@ -358,7 +358,7 @@ of the matching word in backward searches."
      (backward-char))))
 
 (defun helix-find-prev-till-char (char)
-  "Goto till CHAR."
+  "Go to till CHAR."
   (interactive "c")
   (setq helix--current-find (cons #'helix-find-prev-till-char char))
   ;; If what we're searching for is the same as character under point,
