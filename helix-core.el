@@ -337,7 +337,7 @@ of the matching word in backward searches."
      (search-forward (char-to-string char)))))
 
 (defun helix-find-prev-char (char)
-  "Go to next CHAR."
+  "Go to prev CHAR."
   (interactive "c")
   (setq helix--current-find (cons #'helix-find-prev-char char))
   (helix--with-movement-surround
