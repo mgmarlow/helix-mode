@@ -1,5 +1,7 @@
 # Helix Mode
 
+[![MELPA](https://melpa.org/packages/helix-badge.svg)](https://melpa.org/#/helix)
+
 Postmodern keybindings for a premodern
 editor: [Helix](https://helix-editor.com/) keybindings in Emacs.
 
@@ -12,34 +14,27 @@ leaving the hard problems (like directory navigation and searching) to
 Emacs.  The result is a small keybinding layer that supports Vim-like
 hjkl motion commands, while retaining Helix's selection-first model.
 
-Helix Mode integrates nicely with `project.el` and `xref`.
+Helix Mode integrates nicely with `project.el`, `eglot`, and `xref`.
 
 ## Installation
 
 Emacs >= 29.1 required.
 
-Clone Helix Mode:
+Helix Mode is available on [MELPA](https://melpa.org/#/getting-started):
 
-```
-git clone https://github.com/mgmarlow/helix-mode /path/to/helix-mode
+```lisp
+(use-package helix
+  :ensure t
+  :config
+  (helix-mode))
 ```
 
-Add Helix Mode to your load path and enable it globally:
+Or you can clone this repository and modify your load path:
 
 ```lisp
 (add-to-list 'load-path "/path/to/helix-mode")
 (require 'helix)
 (helix-mode)
-```
-
-Or (>= Emacs 30.1) point `use-package` to this repository with the vc
-keyword:
-
-```lisp
-(use-package helix
-  :vc (:url "https://github.com/mgmarlow/helix-mode")
-  :config
-  (helix-mode))
 ```
 
 ### Global vs. local mode
@@ -128,19 +123,24 @@ Normal mode is the default mode. You can return to it by pressing
 
 ### Movement
 
-| Key | Description        | Command                   |
-|:----|:-------------------|:--------------------------|
-| h   | Move left          | `helix-backward-char`     |
-| l   | Move right         | `helix-forward-char`      |
-| j   | Move down          | `helix-next-line`         |
-| k   | Move up            | `helix-previous-line`     |
-| w   | Move next word     | `helix-forward-word`      |
-| W   | Move next WORD     | `helix-forward-long-word` |
-| b   | Move previous word | `helix-backward-word`     |
-| B   | Move previous WORD | `helix-backward-long-word`|
-| G   | Go to line         | N/A                       |
-| C-b | Move page up       | N/A                       |
-| C-f | Move page down     | N/A                       |
+| Key | Description                     | Command                     |
+|:----|:--------------------------------|:----------------------------|
+| h   | Move left                       | `helix-backward-char`       |
+| l   | Move right                      | `helix-forward-char`        |
+| j   | Move down                       | `helix-next-line`           |
+| k   | Move up                         | `helix-previous-line`       |
+| w   | Move next word                  | `helix-forward-word`        |
+| W   | Move next WORD                  | `helix-forward-long-word`   |
+| b   | Move previous word              | `helix-backward-word`       |
+| B   | Move previous WORD              | `helix-backward-long-word`  |
+| t   | Find 'till next char            | `helix-find-till-char`      |
+| T   | Find 'till prev char            | `helix-find-prev-till-char` |
+| f   | Find next char                  | `helix-find-next-char`      |
+| F   | Find prev char                  | `helix-find-prev-char`      |
+| M-. | Repeat last motion (f, t, F, T) | `helix-find-repeat`         |
+| G   | Go to line                      | N/A                         |
+| C-b | Move page up                    | N/A                         |
+| C-f | Move page down                  | N/A                         |
 
 ### Changes
 
