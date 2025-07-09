@@ -148,11 +148,18 @@ If a region is already active, no new region is created."
        (unless (use-region-p)
          (push-mark current t 'activate)))))
 
-(defun helix-forward-word ()
-  "Move to next word."
+(define-obsolete-function-alias 'helix-forward-word 'helix-forward-word-start "0.8.0")
+(defun helix-forward-word-start ()
+  "Move to start of the next word."
   (interactive)
   (helix--with-movement-surround
    (re-search-forward "[[:alnum:]]+[ ]*\\|[[:punct:]]+[ ]*\\|\n" nil 'move)))
+
+(defun helix-forward-word-end ()
+  "Move to the end of the current word."
+  (interactive)
+  (helix--with-movement-surround
+   (re-search-forward "\\([[:alnum:]]+\\)\\|\\([[:punct:]]+\\)\\|\n" nil 'move)))
 
 (defun helix-backward-word ()
   "Move to previous word."
@@ -164,8 +171,9 @@ If a region is already active, no new region is created."
              (skip-syntax-backward "w")
            (skip-syntax-backward ".()"))))))
 
-(defun helix-forward-long-word ()
-  "Move to next long word.
+(define-obsolete-function-alias 'helix-forward-long-word 'helix-forward-long-word-start "0.8.0")
+(defun helix-forward-long-word-start ()
+  "Move to start of the next long word.
 If the point is at the end of a line, it first searches for the
 non-empty line before moving to the next long word."
   (interactive)
@@ -174,6 +182,18 @@ non-empty line before moving to the next long word."
     (while (looking-at-p ".?$") (forward-line))
     (helix--with-movement-surround
      (when (re-search-forward "[ \t]+\\S-" (- (pos-eol) 1) 'move)
+       (backward-char 2)))))
+
+(defun helix-forward-long-word-end ()
+  "Move to end of this long word.
+If the point is at the end of a line, it first searches for the
+non-empty line before moving to the next long word."
+  (interactive)
+  (unless (eobp)
+    (when (looking-at-p "\\s-\\S-") (forward-char))
+    (while (looking-at-p "$") (forward-line))
+    (helix--with-movement-surround
+     (when (re-search-forward "+\\S-+\\s-" nil 'move)
        (backward-char 2)))))
 
 (defun helix-backward-long-word ()
@@ -226,8 +246,19 @@ previous character before moving to the previous long word."
         (call-interactively #'next-line)
         (end-of-line))
     (beginning-of-line)
-    (set-mark-command nil)
+    (push-mark-command t t)
     (end-of-line)))
+
+(defun helix-select-line-up ()
+  "Select the current line, extending upward on every subsequent call."
+  (interactive)
+  (if (and (region-active-p) (bolp))
+      (progn
+        (call-interactively #'previous-line)
+        (beginning-of-line))
+    (end-of-line)
+    (push-mark-command t t)
+    (beginning-of-line)))
 
 (defun helix-kill-thing-at-point ()
   "Kill current region or current point."
@@ -237,14 +268,21 @@ previous character before moving to the previous long word."
     (delete-char 1))
   (helix--clear-data))
 
+(defun helix-change-thing-at-point ()
+  "Remove the current region or current point and enter insert-mode."
+  (interactive)
+  (helix-kill-thing-at-point)
+  (helix-insert))
+
 (defun helix-begin-selection ()
   "Begin selection at existing region or current point."
   (interactive)
   (unless helix--current-selection
     (if (use-region-p)
-        (setq helix--current-selection (region-beginning))
-      (set-mark-command nil)
-      (setq helix--current-selection (point)))))
+        ;; The 1+ is required, so that it selects from under the cursor
+        (setq helix--current-selection (1+ (region-beginning)))
+      (push-mark-command t t)
+      (setq helix--current-selection (1+ (point))))))
 
 (defun helix--end-of-line-p ()
   "Return non-nil if current point is at the end of the current line."
@@ -303,7 +341,7 @@ previous character before moving to the previous long word."
   "Create a region between START and END, leaving the current point at END."
   (deactivate-mark)
   (goto-char start)
-  (set-mark-command nil)
+  (push-mark-command t t)
   (goto-char end))
 
 (defun helix-search-forward ()
@@ -499,8 +537,10 @@ Example that defines the typable command ':format':
     (define-key keymap "l" #'helix-forward-char)
     (define-key keymap "j" #'helix-next-line)
     (define-key keymap "k" #'helix-previous-line)
-    (define-key keymap "w" #'helix-forward-word)
-    (define-key keymap "W" #'helix-forward-long-word)
+    (define-key keymap "w" #'helix-forward-word-start)
+    (define-key keymap "W" #'helix-forward-long-word-start)
+    (define-key keymap "e" #'helix-forward-word-end)
+    (define-key keymap "E" #'helix-forward-long-word-end)
     (define-key keymap "b" #'helix-backward-word)
     (define-key keymap "B" #'helix-backward-long-word)
     (define-key keymap "G" #'goto-line)
@@ -509,6 +549,8 @@ Example that defines the typable command ':format':
     (define-key keymap "F" #'helix-find-prev-char)
     (define-key keymap "T" #'helix-find-prev-till-char)
     (define-key keymap "M-." #'helix-find-repeat)
+    (define-key keymap "c" #'helix-change-thing-at-point)
+    (define-key keymap "%" #'mark-whole-buffer)
     (define-key keymap (kbd "C-f") #'scroll-up-command)
     (define-key keymap (kbd "C-b") #'scroll-down-command)
 
@@ -537,6 +579,8 @@ Example that defines the typable command ':format':
     (define-key helix-space-map "j" #'project-switch-project)
     (define-key helix-space-map "/" #'project-find-regexp)
     (define-key helix-space-map "a" #'eglot-code-action-quickfix)
+    (define-key helix-space-map "r" #'eglot-rename)
+    (define-key helix-space-map "d" #'flymake-show-buffer-diagnostics)
 
     ;; Window mode
     (define-key keymap (kbd "C-w") 'helix-window-map)
@@ -557,6 +601,7 @@ Example that defines the typable command ':format':
     (define-key keymap "p" #'yank)
     (define-key keymap "v" #'helix-begin-selection)
     (define-key keymap "u" #'undo)
+    (define-key keymap "U" #'undo-redo)
     (define-key keymap "o" #'helix-insert-newline)
     (define-key keymap "O" #'helix-insert-prevline)
     (define-key keymap "/" #'helix-search)
