@@ -90,6 +90,20 @@ waits for a second "j" keypress before canceling. You can configure
 different timeouts by passing your desired timeout as an argument to
 `helix-jj-setup`.
 
+### Relative line number mode
+
+You can replicate Helix's `line-number: relative` in Helix Mode by
+changing the `display-line-numbers` variable in Emacs based on the
+current minor mode:
+
+```lisp
+(use-package helix
+  :hook ((helix-normal-mode . (lambda () (setq display-line-numbers 'relative)))
+         (helix-insert-mode . (lambda () (setq display-line-numbers t))))
+  :config
+  (helix-mode))
+```
+
 ## Extension
 
 ### Keys
@@ -252,6 +266,10 @@ Non-goals:
 - Advanced multiple-cursors + selection behaviors. I'll do my best to
   support keybindings for multiple-cursors, but I'm unsure how deep I
   want to dive into overhauling the Emacs selection framework.
+
+## Contributing
+
+See [CONTRIBUTING](./CONTRIBUTING.md).
 
 ## License
 
