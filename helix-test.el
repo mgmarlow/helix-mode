@@ -37,13 +37,13 @@
   (with-temp-buffer
     (insert "hello world test")
     (goto-char 1)
-    (helix-forward-long-word)
+    (helix-forward-long-word-start)
     (should (= (point) 6)) ; before "world"
     (should (= (- (region-end) (region-beginning)) 5))
-    (helix-forward-long-word)
+    (helix-forward-long-word-start)
     (should (= (point) 12)) ; before "test"
     (should (= (- (region-end) (region-beginning)) 5))
-    (helix-forward-long-word)
+    (helix-forward-long-word-start)
     (should (= (point) (- (point-max) 1))) ; before end of line
     (should (= (- (region-end) (region-beginning)) 3))))
 
@@ -52,10 +52,10 @@
   (with-temp-buffer
     (insert "this test-string-example works")
     (goto-char 1)
-    (helix-forward-long-word)
+    (helix-forward-long-word-start)
     (should (= (point) 5)) ; before "test-string-example"
     (should (= (- (region-end) (region-beginning)) 4))
-    (helix-forward-long-word)
+    (helix-forward-long-word-start)
     (should (= (point) 25)) ; before "works"
     (should (= (- (region-end) (region-beginning)) 19))))
 
@@ -64,7 +64,7 @@
   (with-temp-buffer
     (insert "word next")
     (goto-char 5) ; on the first whitespace
-    (helix-forward-long-word)
+    (helix-forward-long-word-start)
     (should (= (point) (- (point-max) 1))) ; before end of line
     (should (= (- (region-end) (region-beginning)) 3))))
 
@@ -73,7 +73,7 @@
   (with-temp-buffer
     (insert "word   \t  next")
     (goto-char 5) ; on the first whitespace
-    (helix-forward-long-word)
+    (helix-forward-long-word-start)
     (should (= (point) 10)) ; start of "next"
     (should (= (- (region-end) (region-beginning)) 5))))
 
@@ -82,13 +82,13 @@
   (with-temp-buffer
     (insert "first line\nsecond line\nthird")
     (goto-char 1) ; start of buffer
-    (helix-forward-long-word)
+    (helix-forward-long-word-start)
     (should (= (point) 6)) ; before "line"
     (should (= (- (region-end) (region-beginning)) 5))
-    (helix-forward-long-word)
+    (helix-forward-long-word-start)
     (should (= (point) 10)) ; before end of first line
     (should (= (- (region-end) (region-beginning)) 3))
-    (helix-forward-long-word)
+    (helix-forward-long-word-start)
     (should (= (point) 18)) ; before "line" of second line
     (should (= (- (region-end) (region-beginning)) 6))))
 
@@ -97,7 +97,7 @@
   (with-temp-buffer
     (insert "first\n\n\nsecond")
     (goto-char 5) ; before end of first line
-    (helix-forward-long-word)
+    (helix-forward-long-word-start)
     (should (= (point) (- (point-max) 1))) ; before end of second line
     (should (= (- (region-end) (region-beginning)) 5))))
 
@@ -107,7 +107,7 @@
     (insert "test word")
     (goto-char (point-max))
     (let ((initial-point (point)))
-      (helix-forward-long-word)
+      (helix-forward-long-word-start)
       (should (= (point) initial-point))
       (should (not (use-region-p))))))
 
@@ -116,7 +116,7 @@
   (with-temp-buffer
     (insert "word1_part2-part3.part4 next")
     (goto-char 1)
-    (helix-forward-long-word)
+    (helix-forward-long-word-start)
     (should (= (point) 24)) ; before "next"
     (should (= (- (region-end) (region-beginning)) 23))))
 
@@ -125,10 +125,10 @@
   (with-temp-buffer
     (insert "Hello, world! How are you?")
     (goto-char 1)
-    (helix-forward-long-word)
+    (helix-forward-long-word-start)
     (should (= (point) 7)) ; before "world!"
     (should (= (- (region-end) (region-beginning)) 6))
-    (helix-forward-long-word)
+    (helix-forward-long-word-start)
     (should (= (point) 14)) ; before "How"
     (should (= (- (region-end) (region-beginning)) 6))))
 
@@ -245,7 +245,7 @@
   "Test forward movement in empty buffer."
   (with-temp-buffer
     (let ((initial-point (point)))
-      (helix-forward-long-word)
+      (helix-forward-long-word-start)
       (should (= (point) initial-point))
       (should (not (use-region-p))))))
 
@@ -262,7 +262,7 @@
   (with-temp-buffer
     (insert "   \t\n  ")
     (goto-char 1)
-    (helix-forward-long-word)
+    (helix-forward-long-word-start)
     (should (= (point) 4)) ; before end of first line
     (should (= (- (region-end) (region-beginning)) 3))))
 
@@ -280,10 +280,10 @@
   (with-temp-buffer
     (insert "a b c d")
     (goto-char 1)
-    (helix-forward-long-word)
+    (helix-forward-long-word-start)
     (should (= (point) 2)) ; before "b"
     (should (= (- (region-end) (region-beginning)) 1))
-    (helix-forward-long-word)
+    (helix-forward-long-word-start)
     (should (= (point) 4)) ; before "c"
     (should (= (- (region-end) (region-beginning)) 1))))
 

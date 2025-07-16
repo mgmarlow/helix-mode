@@ -137,24 +137,26 @@ Normal mode is the default mode. You can return to it by pressing
 
 ### Movement
 
-| Key | Description                     | Command                     |
-|:----|:--------------------------------|:----------------------------|
-| h   | Move left                       | `helix-backward-char`       |
-| l   | Move right                      | `helix-forward-char`        |
-| j   | Move down                       | `helix-next-line`           |
-| k   | Move up                         | `helix-previous-line`       |
-| w   | Move next word                  | `helix-forward-word`        |
-| W   | Move next WORD                  | `helix-forward-long-word`   |
-| b   | Move previous word              | `helix-backward-word`       |
-| B   | Move previous WORD              | `helix-backward-long-word`  |
-| t   | Find 'till next char            | `helix-find-till-char`      |
-| T   | Find 'till prev char            | `helix-find-prev-till-char` |
-| f   | Find next char                  | `helix-find-next-char`      |
-| F   | Find prev char                  | `helix-find-prev-char`      |
-| M-. | Repeat last motion (f, t, F, T) | `helix-find-repeat`         |
-| G   | Go to line                      | N/A                         |
-| C-b | Move page up                    | N/A                         |
-| C-f | Move page down                  | N/A                         |
+| Key | Description                     | Command                        |
+|:----|:--------------------------------|:-------------------------------|
+| h   | Move left                       | `helix-backward-char`          |
+| l   | Move right                      | `helix-forward-char`           |
+| j   | Move down                       | `helix-next-line`              |
+| k   | Move up                         | `helix-previous-line`          |
+| w   | Move next word start            | `helix-forward-word-start`     |
+| W   | Move next WORD                  | `helix-forward-long-word-start`|
+| e   | Move word end                   | `helix-forward-word-end`       |
+| E   | Move WORD end                   | `helix-forward-long-word-end`  |
+| b   | Move previous word              | `helix-backward-word`          |
+| B   | Move previous WORD              | `helix-backward-long-word`     |
+| t   | Find 'till next char            | `helix-find-till-char`         |
+| T   | Find 'till prev char            | `helix-find-prev-till-char`    |
+| f   | Find next char                  | `helix-find-next-char`         |
+| F   | Find prev char                  | `helix-find-prev-char`         |
+| M-. | Repeat last motion (f, t, F, T) | `helix-find-repeat`            |
+| G   | Go to line                      | N/A                            |
+| C-b | Move page up                    | N/A                            |
+| C-f | Move page down                  | N/A                            |
 
 ### Changes
 
