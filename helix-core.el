@@ -190,10 +190,10 @@ If the point is at the end of a line, it first searches for the
 non-empty line before moving to the next long word."
   (interactive)
   (unless (eobp)
-    (when (looking-at-p "\\s-\\S-") (forward-char))
-    (while (looking-at-p "$") (forward-line))
+    (when (looking-at-p "\\S-\\(\\s-\\|[[:punct:]]\\)") (forward-char))
+    (while (looking-at-p ".?$") (forward-line))
     (helix--with-movement-surround
-     (when (re-search-forward "+\\S-+\\s-" nil 'move)
+     (when (re-search-forward "\\S-+\\(\\s-\\|[[:punct:]]\\)" (- (pos-eol) 1) 'move)
        (backward-char 2)))))
 
 (defun helix-backward-long-word ()

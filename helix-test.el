@@ -32,7 +32,7 @@
 
 ;;; Forward long word tests
 
-(ert-deftest helix-test-forward-long-word-basic-movement ()
+(ert-deftest helix-test-forward-long-word-start-basic-movement ()
   "Test basic forward movement between words."
   (with-temp-buffer
     (insert "hello world test")
@@ -47,7 +47,7 @@
     (should (= (point) (- (point-max) 1))) ; before end of line
     (should (= (- (region-end) (region-beginning)) 3))))
 
-(ert-deftest helix-test-forward-long-word-hyphenated-words ()
+(ert-deftest helix-test-forward-long-word-start-hyphenated-words ()
   "Test forward movement with hyphenated words (long words)."
   (with-temp-buffer
     (insert "this test-string-example works")
@@ -59,7 +59,7 @@
     (should (= (point) 25)) ; before "works"
     (should (= (- (region-end) (region-beginning)) 19))))
 
-(ert-deftest helix-test-forward-long-word-on-whitespace ()
+(ert-deftest helix-test-forward-long-word-start-on-whitespace ()
   "Test that forward movement skips over whitespace."
   (with-temp-buffer
     (insert "word next")
@@ -68,7 +68,7 @@
     (should (= (point) (- (point-max) 1))) ; before end of line
     (should (= (- (region-end) (region-beginning)) 3))))
 
-(ert-deftest helix-test-forward-long-word-on-whitespaces ()
+(ert-deftest helix-test-forward-long-word-start-on-whitespaces ()
   "Test that forward movement skips over whitespace."
   (with-temp-buffer
     (insert "word   \t  next")
@@ -77,7 +77,7 @@
     (should (= (point) 10)) ; start of "next"
     (should (= (- (region-end) (region-beginning)) 5))))
 
-(ert-deftest helix-test-forward-long-word-multiple-lines ()
+(ert-deftest helix-test-forward-long-word-start-multiple-lines ()
   "Test forward movement across multiple lines."
   (with-temp-buffer
     (insert "first line\nsecond line\nthird")
@@ -92,7 +92,7 @@
     (should (= (point) 18)) ; before "line" of second line
     (should (= (- (region-end) (region-beginning)) 6))))
 
-(ert-deftest helix-test-forward-long-word-empty-lines ()
+(ert-deftest helix-test-forward-long-word-start-empty-lines ()
   "Test forward movement with empty lines."
   (with-temp-buffer
     (insert "first\n\n\nsecond")
@@ -101,7 +101,7 @@
     (should (= (point) (- (point-max) 1))) ; before end of second line
     (should (= (- (region-end) (region-beginning)) 5))))
 
-(ert-deftest helix-test-forward-long-word-at-end-of-buffer ()
+(ert-deftest helix-test-forward-long-word-start-at-end-of-buffer ()
   "Test that forward movement at end of buffer doesn't move."
   (with-temp-buffer
     (insert "test word")
@@ -111,7 +111,7 @@
       (should (= (point) initial-point))
       (should (not (use-region-p))))))
 
-(ert-deftest helix-test-forward-long-word-mixed-separators ()
+(ert-deftest helix-test-forward-long-word-start-mixed-separators ()
   "Test forward movement with mixed word separators."
   (with-temp-buffer
     (insert "word1_part2-part3.part4 next")
@@ -120,7 +120,7 @@
     (should (= (point) 24)) ; before "next"
     (should (= (- (region-end) (region-beginning)) 23))))
 
-(ert-deftest helix-test-forward-long-word-punctuation ()
+(ert-deftest helix-test-forward-long-word-start-punctuation ()
   "Test forward movement with punctuation."
   (with-temp-buffer
     (insert "Hello, world! How are you?")
@@ -131,6 +131,128 @@
     (helix-forward-long-word-start)
     (should (= (point) 14)) ; before "How"
     (should (= (- (region-end) (region-beginning)) 6))))
+
+;;; Forward long word end tests
+
+(ert-deftest helix-test-forward-long-word-end-basic-movement ()
+  "Test basic forward movement to word ends."
+  (with-temp-buffer
+    (insert "hello world test")
+    (goto-char 1)
+    (helix-forward-long-word-end)
+    (should (= (point) 5)) ; end of "hello"
+    (should (= (- (region-end) (region-beginning)) 4))
+    (helix-forward-long-word-end)
+    (should (= (point) 11)) ; end of "world"
+    (should (= (- (region-end) (region-beginning)) 5))
+    (helix-forward-long-word-end)
+    (should (= (point) 16)) ; end of "test"
+    (should (= (- (region-end) (region-beginning)) 4))))
+
+(ert-deftest helix-test-forward-long-word-end-hyphenated-words ()
+  "Test forward movement to ends of hyphenated words (long words)."
+  (with-temp-buffer
+    (insert "this test-string-example works")
+    (goto-char 1)
+    (helix-forward-long-word-end)
+    (should (= (point) 4)) ; end of "this"
+    (should (= (- (region-end) (region-beginning)) 3))
+    (helix-forward-long-word-end)
+    (should (= (point) 24)) ; end of "test-string-example"
+    (should (= (- (region-end) (region-beginning)) 19))
+    (helix-forward-long-word-end)
+    (should (= (point) 30)) ; end of "works"
+    (should (= (- (region-end) (region-beginning)) 5))))
+
+(ert-deftest helix-test-forward-long-word-end-on-whitespace ()
+  "Test that forward movement to word ends skips over whitespace."
+  (with-temp-buffer
+    (insert "word next")
+    (goto-char 5) ; on the first whitespace
+    (helix-forward-long-word-end)
+    (should (= (point) 9)) ; end of "next"
+    (should (= (- (region-end) (region-beginning)) 4))))
+
+(ert-deftest helix-test-forward-long-word-end-on-whitespaces ()
+  "Test that forward movement to word ends skips over multiple whitespaces."
+  (with-temp-buffer
+    (insert "word   \t  next")
+    (goto-char 5) ; on the first whitespace
+    (helix-forward-long-word-end)
+    (should (= (point) 14)) ; end of "next"
+    (should (= (- (region-end) (region-beginning)) 9))))
+
+(ert-deftest helix-test-forward-long-word-end-multiple-lines ()
+  "Test forward movement to word ends across multiple lines."
+  (with-temp-buffer
+    (insert "first line\nsecond line\nthird")
+    (goto-char 1) ; start of buffer
+    (helix-forward-long-word-end)
+    (should (= (point) 5)) ; end of "first"
+    (should (= (- (region-end) (region-beginning)) 4))
+    (helix-forward-long-word-end)
+    (should (= (point) 10)) ; end of "line"
+    (should (= (- (region-end) (region-beginning)) 4))
+    (helix-forward-long-word-end)
+    (should (= (point) 17)) ; end of "second"
+    (should (= (- (region-end) (region-beginning)) 5))))
+
+(ert-deftest helix-test-forward-long-word-end-empty-lines ()
+  "Test forward movement to word ends with empty lines."
+  (with-temp-buffer
+    (insert "first\n\n\nsecond")
+    (goto-char 1)
+    (helix-forward-long-word-end)
+    (should (= (point) 5)) ; end of "first"
+    (should (= (- (region-end) (region-beginning)) 4))
+    (helix-forward-long-word-end)
+    (should (= (point) 14)) ; end of "second"
+    (should (= (- (region-end) (region-beginning)) 5))))
+
+(ert-deftest helix-test-forward-long-word-end-at-end-of-buffer ()
+  "Test that forward movement to word end at end of buffer doesn't move."
+  (with-temp-buffer
+    (insert "test word")
+    (goto-char (point-max))
+    (let ((initial-point (point)))
+      (helix-forward-long-word-end)
+      (should (= (point) initial-point))
+      (should (not (use-region-p))))))
+
+(ert-deftest helix-test-forward-long-word-end-mixed-separators ()
+  "Test forward movement to word ends with mixed word separators."
+  (with-temp-buffer
+    (insert "word1_part2-part3.part4 next")
+    (goto-char 1)
+    (helix-forward-long-word-end)
+    (should (= (point) 23)) ; end of "word1_part2-part3.part4"
+    (should (= (- (region-end) (region-beginning)) 22))
+    (helix-forward-long-word-end)
+    (should (= (point) 28)) ; end of "next"
+    (should (= (- (region-end) (region-beginning)) 4))))
+
+(ert-deftest helix-test-forward-long-word-end-punctuation ()
+  "Test forward movement to word ends with punctuation."
+  (with-temp-buffer
+    (insert "Hello, world! How are you?")
+    (goto-char 1)
+    (helix-forward-long-word-end)
+    (should (= (point) 6)) ; end of "Hello,"
+    (should (= (- (region-end) (region-beginning)) 5))
+    (helix-forward-long-word-end)
+    (should (= (point) 13)) ; end of "world!"
+    (should (= (- (region-end) (region-beginning)) 6))
+    (helix-forward-long-word-end)
+    (should (= (point) 17)) ; end of "How"
+    (should (= (- (region-end) (region-beginning)) 3))))
+
+(ert-deftest helix-test-forward-long-word-end-empty-buffer ()
+  "Test forward movement to word end in empty buffer."
+  (with-temp-buffer
+    (let ((initial-point (point)))
+      (helix-forward-long-word-end)
+      (should (= (point) initial-point))
+      (should (not (use-region-p))))))
 
 ;;; Backward long word tests
 
@@ -257,7 +379,7 @@
       (should (= (point) initial-point))
       (should (not (use-region-p))))))
 
-(ert-deftest helix-test-forward-long-word-only-whitespace ()
+(ert-deftest helix-test-forward-long-word-start-only-whitespace ()
   "Test forward movement in buffer with only whitespace."
   (with-temp-buffer
     (insert "   \t\n  ")
@@ -265,6 +387,18 @@
     (helix-forward-long-word-start)
     (should (= (point) 4)) ; before end of first line
     (should (= (- (region-end) (region-beginning)) 3))))
+
+(ert-deftest helix-test-forward-long-word-end-only-whitespace ()
+  "Test forward movement to word end in buffer with only whitespace."
+  (with-temp-buffer
+    (insert "   \t\n  ")
+    (goto-char 1)
+    (helix-forward-long-word-end)
+    (should (= (point) 4)) ; end of first line whitespace
+    (should (= (- (region-end) (region-beginning)) 3))
+    (helix-forward-long-word-end)
+    (should (= (point) 7)) ; end of buffer
+    (should (= (- (region-end) (region-beginning)) 1))))
 
 (ert-deftest helix-test-backward-long-word-only-whitespace ()
   "Test backward movement in buffer with only whitespace."
@@ -275,7 +409,7 @@
     (should (= (point) 6)) ; start of second line
     (should (= (- (region-end) (region-beginning) 2)))))
 
-(ert-deftest helix-test-forward-long-word-single-character ()
+(ert-deftest helix-test-forward-long-word-start-single-character ()
   "Test forward movement with single character words."
   (with-temp-buffer
     (insert "a b c d")
@@ -285,6 +419,21 @@
     (should (= (- (region-end) (region-beginning)) 1))
     (helix-forward-long-word-start)
     (should (= (point) 4)) ; before "c"
+    (should (= (- (region-end) (region-beginning)) 1))))
+
+(ert-deftest helix-test-forward-long-word-end-single-character ()
+  "Test forward movement to word ends with single character words."
+  (with-temp-buffer
+    (insert "a b c d")
+    (goto-char 1)
+    (helix-forward-long-word-end)
+    (should (= (point) 3)) ; end of "b"
+    (should (= (- (region-end) (region-beginning)) 1))
+    (helix-forward-long-word-end)
+    (should (= (point) 5)) ; end of "c"
+    (should (= (- (region-end) (region-beginning)) 1))
+    (helix-forward-long-word-end)
+    (should (= (point) 7)) ; end of "d"
     (should (= (- (region-end) (region-beginning)) 1))))
 
 (ert-deftest helix-test-backward-long-word-single-character ()
