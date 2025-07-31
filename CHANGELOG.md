@@ -1,5 +1,27 @@
 # Changelog
 
+## 0.8.0 (2025-07-31)
+
+Now available on MELPA! Helix Mode is now split into several smaller
+packages, behaves more appropriately towards advice, and bytecompiles
+without warnings.
+
+New features:
+
+- Character navigation (`t`, `T`, `f`, `F`).
+- Repeat last motion (applying to character navigation).
+- Move word/WORD end (`e`, `E`).
+- Undo-redo (`U`).
+- Change thing at point (`c`).
+- Mark whole buffer (`%`).
+- LSP rename (using Eglot, `SPC r`).
+- LSP show buffer diagnostics (using Flymake, `SPC d`).
+
+Contributor kudos:
+
+- @SoraTenshi for adding a bunch of functionality.
+- @roy-corentin for helping address bugs in navigation.
+
 ## 0.7.0 (2025-06-19)
 
 Navigation overhaul! Navigating via word/long-word (w/b/W/B) now
