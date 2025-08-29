@@ -81,6 +81,9 @@ keybindings that spawn multiple cursors
 Helix Mode supports remapping "jj" as escape for the purpose of
 exiting Insert Mode. Invoke `helix-jj-setup` to activate jj-mode.
 
+This is useful in terminal mode, since escape [currently cannot be
+bound](https://github.com/mgmarlow/helix-mode/issues/24).
+
 ```lisp
 (helix-jj-setup 0.2)
 ```
