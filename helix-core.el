@@ -263,9 +263,15 @@ previous character before moving to the previous long word."
 (defun helix-kill-thing-at-point ()
   "Kill current region or current point."
   (interactive)
-  (if (use-region-p)
-      (kill-region (region-beginning) (region-end))
-    (delete-char 1))
+  (cond
+   ((and (use-region-p)
+         (eq (point-at-bol) (region-beginning))
+         (eq (point-at-eol) (region-end)))
+    (kill-whole-line))
+   ((use-region-p)
+    (kill-region (region-beginning) (region-end)))
+   (t
+    (delete-char 1)))
   (helix--clear-data))
 
 (defun helix-change-thing-at-point ()
