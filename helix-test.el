@@ -448,6 +448,144 @@
     (should (= (point) 5)) ; start of "c"
     (should (= (- (region-end) (region-beginning)) 2))))
 
+;;; Search tests
+
+(ert-deftest helix-test-search-forward-begin-no-current-search ()
+  "Test `helix-search-forward-begin' when `helix-current-search' is nil."
+  (with-temp-buffer
+    (insert "hello world hello")
+    (goto-char 1)
+    (let ((isearch-success 6)
+          (isearch-message "hello")
+          (isearch-match-data '(1 6)))
+      (cl-letf (((symbol-function 'isearch-forward)
+                 (lambda (&rest _)
+                   (goto-char 6))))
+        (helix-search-forward-begin)
+        (should (string= helix-current-search "hello"))
+        (should (= (point) 6))
+        (should (= (mark) 1))))))
+
+(ert-deftest helix-test-search-forward-begin-with-current-search ()
+  "Test `helix-search-forward-begin' resets `helix-current-search'."
+  (with-temp-buffer
+    (insert "hello world hello")
+    (goto-char (point-min))
+    (setq helix-current-search "previous")
+    (let ((isearch-success 6)
+          (isearch-message "hello")
+          (isearch-match-data '(1 6)))
+      (cl-letf (((symbol-function 'isearch-forward)
+                 (lambda (&rest _)
+                   (goto-char 6))))
+        (helix-search-forward-begin)
+        (should (string= helix-current-search "hello"))))))
+
+(ert-deftest helix-test-search-backward-begin-no-current-search ()
+  "Test `helix-search-backward-begin' when `helix-current-search' is nil."
+  (with-temp-buffer
+    (insert "hello world hello")
+    (goto-char (point-max))
+    (setq helix-current-search "previous")
+    (let ((isearch-success 18)
+          (isearch-message "hello")
+          (isearch-match-data '(13 18)))
+      (cl-letf (((symbol-function 'isearch-backward)
+                 (lambda (&rest _)
+                   (goto-char 13))))
+        (helix-search-backward-begin)
+        (should (string= helix-current-search "hello"))
+        (should (= (point) 18))
+        (should (= (mark) 13))))))
+
+(ert-deftest helix-test-search-backward-begin-with-current-search ()
+  "Test `helix-search-backward-begin' resets `helix-current-search'."
+  (with-temp-buffer
+    (insert "hello world hello")
+    (goto-char (point-max))
+    (setq helix-current-search "previous")
+    (let ((isearch-success 18)
+          (isearch-message "hello")
+          (isearch-match-data '(13 18)))
+      (cl-letf (((symbol-function 'isearch-backward)
+                 (lambda (&rest _)
+                   (goto-char 18))))
+        (helix-search-backward-begin)
+        (should (string= helix-current-search "hello"))))))
+
+(ert-deftest helix-test-search-forward-with-current-search ()
+  "Test `helix-search-forward' when `helix-current-search' is set."
+  (with-temp-buffer
+    (insert "hello world hello")
+    (goto-char 1)
+    (setq helix-current-search "hello")
+    (setq isearch-message "hello")
+    (helix-search-forward)
+    (should (= (point) 6))
+    (should (= (mark) 1))))
+
+(ert-deftest helix-test-search-forward-without-current-search ()
+  "Test `helix-search-forward' when `helix-current-search' is nil."
+  (with-temp-buffer
+    (insert "hello world hello")
+    (goto-char 1)
+    (setq helix-current-search nil)
+    (let ((isearch-success 12)
+          (isearch-message "world")
+          (isearch-match-data '(7 12)))
+      (cl-letf (((symbol-function 'isearch-forward)
+                 (lambda (&rest _)
+                   (goto-char 12))))
+        (helix-search-forward)
+        (should (string= helix-current-search "world"))
+        (should (= (point) 12))
+        (should (= (mark) 7))))))
+
+(ert-deftest helix-test-search-backward-with-current-search ()
+  "Test `helix-search-backward' when `helix-current-search' is set."
+  (with-temp-buffer
+    (insert "hello world hello")
+    (goto-char 18)
+    (setq helix-current-search "hello")
+    (helix-search-backward)
+    (should (= (point) 6))
+    (should (= (mark) 1))))
+
+(ert-deftest helix-test-search-backward-without-current-search ()
+  "Test `helix-search-backward' when `helix-current-search' is nil."
+  (with-temp-buffer
+    (insert "hello world hello")
+    (goto-char (point-max))
+    (setq helix-current-search nil)
+    (let ((isearch-success 12)
+          (isearch-message "world")
+          (isearch-match-data '(7 12)))
+      (cl-letf (((symbol-function 'isearch-backward)
+                 (lambda (&rest _)
+                   (goto-char 7))))
+        (helix-search-backward)
+        (should (string= helix-current-search "world"))
+        (should (= (point) 12))
+        (should (= (mark) 7))))))
+
+(ert-deftest helix-test-search-forward-no-match ()
+  "Test `helix-search-forward' when no match is found."
+  :expected-result :failed
+  (with-temp-buffer
+    (insert "hello world")
+    (goto-char 1)
+    (setq helix-current-search "nonexistent")
+    (helix-search-forward)))
+
+(ert-deftest helix-test-search-backward-no-match ()
+  "Test `helix-search-backward' when no match is found."
+  :expected-result :failed
+  (with-temp-buffer
+    (insert "hello world")
+    (goto-char (point-max))
+    (setq helix-current-search "nonexistent")
+    (helix-search-backward)))
+
 ;; Find char
 
 (ert-deftest helix-test-find-next-char ()
