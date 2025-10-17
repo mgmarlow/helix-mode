@@ -188,11 +188,12 @@ Normal mode is the default mode. You can return to it by pressing
 
 ### Search
 
-| Key | Description               | Command                 |
-|:----|:--------------------------|:------------------------|
-| /   | Search                    | `helix-search`          |
-| n   | Continue search forwards  | `helix-search-forward`  |
-| N   | Continue search backwards | `helix-search-backward` |
+| Key | Description               | Command                       |
+|:----|:--------------------------|:------------------------------|
+| /   | Search forwards           | `helix-search-forward-begin`  |
+| ?   | Search backwards          | `helix-search-backward-begin` |
+| n   | Continue search forwards  | `helix-search-forward`        |
+| N   | Continue search backwards | `helix-search-backward`       |
 
 ### Command mode
 
