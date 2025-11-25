@@ -65,6 +65,7 @@
     (add-to-list 'mc/cmds-to-run-for-all cmd))
   (advice-add #'mc/keyboard-quit :before #'helix--clear-data)
   (helix-define-key 'normal "s" #'helix-multiple-cursors-select-regex)
+  (helix-define-key 'normal "C" #'mc/mark-next-like-this)
   (helix-define-key 'normal "," #'mc/keyboard-quit)
   (helix-define-key 'normal [escape] #'mc/keyboard-quit))
 
