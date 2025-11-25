@@ -27,6 +27,7 @@
 
 (require 'flymake)
 (require 'eglot)
+(require 'isearch)
 
 (defgroup helix nil
   "Custom group for Helix."
@@ -47,7 +48,7 @@
   "Enable Helix mode in all buffers.")
 
 (defvar helix-current-search nil
-  "Current search string, initiated via `helix-search'.
+  "Current search string, initiated via `helix-search-forward' or `helix-search-backward'.
 
 Nil if no search has taken place while `helix-mode' is active.")
 
@@ -335,11 +336,17 @@ previous character before moving to the previous long word."
     (indent-according-to-mode))
   (helix-insert))
 
-(defun helix-search (input)
-  "Begin a search for INPUT."
-  (interactive "ssearch:")
-  (setq helix-current-search input)
+(defun helix-search-forward-begin ()
+  "Begin a new forward search."
+  (interactive)
+  (setq helix-current-search nil)
   (helix-search-forward))
+
+(defun helix-search-backward-begin ()
+  "Begin a new backward search."
+  (interactive)
+  (setq helix-current-search nil)
+  (helix-search-backward))
 
 (defun helix--select-region (start end)
   "Create a region between START and END, leaving the current point at END."
@@ -351,9 +358,15 @@ previous character before moving to the previous long word."
 (defun helix-search-forward ()
   "When `helix-current-search' is non-nil, search forward."
   (interactive)
-  (when helix-current-search
-    (search-forward helix-current-search)
-    (helix--select-region (match-beginning 0) (match-end 0))))
+  (helix--clear-highlights)
+  (if helix-current-search
+      (when (search-forward-regexp helix-current-search)
+        (helix--select-region (match-beginning 0) (match-end 0)))
+    (let ((isearch-message-function #'helix--search-prompt))
+      (isearch-forward t))
+    (when isearch-success
+      (setq helix-current-search isearch-message)
+      (helix--select-region (car isearch-match-data) isearch-success))))
 
 (defun helix-search-backward ()
   "When `helix-current-search' is non-nil, search backward.
@@ -365,10 +378,20 @@ current point at the end of the matching word in both forward and
 backward searches, while Emacs places the cursor at the beginning
 of the matching word in backward searches."
   (interactive)
-  (when helix-current-search
-    (backward-char)
-    (search-backward helix-current-search)
-    (helix--select-region (match-beginning 0) (match-end 0))))
+  (helix--clear-highlights)
+  (if helix-current-search
+      (when (or (backward-char)
+                (search-backward-regexp helix-current-search))
+        (helix--select-region (match-beginning 0) (match-end 0)))
+    (let ((isearch-message-function #'helix--search-prompt))
+      (isearch-backward t))
+    (when isearch-success
+      (setq helix-current-search isearch-message)
+      (helix--select-region (car isearch-match-data) isearch-success))))
+
+(defun helix--search-prompt (&optional c-q-hack ellipsis)
+  "Helix custom search prompt.  C-Q-HACK and ELLIPSIS aren't used."
+  (message "search:%s" isearch-message))
 
 (defun helix-find-next-char (char)
   "Go to next CHAR."
@@ -608,7 +631,8 @@ Example that defines the typable command ':format':
     (define-key keymap "U" #'undo-redo)
     (define-key keymap "o" #'helix-insert-newline)
     (define-key keymap "O" #'helix-insert-prevline)
-    (define-key keymap "/" #'helix-search)
+    (define-key keymap "/" #'helix-search-forward-begin)
+    (define-key keymap (kbd "?") #'helix-search-backward-begin)
     (define-key keymap "n" #'helix-search-forward)
     (define-key keymap "N" #'helix-search-backward)
     (define-key keymap "r" #'helix-replace)
