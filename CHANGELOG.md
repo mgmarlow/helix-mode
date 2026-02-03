@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased
+
+New features:
+
+- Auxiliary keymap system for major-mode-specific keybindings.
+  `helix-define-key` now accepts an optional fourth argument KEYMAP
+  (e.g., `dired-mode-map`). When provided, bindings are stored in
+  auxiliary keymaps that take precedence over helix's global state
+  keymaps when that mode is active. This follows evil-mode's approach
+  using `emulation-mode-map-alists`. See README for usage examples.
+
 ## 0.8.0 (2025-07-31)
 
 Now available on MELPA! Helix Mode is now split into several smaller

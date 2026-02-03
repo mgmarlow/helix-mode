@@ -46,6 +46,14 @@
 (defvar helix-global-mode nil
   "Enable Helix mode in all buffers.")
 
+(defvar-local helix-mode-map-alist nil
+  "Buffer-local keymap alist for helix states.
+Registered in `emulation-mode-map-alists' for proper precedence.")
+
+(defvar helix--auxiliary-keymaps nil
+  "Alist tracking all auxiliary keymaps for efficient lookup.
+Maps (PARENT-KEYMAP . STATE) to the auxiliary keymap.")
+
 (defvar helix-current-search nil
   "Current search string, initiated via `helix-search'.
 
@@ -67,6 +75,100 @@ Nil if no find has taken place while `helix-mode' is active.")
 (defvar helix-space-map nil "Keymap for Space mode.")
 (defvar helix-window-map nil "Keymap for Window mode.")
 
+;; Forward declaration - defined later with keymap initializers
+(defvar helix--state-to-keymap-alist)
+
+;;; Auxiliary Keymap System
+;;
+;; This system allows major-mode-specific keybindings to take precedence
+;; over helix's default state keybindings, following evil-mode's approach.
+;; Auxiliary keymaps are stored within parent keymaps under vector keys
+;; like [normal-state].
+
+(defun helix--auxiliary-keymap-p (keymap)
+  "Return non-nil if KEYMAP is a helix auxiliary keymap."
+  (and (keymapp keymap)
+       (keymap-parent keymap)
+       (get (keymap-parent keymap) 'helix-auxiliary)))
+
+(defun helix--keymap-symbol (keymap)
+  "Return the symbol for KEYMAP if it has one."
+  (catch 'found
+    (mapatoms (lambda (sym)
+                (when (and (boundp sym)
+                           (eq (symbol-value sym) keymap))
+                  (throw 'found sym))))))
+
+(defun helix--state-key (state)
+  "Return the vector key used to store auxiliary keymap for STATE."
+  (vector (intern (format "%s-state" state))))
+
+(defun helix--set-auxiliary-keymap (parent-keymap state aux-keymap)
+  "Store AUX-KEYMAP as auxiliary keymap for STATE in PARENT-KEYMAP.
+Also registers it in `helix--auxiliary-keymaps' for efficient lookup."
+  (define-key parent-keymap (helix--state-key state) aux-keymap)
+  (let ((key (cons parent-keymap state)))
+    (setq helix--auxiliary-keymaps
+          (cons (cons key aux-keymap)
+                (assq-delete-all key helix--auxiliary-keymaps)))))
+
+(defun helix-get-auxiliary-keymap (parent-keymap state &optional create)
+  "Get the auxiliary keymap for STATE within PARENT-KEYMAP.
+If CREATE is non-nil and the auxiliary keymap doesn't exist, create it.
+Returns nil if no auxiliary keymap exists and CREATE is nil."
+  (let* ((state-key (helix--state-key state))
+         (aux-keymap (lookup-key parent-keymap state-key)))
+    (if (keymapp aux-keymap)
+        aux-keymap
+      (when create
+        (let ((new-keymap (make-sparse-keymap)))
+          ;; Mark the parent as having auxiliary keymaps
+          (put (or (helix--keymap-symbol parent-keymap) 'anonymous)
+               'helix-auxiliary t)
+          (helix--set-auxiliary-keymap parent-keymap state new-keymap)
+          new-keymap)))))
+
+(defun helix--collect-auxiliary-keymaps (state)
+  "Collect all auxiliary keymaps for STATE that should be active.
+Returns a list of auxiliary keymaps in precedence order (highest first):
+1. Active minor mode auxiliary keymaps
+2. Major mode auxiliary keymap"
+  (let ((keymaps nil))
+    ;; Collect from minor modes
+    (dolist (entry minor-mode-map-alist)
+      (let ((mode (car entry))
+            (keymap (cdr entry)))
+        (when (and (symbol-value mode)
+                   (keymapp keymap))
+          (let ((aux (helix-get-auxiliary-keymap keymap state)))
+            (when aux
+              (push aux keymaps))))))
+    ;; Collect from major mode
+    (let* ((mode-map-sym (intern (format "%s-map" major-mode)))
+           (mode-map (when (boundp mode-map-sym)
+                       (symbol-value mode-map-sym))))
+      (when (keymapp mode-map)
+        (let ((aux (helix-get-auxiliary-keymap mode-map state)))
+          (when aux
+            (push aux keymaps)))))
+    (nreverse keymaps)))
+
+(defun helix-normalize-keymaps ()
+  "Rebuild `helix-mode-map-alist' for proper keymap precedence.
+This should be called when switching states or changing major modes."
+  (let* ((state helix--current-state)
+         (state-keymap (alist-get state helix--state-to-keymap-alist))
+         (state-mode (alist-get state helix-state-mode-alist))
+         (aux-keymaps (helix--collect-auxiliary-keymaps state)))
+    ;; Build the alist: auxiliary keymaps first (highest precedence),
+    ;; then the global state keymap
+    (setq helix-mode-map-alist
+          (append
+           ;; Auxiliary keymaps get highest precedence
+           (mapcar (lambda (km) (cons state-mode km)) aux-keymaps)
+           ;; Global state keymap
+           (list (cons state-mode state-keymap))))))
+
 (defun helix--unload-current-state ()
   "Deactivate the minor mode described by `helix--current-state'."
   (let ((mode (alist-get helix--current-state helix-state-mode-alist)))
@@ -79,7 +181,8 @@ Nil if no find has taken place while `helix-mode' is active.")
     (helix--clear-data)
     (setq-local helix--current-state state)
     (let ((mode (alist-get state helix-state-mode-alist)))
-      (funcall mode 1))))
+      (funcall mode 1))
+    (helix-normalize-keymaps)))
 
 (defun helix--clear-data ()
   "Clear any intermediate data, e.g. selections/mark."
@@ -650,23 +753,40 @@ Example that defines the typable command ':format':
     (space . ,helix-space-map))
   "Alist mapping a state symbol to a Helix keymap.")
 
-(defun helix-define-key (state key def)
-  "Define a new Helix command mapping KEY to the keymap associated with STATE.
+(defun helix-define-key (state key def &optional keymap)
+  "Define a Helix keybinding for KEY to DEF.
 
-Argument STATE must be one of:
+When KEYMAP is nil, bind to the keymap associated with STATE from
+`helix--state-to-keymap-alist'.  When KEYMAP is provided (e.g., a
+major-mode keymap like `dired-mode-map'), create or update an auxiliary
+keymap within KEYMAP that takes precedence when that mode is active.
 
-- insert
-- normal
-- view
-- goto
-- window
-- space
+Argument STATE must be one of: insert, normal, view, goto, window, space.
 
-Argument DEF should be an interactive function, matching the usage
-pattern of `define-key'."
-  (if-let (keymap (alist-get state helix--state-to-keymap-alist))
-      (define-key keymap key def)
-    (error "Invalid state %s" state)))
+Argument KEY and DEF follow the same conventions as `define-key'.
+
+Optional argument KEYMAP specifies the parent keymap in which to create
+an auxiliary keymap for STATE-specific bindings.  This is useful for
+major-mode specific bindings that should override helix defaults.
+
+Example:
+  ;; Standard: bind to Helix's normal state keymap
+  (helix-define-key \\='normal \"s\" #\\='my-command)
+
+  ;; Major-mode specific: bind to dired's auxiliary keymap for normal state
+  ;; Takes precedence when dired-mode is active
+  (with-eval-after-load \\='dired
+    (helix-define-key \\='normal dired-mode-map \"j\" #\\='dired-next-line)
+    (helix-define-key \\='normal dired-mode-map \"k\" #\\='dired-previous-line))"
+  (unless (alist-get state helix--state-to-keymap-alist)
+    (error "Invalid state %s" state))
+  (if keymap
+      ;; Bind to auxiliary keymap within the parent keymap
+      (let ((aux-keymap (helix-get-auxiliary-keymap keymap state t)))
+        (define-key aux-keymap key def))
+    ;; Bind to global state keymap
+    (let ((state-keymap (alist-get state helix--state-to-keymap-alist)))
+      (define-key state-keymap key def))))
 
 (define-minor-mode helix-insert-mode
   "Helix INSERT state minor mode."
@@ -674,7 +794,7 @@ pattern of `define-key'."
   :init-value nil
   :interactive nil
   :global nil
-  :keymap helix-insert-state-keymap
+  :keymap nil  ; Keymaps managed via emulation-mode-map-alists
   (if helix-insert-mode
       (progn
         (setq-local helix--current-state 'insert)
@@ -688,11 +808,12 @@ pattern of `define-key'."
   :init-value nil
   :interactive t
   :global nil
-  :keymap helix-normal-state-keymap
+  :keymap nil  ; Keymaps managed via emulation-mode-map-alists
   (if helix-normal-mode
       (progn
         (setq-local helix--current-state 'normal)
-        (setq cursor-type 'box))))
+        (setq cursor-type 'box)
+        (helix-normalize-keymaps))))
 
 (defun helix-mode-maybe-activate (&optional status)
   "Activate `helix-normal-mode' if `helix-global-mode' is non-nil.
@@ -718,6 +839,13 @@ Argument STATUS is passed through to `helix-mode-maybe-activate'."
         (buffer-list))
   (setq helix-global-mode (if status status 1)))
 
+(defun helix--on-major-mode-change ()
+  "Handler for major mode changes.
+Normalizes keymaps to pick up any major-mode-specific auxiliary keymaps."
+  (when (and helix-global-mode
+             (or helix-normal-mode helix-insert-mode))
+    (helix-normalize-keymaps)))
+
 ;;;###autoload
 (defun helix-mode ()
   "Toggle global Helix mode."
@@ -725,15 +853,23 @@ Argument STATUS is passed through to `helix-mode-maybe-activate'."
   (setq helix-global-mode (not helix-global-mode))
   (if helix-global-mode
       (progn
+        ;; Register helix-mode-map-alist in emulation-mode-map-alists
+        ;; for proper keymap precedence
+        (cl-pushnew 'helix-mode-map-alist emulation-mode-map-alists)
         ;; Ensure `keyboard-quit' clears out intermediate Helix state.
         (advice-add #'keyboard-quit :before #'helix--clear-data)
         (add-hook 'after-change-major-mode-hook #'helix-mode-maybe-activate)
+        (add-hook 'after-change-major-mode-hook #'helix--on-major-mode-change)
         (helix-normal-mode 1))
     (cond
      (helix-normal-mode (helix-normal-mode -1))
      (helix-insert-mode (helix-insert-mode -1)))
+    ;; Clean up emulation-mode-map-alists
+    (setq emulation-mode-map-alists
+          (delq 'helix-mode-map-alist emulation-mode-map-alists))
     (advice-remove #'keyboard-quit #'helix--clear-data)
-    (remove-hook 'after-change-major-mode-hook #'helix-mode-maybe-activate)))
+    (remove-hook 'after-change-major-mode-hook #'helix-mode-maybe-activate)
+    (remove-hook 'after-change-major-mode-hook #'helix--on-major-mode-change)))
 
 (provide 'helix-core)
 ;;; helix-core.el ends here

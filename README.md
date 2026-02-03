@@ -122,6 +122,27 @@ Example:
 The first argument to `helix-define-key` is a Helix state. The valid
 options are: insert, normal, space, view, goto, and window.
 
+#### Major-mode specific keys
+
+You can bind keys that take precedence over helix's default bindings
+when a specific major mode is active:
+
+```lisp
+(with-eval-after-load 'dired
+  (helix-define-key 'normal "j" #'dired-next-line dired-mode-map)
+  (helix-define-key 'normal "k" #'dired-previous-line dired-mode-map))
+```
+
+When you pass a keymap as the fourth argument, helix creates an
+"auxiliary keymap" within that parent keymap. Auxiliary keymaps are
+registered in `emulation-mode-map-alists` and automatically take
+precedence over helix's global state keymaps when the parent mode is
+active.
+
+For example, after the above configuration:
+- In dired buffers, `j` runs `dired-next-line`
+- In other buffers, `j` runs `helix-next-line` (the default)
+
 ### Typable commands
 
 You can create new typable commands (invoked via ":command-name") with

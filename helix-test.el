@@ -570,5 +570,90 @@
     (helix-find-repeat)
     (should (eql (point) 1))))
 
+;;; helix-define-key tests
+
+(ert-deftest helix-test-define-key-standard ()
+  "Test standard helix-define-key without optional keymap."
+  (let ((original-binding (lookup-key helix-space-map "t")))
+    (unwind-protect
+        (progn
+          (helix-define-key 'space "t" #'ignore)
+          (should (eq (lookup-key helix-space-map "t") #'ignore)))
+      (define-key helix-space-map "t" original-binding))))
+
+(ert-deftest helix-test-define-key-with-keymap ()
+  "Test helix-define-key with explicit keymap creates auxiliary keymap."
+  (let ((test-map (make-sparse-keymap)))
+    (helix-define-key 'normal "t" #'ignore test-map)
+    ;; The binding should be in an auxiliary keymap, not directly in test-map
+    (let ((aux-keymap (helix-get-auxiliary-keymap test-map 'normal)))
+      (should aux-keymap)
+      (should (eq (lookup-key aux-keymap "t") #'ignore)))))
+
+(ert-deftest helix-test-define-key-invalid-state ()
+  "Test that invalid state signals an error."
+  (should-error (helix-define-key 'invalid-state "t" #'ignore)))
+
+(ert-deftest helix-test-define-key-invalid-state-with-keymap ()
+  "Test that invalid state signals error even with explicit keymap."
+  (let ((test-map (make-sparse-keymap)))
+    (should-error (helix-define-key 'invalid-state "t" #'ignore test-map))))
+
+;;; Auxiliary keymap tests
+
+(ert-deftest helix-test-auxiliary-keymap-creation ()
+  "Test that auxiliary keymaps are properly created."
+  (let ((parent-map (make-sparse-keymap)))
+    (let ((aux-map (helix-get-auxiliary-keymap parent-map 'normal t)))
+      (should (keymapp aux-map))
+      ;; Should be stored under vector key
+      (should (eq aux-map (lookup-key parent-map [normal-state]))))))
+
+(ert-deftest helix-test-auxiliary-keymap-no-create ()
+  "Test that get-auxiliary-keymap returns nil when create is nil."
+  (let ((parent-map (make-sparse-keymap)))
+    (should (null (helix-get-auxiliary-keymap parent-map 'normal nil)))))
+
+(ert-deftest helix-test-auxiliary-keymap-reuse ()
+  "Test that auxiliary keymaps are reused on subsequent calls."
+  (let ((parent-map (make-sparse-keymap)))
+    (let ((aux-map-1 (helix-get-auxiliary-keymap parent-map 'normal t))
+          (aux-map-2 (helix-get-auxiliary-keymap parent-map 'normal t)))
+      (should (eq aux-map-1 aux-map-2)))))
+
+(ert-deftest helix-test-auxiliary-keymap-different-states ()
+  "Test that different states have different auxiliary keymaps."
+  (let ((parent-map (make-sparse-keymap)))
+    (let ((normal-aux (helix-get-auxiliary-keymap parent-map 'normal t))
+          (insert-aux (helix-get-auxiliary-keymap parent-map 'insert t)))
+      (should (keymapp normal-aux))
+      (should (keymapp insert-aux))
+      (should-not (eq normal-aux insert-aux)))))
+
+(ert-deftest helix-test-auxiliary-keymap-bindings ()
+  "Test that bindings in auxiliary keymaps work correctly."
+  (let ((parent-map (make-sparse-keymap)))
+    (helix-define-key 'normal "j" #'next-line parent-map)
+    (helix-define-key 'normal "k" #'previous-line parent-map)
+    (let ((aux-map (helix-get-auxiliary-keymap parent-map 'normal)))
+      (should (eq (lookup-key aux-map "j") #'next-line))
+      (should (eq (lookup-key aux-map "k") #'previous-line)))))
+
+(ert-deftest helix-test-state-key-format ()
+  "Test that state keys are formatted correctly."
+  (should (equal (helix--state-key 'normal) [normal-state]))
+  (should (equal (helix--state-key 'insert) [insert-state])))
+
+(ert-deftest helix-test-normalize-keymaps-basic ()
+  "Test that helix-normalize-keymaps builds the correct alist."
+  (with-temp-buffer
+    (setq-local helix--current-state 'normal)
+    (helix-normalize-keymaps)
+    ;; Should have at least the global state keymap
+    (should (assq 'helix-normal-mode helix-mode-map-alist))
+    ;; The keymap should be the normal state keymap
+    (should (memq helix-normal-state-keymap
+                  (mapcar #'cdr helix-mode-map-alist)))))
+
 (provide 'helix-test)
 ;;; helix-test.el ends here
