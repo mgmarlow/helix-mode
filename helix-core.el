@@ -710,8 +710,9 @@ Example:
     (setq minor-mode-overriding-map-alist
           (assq-delete-all state-mode minor-mode-overriding-map-alist))
     (when overrides
-      (push (cons state-mode (make-composed-keymap overrides))
-            minor-mode-overriding-map-alist))))
+      (let ((base-keymap (alist-get state helix--state-to-keymap-alist)))
+        (push (cons state-mode (make-composed-keymap overrides base-keymap))
+              minor-mode-overriding-map-alist)))))
 
 (define-minor-mode helix-insert-mode
   "Helix INSERT state minor mode."

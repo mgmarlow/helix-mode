@@ -661,5 +661,21 @@
       ;; Should have no overriding entry
       (should-not (assq 'helix-normal-mode minor-mode-overriding-map-alist)))))
 
+(ert-deftest helix-test-refresh-overriding-maps-fallback-to-base ()
+  "Test that non-overridden keys fall back to base helix keymap."
+  (let ((helix--mode-keybindings nil))
+    (with-temp-buffer
+      (setq major-mode 'helix-test-mode)
+      (setq-local helix--current-state 'normal)
+      ;; Override only "j"
+      (helix-define-key 'normal "j" #'next-line 'helix-test-mode)
+      (helix--refresh-overriding-maps)
+      (let ((entry (assq 'helix-normal-mode minor-mode-overriding-map-alist)))
+        (should entry)
+        ;; Overridden key works
+        (should (eq (lookup-key (cdr entry) "j") #'next-line))
+        ;; Non-overridden key falls back to helix binding
+        (should (eq (lookup-key (cdr entry) "k") #'helix-previous-line))))))
+
 (provide 'helix-test)
 ;;; helix-test.el ends here
