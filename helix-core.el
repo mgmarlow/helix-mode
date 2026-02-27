@@ -746,7 +746,8 @@ Example:
 A non-nil value of STATUS can be passed into `helix-normal-mode' for
 disabling."
   (when (and (not (minibufferp)) helix-global-mode)
-    (helix-normal-mode (if status status 1))))
+    (helix-normal-mode (if status status 1))
+    (helix--refresh-overriding-maps)))
 
 ;;;###autoload
 (defun helix-mode-all (&optional status)
@@ -764,13 +765,6 @@ Argument STATUS is passed through to `helix-mode-maybe-activate'."
         (buffer-list))
   (setq helix-global-mode (if status status 1)))
 
-(defun helix--on-major-mode-change ()
-  "Handler for major mode changes.
-Refreshes overriding maps to pick up any major-mode-specific bindings."
-  (when (and helix-global-mode
-             (or helix-normal-mode helix-insert-mode))
-    (helix--refresh-overriding-maps)))
-
 ;;;###autoload
 (defun helix-mode ()
   "Toggle global Helix mode."
@@ -781,14 +775,12 @@ Refreshes overriding maps to pick up any major-mode-specific bindings."
         ;; Ensure `keyboard-quit' clears out intermediate Helix state.
         (advice-add #'keyboard-quit :before #'helix--clear-data)
         (add-hook 'after-change-major-mode-hook #'helix-mode-maybe-activate)
-        (add-hook 'after-change-major-mode-hook #'helix--on-major-mode-change)
         (helix-normal-mode 1))
     (cond
      (helix-normal-mode (helix-normal-mode -1))
      (helix-insert-mode (helix-insert-mode -1)))
     (advice-remove #'keyboard-quit #'helix--clear-data)
-    (remove-hook 'after-change-major-mode-hook #'helix-mode-maybe-activate)
-    (remove-hook 'after-change-major-mode-hook #'helix--on-major-mode-change)))
+    (remove-hook 'after-change-major-mode-hook #'helix-mode-maybe-activate)))
 
 (provide 'helix-core)
 ;;; helix-core.el ends here
