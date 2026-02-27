@@ -122,6 +122,24 @@ Example:
 The first argument to `helix-define-key` is a Helix state. The valid
 options are: insert, normal, space, view, goto, and window.
 
+#### Major-mode-specific keys
+
+You can override Helix keybindings for specific major modes by passing
+a mode symbol as the fourth argument to `helix-define-key`. These
+bindings only take effect when that mode is active:
+
+```lisp
+(with-eval-after-load 'dired
+  (helix-define-key 'normal "j" #'dired-next-line 'dired-mode)
+  (helix-define-key 'normal "k" #'dired-previous-line 'dired-mode))
+```
+
+In this example, `j` and `k` call `dired-next-line` and
+`dired-previous-line` when in a Dired buffer, but retain their default
+Helix behavior everywhere else. This works by storing the bindings in
+`minor-mode-overriding-map-alist`, which takes precedence over the
+Helix state keymaps in `minor-mode-map-alist`.
+
 ### Typable commands
 
 You can create new typable commands (invoked via ":command-name") with

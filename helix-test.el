@@ -570,5 +570,96 @@
     (helix-find-repeat)
     (should (eql (point) 1))))
 
+;;; helix-define-key tests
+
+(ert-deftest helix-test-define-key-standard ()
+  "Test standard helix-define-key without optional keymap."
+  (let ((original-binding (lookup-key helix-space-map "t")))
+    (unwind-protect
+        (progn
+          (helix-define-key 'space "t" #'ignore)
+          (should (eq (lookup-key helix-space-map "t") #'ignore)))
+      (define-key helix-space-map "t" original-binding))))
+
+(ert-deftest helix-test-define-key-with-mode ()
+  "Test helix-define-key with MODE stores binding in helix--mode-keybindings."
+  (let ((helix--mode-keybindings nil))
+    (helix-define-key 'normal "j" #'next-line 'dired-mode)
+    (let ((entry (assoc (cons 'dired-mode 'normal) helix--mode-keybindings)))
+      (should entry)
+      (should (eq (lookup-key (cdr entry) "j") #'next-line)))))
+
+(ert-deftest helix-test-define-key-with-mode-multiple-bindings ()
+  "Test that multiple bindings for the same mode and state accumulate."
+  (let ((helix--mode-keybindings nil))
+    (helix-define-key 'normal "j" #'next-line 'dired-mode)
+    (helix-define-key 'normal "k" #'previous-line 'dired-mode)
+    (let ((entry (assoc (cons 'dired-mode 'normal) helix--mode-keybindings)))
+      (should (eq (lookup-key (cdr entry) "j") #'next-line))
+      (should (eq (lookup-key (cdr entry) "k") #'previous-line)))))
+
+(ert-deftest helix-test-define-key-with-mode-different-states ()
+  "Test that different states get different sparse keymaps."
+  (let ((helix--mode-keybindings nil))
+    (helix-define-key 'normal "j" #'next-line 'dired-mode)
+    (helix-define-key 'insert "j" #'self-insert-command 'dired-mode)
+    (let ((normal-entry (assoc (cons 'dired-mode 'normal) helix--mode-keybindings))
+          (insert-entry (assoc (cons 'dired-mode 'insert) helix--mode-keybindings)))
+      (should normal-entry)
+      (should insert-entry)
+      (should-not (eq (cdr normal-entry) (cdr insert-entry)))
+      (should (eq (lookup-key (cdr normal-entry) "j") #'next-line))
+      (should (eq (lookup-key (cdr insert-entry) "j") #'self-insert-command)))))
+
+(ert-deftest helix-test-define-key-invalid-state ()
+  "Test that invalid state signals an error."
+  (should-error (helix-define-key 'invalid-state "t" #'ignore)))
+
+(ert-deftest helix-test-define-key-invalid-state-with-mode ()
+  "Test that invalid state signals error even with explicit mode."
+  (should-error (helix-define-key 'invalid-state "t" #'ignore 'dired-mode)))
+
+;;; helix--refresh-overriding-maps tests
+
+(ert-deftest helix-test-refresh-overriding-maps-with-major-mode-bindings ()
+  "Test that refresh builds correct minor-mode-overriding-map-alist."
+  (let ((helix--mode-keybindings nil))
+    (with-temp-buffer
+      ;; Simulate a major mode
+      (setq major-mode 'helix-test-mode)
+      (setq-local helix--current-state 'normal)
+      ;; Register a binding for this mode
+      (helix-define-key 'normal "j" #'next-line 'helix-test-mode)
+      (helix--refresh-overriding-maps)
+      ;; Should have an entry in minor-mode-overriding-map-alist
+      (let ((entry (assq 'helix-normal-mode minor-mode-overriding-map-alist)))
+        (should entry)
+        (should (eq (lookup-key (cdr entry) "j") #'next-line))))))
+
+(ert-deftest helix-test-refresh-overriding-maps-clears-when-no-bindings ()
+  "Test that refresh clears overriding alist when no bindings apply."
+  (let ((helix--mode-keybindings nil))
+    (with-temp-buffer
+      (setq-local helix--current-state 'normal)
+      ;; Pre-populate with a stale entry
+      (setq minor-mode-overriding-map-alist
+            (list (cons 'helix-normal-mode (make-sparse-keymap))))
+      (helix--refresh-overriding-maps)
+      ;; Should have cleared the entry
+      (should-not (assq 'helix-normal-mode minor-mode-overriding-map-alist)))))
+
+(ert-deftest helix-test-refresh-overriding-maps-no-cross-mode-leak ()
+  "Test that bindings for one major mode don't leak into another."
+  (let ((helix--mode-keybindings nil))
+    (with-temp-buffer
+      ;; Register binding for dired-mode
+      (helix-define-key 'normal "j" #'next-line 'dired-mode)
+      ;; But current buffer is a different major mode
+      (setq major-mode 'fundamental-mode)
+      (setq-local helix--current-state 'normal)
+      (helix--refresh-overriding-maps)
+      ;; Should have no overriding entry
+      (should-not (assq 'helix-normal-mode minor-mode-overriding-map-alist)))))
+
 (provide 'helix-test)
 ;;; helix-test.el ends here
