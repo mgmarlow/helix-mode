@@ -71,7 +71,9 @@
 ;;; Code:
 
 (require 'helix-core)
-(require 'helix-multiple-cursors)
+(when (locate-library "multiple-cursors")
+  (require 'helix-multiple-cursors)
+  (helix-multiple-cursors-setup))
 (require 'helix-jj)
 
 (provide 'helix)

@@ -55,26 +55,16 @@ buffers by invoking `helix-normal-mode`:
 
 ## Configuration
 
-### Multiple cursors (experimental)
+### Multiple cursors
 
-Helix Mode does not come with support for multiple cursors
-out-of-the-box. Instead, it provides extensions for the
+Helix Mode provides extensions for the
 [multiple-cursors.el](https://github.com/magnars/multiple-cursors.el)
-package available on NonGNU ELPA. Provided that you have
-[multiple-cursors.el](https://github.com/magnars/multiple-cursors.el)
-installed, you can enable Helix Mode support with
-`helix-multiple-cursors-setup`:
+package available on NonGNU ELPA. If you have `multiple-cursors`
+installed, Helix Mode automatically detects it and sets up the
+integration when loaded. No additional configuration is needed.
 
-```lisp
-(use-package helix
-  :after multiple-cursors
-  :config
-  (helix-multiple-cursors-setup))
-```
-
-Enabling Helix multiple cursors support adds selection manipulation
-keybindings that spawn multiple cursors
-(e.g. `helix-multiple-cursors-select-regex`).
+The integration adds selection manipulation keybindings that spawn
+multiple cursors (e.g. `helix-multiple-cursors-select-regex`).
 
 ### jj as escape
 
