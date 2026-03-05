@@ -114,13 +114,13 @@ Stores mode-specific helix bindings registered via `helix-define-key'.")
   "Move left."
   (interactive)
   (helix--clear-highlights)
-  (backward-char))
+  (call-interactively #'backward-char))
 
 (defun helix-forward-char ()
   "Move right."
   (interactive)
   (helix--clear-highlights)
-  (forward-char))
+  (call-interactively #'forward-char))
 
 (defun helix-next-line ()
   "Move down."
@@ -566,6 +566,16 @@ Example that defines the typable command ':format':
     (define-key keymap "%" #'mark-whole-buffer)
     (define-key keymap (kbd "C-f") #'scroll-up-command)
     (define-key keymap (kbd "C-b") #'scroll-down-command)
+    (define-key keymap (kbd "1") (kbd "C-u 1"))
+    (define-key keymap (kbd "2") (kbd "C-u 2"))
+    (define-key keymap (kbd "3") (kbd "C-u 3"))
+    (define-key keymap (kbd "4") (kbd "C-u 4"))
+    (define-key keymap (kbd "5") (kbd "C-u 5"))
+    (define-key keymap (kbd "6") (kbd "C-u 6"))
+    (define-key keymap (kbd "7") (kbd "C-u 7"))
+    (define-key keymap (kbd "8") (kbd "C-u 8"))
+    (define-key keymap (kbd "9") (kbd "C-u 9"))
+    (define-key keymap (kbd "0") (kbd "C-u 0"))
 
     ;; Goto mode
     (define-key keymap "g" 'helix-goto-map)
