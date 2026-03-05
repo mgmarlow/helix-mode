@@ -236,10 +236,12 @@ previous character before moving to the previous long word."
   (back-to-indentation))
 
 (defun helix-go-beginning-buffer ()
-  "Go to beginning of buffer."
+  "Go to beginning of buffer, or go to line N if a numeric prefix arg is given."
   (interactive)
   (helix--clear-highlights)
-  (call-interactively #'beginning-of-buffer))
+  (if current-prefix-arg
+      (goto-line (prefix-numeric-value current-prefix-arg))
+    (call-interactively #'beginning-of-buffer)))
 
 (defun helix-go-end-buffer ()
   "Go to end of buffer."
