@@ -32,6 +32,7 @@ Contributor kudos:
 
 - @johndoeuserr02
 - @matrss
+- @3541
 
 ## 0.8.0 (2025-07-31)
 
