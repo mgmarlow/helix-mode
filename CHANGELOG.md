@@ -1,5 +1,38 @@
 # Changelog
 
+## 0.9.0 (2026-03-06)
+
+`helix-define-key` now takes an optional fourth argument, `MODE`. When
+passed, `MODE` allows users to specify Helix Mode keybindings that only
+activate in certain major modes.
+
+Example:
+
+```lisp
+(with-eval-after-load 'dired
+  (helix-define-key 'normal "j" #'dired-next-line 'dired-mode)
+  (helix-define-key 'normal "k" #'dired-previous-line 'dired-mode))
+```
+
+New features:
+
+- Support digit prefix for go-to line (`gg`)
+- Support digit prefix during navigation
+- Multiple cursors extension activates automatically if the
+  `multiple-cursors` package is already installed
+- Allow major mode keybindings to override helix mode
+- Add cursor below keybinding for multiple-cursors (`C`)
+
+Fix:
+
+- When selection is an entire line, also kill the ending newline
+  character
+
+Contributor kudos:
+
+- @johndoeuserr02
+- @matrss
+
 ## 0.8.0 (2025-07-31)
 
 Now available on MELPA! Helix Mode is now split into several smaller
