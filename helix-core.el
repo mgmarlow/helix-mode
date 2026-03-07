@@ -96,8 +96,10 @@ Stores mode-specific helix bindings registered via `helix-define-key'.")
   (deactivate-mark))
 
 (defun helix-insert ()
-  "Switch to insert state."
+  "Switch to insert state at the beginning of the selection."
   (interactive)
+  (if (use-region-p)
+      (goto-char (region-beginning)))
   (helix--switch-state 'insert))
 
 (defun helix-insert-exit ()
@@ -287,7 +289,7 @@ previous character before moving to the previous long word."
   "Remove the current region or current point and enter insert-mode."
   (interactive)
   (helix-kill-thing-at-point)
-  (helix-insert))
+  (helix--switch-state 'insert))
 
 (defun helix-begin-selection ()
   "Begin selection at existing region or current point."
@@ -309,23 +311,25 @@ previous character before moving to the previous long word."
       (= cur eol))))
 
 (defun helix-insert-after ()
-  "Swap to insert mode one character beyond current point."
+  "Swap to insert mode at the end of the selection."
   (interactive)
-  (unless (helix--end-of-line-p)
-    (forward-char))
-  (helix-insert))
+  (if (use-region-p)
+      (goto-char (region-end))
+    (unless (helix--end-of-line-p)
+      (forward-char)))
+  (helix--switch-state 'insert))
 
 (defun helix-insert-beginning-line ()
   "Move current point to the beginning of line and enter insert mode."
   (interactive)
   (beginning-of-line)
-  (helix-insert))
+  (helix--switch-state 'insert))
 
 (defun helix-insert-after-end-line ()
   "Move current point to the end of line and enter insert mode."
   (interactive)
   (end-of-line)
-  (helix-insert))
+  (helix--switch-state 'insert))
 
 (defun helix-insert-newline ()
   "Insert newline and change `helix--current-state' to INSERT mode."
@@ -333,7 +337,7 @@ previous character before moving to the previous long word."
   (helix--clear-data)
   (end-of-line)
   (newline-and-indent)
-  (helix-insert))
+  (helix--switch-state 'insert))
 
 (defun helix-insert-prevline ()
   "Insert line above and change `helix--current-state' to INSERT mode."
@@ -344,7 +348,7 @@ previous character before moving to the previous long word."
     (newline nil t)
     (call-interactively #'previous-line)
     (indent-according-to-mode))
-  (helix-insert))
+  (helix--switch-state 'insert))
 
 (defun helix-search (input)
   "Begin a search for INPUT."
