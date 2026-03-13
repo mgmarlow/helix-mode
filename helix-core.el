@@ -356,6 +356,12 @@ previous character before moving to the previous long word."
   (setq helix-current-search input)
   (helix-search-forward))
 
+(defun helix-begin-search-backward (input)
+  "Begin a backwards search for INPUT."
+  (interactive "ssearch:")
+  (setq helix-current-search input)
+  (helix-search-backward))
+
 (defun helix--select-region (start end)
   "Create a region between START and END, leaving the current point at END."
   (deactivate-mark)
@@ -634,6 +640,7 @@ Example that defines the typable command ':format':
     (define-key keymap "o" #'helix-insert-newline)
     (define-key keymap "O" #'helix-insert-prevline)
     (define-key keymap "/" #'helix-search)
+    (define-key keymap "?" #'helix-begin-search-backward)
     (define-key keymap "n" #'helix-search-forward)
     (define-key keymap "N" #'helix-search-backward)
     (define-key keymap "r" #'helix-replace)
