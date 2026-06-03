@@ -1,6 +1,6 @@
 EMACS ?= emacs
 
-FILES = helix-core.el helix-multiple-cursors.el helix-jj.el helix.el
+FILES = helix-core.el helix-avy.el helix-multiple-cursors.el helix-jj.el helix.el
 
 DEPS = package-lint
 

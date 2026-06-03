@@ -66,6 +66,11 @@ integration when loaded. No additional configuration is needed.
 The integration adds selection manipulation keybindings that spawn
 multiple cursors (e.g. `helix-multiple-cursors-select-regex`).
 
+### Avy
+
+Helix Mode includes an automatic keybinding for `goto_word` if
+the [Avy package](https://github.com/abo-abo/avy) is installed.
+
 ### jj as escape
 
 Helix Mode supports remapping "jj" as escape for the purpose of

@@ -74,6 +74,9 @@
 (when (locate-library "multiple-cursors")
   (require 'helix-multiple-cursors)
   (helix-multiple-cursors-setup))
+(when (locate-library "avy")
+  (require 'helix-avy)
+  (helix-avy-setup))
 (require 'helix-jj)
 
 (provide 'helix)
