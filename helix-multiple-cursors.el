@@ -33,6 +33,7 @@
 (defvar mc/cmds-to-run-for-all)
 (declare-function mc/keyboard-quit "multiple-cursors")
 (declare-function mc/mark-all-in-region-regexp "multiple-cursors")
+(declare-function mc/mark-next-like-this "multiple-cursors")
 
 (defvar helix-multiple-cursors-run-for-all-commands
   '(helix-forward-char
