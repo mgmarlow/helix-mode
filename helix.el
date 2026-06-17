@@ -71,6 +71,14 @@
 ;;; Code:
 
 (require 'helix-core)
+
+(declare-function helix-avy-setup "helix-avy")
+(declare-function helix-multiple-cursors-setup "helix-multiple-cursors")
+(declare-function helix-treesit-setup "helix-treesit")
+
+(when (locate-library "treesit")
+  (require 'helix-treesit)
+  (helix-treesit-setup))
 (when (locate-library "multiple-cursors")
   (require 'helix-multiple-cursors)
   (helix-multiple-cursors-setup))

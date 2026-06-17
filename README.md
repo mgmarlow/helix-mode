@@ -151,6 +151,9 @@ Example:
 Normal mode is the default mode. You can return to it by pressing
 `ESC`.
 
+Note: tree-sitter commands (TS) require an active tree-sitter parser in
+the current buffer
+
 ### Movement
 
 | Key | Description                     | Command                        |
@@ -165,6 +168,8 @@ Normal mode is the default mode. You can return to it by pressing
 | E   | Move WORD end                   | `helix-forward-long-word-end`  |
 | b   | Move previous word              | `helix-backward-word`          |
 | B   | Move previous WORD              | `helix-backward-long-word`     |
+| M-b | Move to parent syntax node start (TS) | `helix-treesit-go-parent-start` |
+| M-e | Move to parent syntax node end (TS) | `helix-treesit-go-parent-end`   |
 | t   | Find 'till next char            | `helix-find-till-char`         |
 | T   | Find 'till prev char            | `helix-find-prev-till-char`    |
 | f   | Find next char                  | `helix-find-next-char`         |
@@ -195,9 +200,11 @@ Normal mode is the default mode. You can return to it by pressing
 
 ### Selection
 
-| Key | Description         | Command             |
-|:----|:--------------------|:--------------------|
-| x   | Select current line | `helix-select-line` |
+| Key | Description                                | Command                  |
+|:----|:-------------------------------------------|:-------------------------|
+| x   | Select current line                        | `helix-select-line`      |
+| M-i | Shrink syntax tree object selection (TS)   | `helix-shrink-selection` |
+| M-o | Expand syntax tree object selection (TS)   | `helix-expand-selection` |
 
 ### Search
 
