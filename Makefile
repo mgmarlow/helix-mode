@@ -33,7 +33,7 @@ test:
 	@echo "---- Run unit tests"
 	@${EMACS_BATCH} \
 		$(addprefix -l ,$(FILES)) \
-		-l helix-test.el \
+		$(addprefix -l ,$(wildcard *-test.el)) \
 		--eval "(ert-run-tests-batch-and-exit '${TEST_SELECTOR})" \
 		&& echo "OK"
 
