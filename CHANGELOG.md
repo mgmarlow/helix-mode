@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.10.0 (2026-06-29)
+
+New features:
+
+- Tree-sitter support added, with keybindings for `Alt-i`, `Alt-o`,
+  `Alt-b`, `Alt-e`. These features are only present in tree-sitter
+  major modes.
+- Added an Avy integration for `g w` (goto word). You must have the
+  Avy package installed for this integration to work with Helix Mode.
+- Add keybinding `?` for reverse search.
+
+Fix:
+
+- Proper beginning/end selection on insert and insert after.
+
+Contributor kudos:
+
+- @3541
+
 ## 0.9.0 (2026-03-06)
 
 `helix-define-key` now takes an optional fourth argument, `MODE`. When

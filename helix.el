@@ -4,7 +4,7 @@
 
 ;; Author: Graham Marlow
 ;; Keywords: convenience
-;; Version: 0.9.0
+;; Version: 0.10.0
 ;; Package-Requires: ((emacs "29.1"))
 ;; URL: https://github.com/mgmarlow/helix-mode
 
