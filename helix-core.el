@@ -773,6 +773,14 @@ disabling."
     (helix-normal-mode (if status status 1))
     (helix--refresh-overriding-maps)))
 
+(defun helix--initialize-displayed-buffer (_window buffer &rest _args)
+  "Activate Helix mode in BUFFER when it is displayed in a window."
+  ;; `set-window-buffer' does not necessarily make BUFFER current, while
+  ;; Helix modes and their state variables are buffer-local.
+  (with-current-buffer buffer
+    (unless (or helix-normal-mode helix-insert-mode)
+      (helix-mode-maybe-activate))))
+
 ;;;###autoload
 (defun helix-mode-all (&optional status)
   "Activate `helix-normal-mode' in all buffers.
@@ -798,12 +806,17 @@ Argument STATUS is passed through to `helix-mode-maybe-activate'."
       (progn
         ;; Ensure `keyboard-quit' clears out intermediate Helix state.
         (advice-add #'keyboard-quit :before #'helix--clear-data)
+        ;; Startup screen doesn't run a major-mode hook, so we have to set
+        ;; up Helix via the `set-window-buffer' hook.
+        (advice-add #'set-window-buffer :before
+                    #'helix--initialize-displayed-buffer)
         (add-hook 'after-change-major-mode-hook #'helix-mode-maybe-activate)
         (helix-normal-mode 1))
     (cond
      (helix-normal-mode (helix-normal-mode -1))
      (helix-insert-mode (helix-insert-mode -1)))
     (advice-remove #'keyboard-quit #'helix--clear-data)
+    (advice-remove #'set-window-buffer #'helix--initialize-displayed-buffer)
     (remove-hook 'after-change-major-mode-hook #'helix-mode-maybe-activate)))
 
 (provide 'helix-core)
