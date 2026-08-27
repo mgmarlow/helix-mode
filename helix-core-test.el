@@ -570,6 +570,93 @@
     (helix-find-repeat)
     (should (eql (point) 1))))
 
+;;; helix-select-line tests
+
+(ert-deftest helix-test-select-line-no-region ()
+  "Selecting a line with no active region selects the current line, point at end."
+  (let ((transient-mark-mode t))
+    (with-temp-buffer
+      (insert "alpha bravo\ncharlie delta\necho foxtrot\n")
+      (goto-char (point-min))
+      (forward-line 1)
+      (forward-char 3)
+      (let ((line-beg (pos-bol))
+            (line-end (pos-eol)))
+        (helix-select-line)
+        (should (= (region-beginning) line-beg))
+        (should (= (region-end) line-end))
+        (should (= (point) line-end))))))
+
+(ert-deftest helix-test-select-line-expands-partial-single-line-region ()
+  "A mid-line region on one line expands to the full line."
+  (let ((transient-mark-mode t))
+    (with-temp-buffer
+      (insert "alpha bravo\ncharlie delta\necho foxtrot\n")
+      (goto-char (point-min))
+      (forward-line 1)
+      (let ((line-beg (pos-bol))
+            (line-end (pos-eol)))
+        (forward-char 2)
+        (helix--select-region (point) (+ (point) 5))
+        (helix-select-line)
+        (should (= (region-beginning) line-beg))
+        (should (= (region-end) line-end))))))
+
+(ert-deftest helix-test-select-line-expands-multiline-region-not-eol-aligned ()
+  "A forward multi-line region whose end isn't at eol expands to full lines."
+  (let ((transient-mark-mode t))
+    (with-temp-buffer
+      (insert "alpha bravo\ncharlie delta\necho foxtrot\ngolf hotel\n")
+      (goto-char (point-min))
+      (forward-line 1)
+      (let ((first-line-beg (pos-bol)))
+        (forward-char 2)
+        (let ((sel-start (point)))
+          (forward-line 1)
+          (forward-char 4)
+          (let ((last-line-end (pos-eol))
+                (sel-end (point)))
+            (helix--select-region sel-start sel-end)
+            (helix-select-line)
+            (should (= (region-beginning) first-line-beg))
+            (should (= (region-end) last-line-end))
+            (should (= (point) last-line-end))))))))
+
+(ert-deftest helix-test-select-line-backward-region ()
+  "A backward region (point before mark) still expands to full line bounds,
+leaving point at the bottom of the resulting selection."
+  (let ((transient-mark-mode t))
+    (with-temp-buffer
+      (insert "alpha bravo\ncharlie delta\necho foxtrot\ngolf hotel\n")
+      (goto-char (point-min))
+      (let ((top-line-beg (pos-bol)))
+        (forward-char 2)
+        (let ((point-pos (point)))
+          (forward-line 2)
+          (forward-char 3)
+          (let ((bottom-line-end (pos-eol))
+                (mark-pos (point)))
+            (helix--select-region mark-pos point-pos)
+            (helix-select-line)
+            (should (= (region-beginning) top-line-beg))
+            (should (= (region-end) bottom-line-end))
+            (should (= (point) bottom-line-end))))))))
+
+(ert-deftest helix-test-select-line-repeat-extends-one-line ()
+  "Repeating select-line on an already line-aligned selection extends it
+by one more line downward."
+  (let ((transient-mark-mode t))
+    (with-temp-buffer
+      (insert "alpha bravo\ncharlie delta\necho foxtrot\ngolf hotel\n")
+      (goto-char (point-min))
+      (let ((line1-beg (pos-bol))
+            (line2-end (save-excursion (forward-line 1) (pos-eol))))
+        (helix-select-line)
+        (helix-select-line)
+        (should (= (region-beginning) line1-beg))
+        (should (= (region-end) line2-end))
+        (should (= (point) line2-end))))))
+
 ;;; helix-define-key tests
 
 (ert-deftest helix-test-define-key-standard ()

@@ -252,26 +252,23 @@ previous character before moving to the previous long word."
   (call-interactively #'end-of-buffer))
 
 (defun helix-select-line ()
-  "Select the current line, moving the cursor to the end."
+  "Select the current line, moving the cursor to the end.
+
+If a region is already active, extend it in both directions.  Repeated
+invocations advance the selection."
   (interactive)
-  (if (and (region-active-p) (eolp))
-      (progn
-        (call-interactively #'next-line)
-        (end-of-line))
+  (if (region-active-p)
+      (let* ((beg (region-beginning))
+             (end (region-end))
+             (line-beg (save-excursion (goto-char beg) (pos-bol)))
+             (line-end (save-excursion (goto-char end) (pos-eol))))
+        (if (and (= beg line-beg) (= end line-end))
+            (helix--select-region
+             line-beg (save-excursion (goto-char line-end) (forward-line 1) (pos-eol)))
+          (helix--select-region line-beg line-end)))
     (beginning-of-line)
     (push-mark-command t t)
     (end-of-line)))
-
-(defun helix-select-line-up ()
-  "Select the current line, extending upward on every subsequent call."
-  (interactive)
-  (if (and (region-active-p) (bolp))
-      (progn
-        (call-interactively #'previous-line)
-        (beginning-of-line))
-    (end-of-line)
-    (push-mark-command t t)
-    (beginning-of-line)))
 
 (defun helix-kill-thing-at-point ()
   "Kill current region or current point."
