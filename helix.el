@@ -27,7 +27,7 @@
 ;;
 ;; Helix Mode is a minor mode that emulates Helix editor keybindings
 ;; in Emacs.  Helix is a modal text editor with keybindings similar to
-;; vi, but with some noteworthy differences. Helix Mode supports a
+;; vi, but with some noteworthy differences.  Helix Mode supports a
 ;; small subset of Helix functionality with the goal of recreating the
 ;; editor navigation/selection experience in Helix while leaving the
 ;; hard problems (like directory navigation and searching) to Emacs.
@@ -42,7 +42,7 @@
 ;;
 ;;   (helix-normal-mode 1)
 ;;
-;; Normal mode is the default mode. You can return to it by pressing
+;; Normal mode is the default mode.  You can return to it by pressing
 ;; ESC.  Enter insert mode by pressing 'i' (insert before cursor) or
 ;; 'a' (insert after cursor).
 ;;

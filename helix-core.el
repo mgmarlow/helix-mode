@@ -698,7 +698,7 @@ Example:
   ;; Standard: bind to Helix's normal state keymap
   (helix-define-key \\='normal \"s\" #\\='my-command)
 
-  ;; Major-mode specific: override normal state bindings in dired
+  ;; Major-mode specific: override normal state bindings in Dired
   (with-eval-after-load \\='dired
     (helix-define-key \\='normal \"j\" #\\='dired-next-line \\='dired-mode)
     (helix-define-key \\='normal \"k\" #\\='dired-previous-line \\='dired-mode))"
