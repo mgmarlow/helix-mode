@@ -26,7 +26,13 @@
 ;;; Code:
 
 (require 'flymake)
-(require 'eglot)
+
+;; Helix Mode will lazy-load Eglot on request if one of the
+;; Eglot-relevant functions are invoked by keypress.
+(autoload 'eglot-code-action-quickfix "eglot" nil t)
+(autoload 'eglot-find-implementation "eglot" nil t)
+(autoload 'eglot-find-typeDefinition "eglot" nil t)
+(autoload 'eglot-rename "eglot" nil t)
 
 (defgroup helix nil
   "Custom group for Helix."

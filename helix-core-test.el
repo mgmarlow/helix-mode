@@ -30,6 +30,19 @@
 (require 'ert)
 (require 'helix)
 
+;;; Optional dependency tests
+
+(ert-deftest helix-test-eglot-is-lazily-loaded ()
+  "Test that Eglot commands are bound without eagerly loading Eglot."
+  (should-not (featurep 'eglot))
+  (dolist (binding `((,helix-goto-map "y" eglot-find-typeDefinition)
+                     (,helix-goto-map "i" eglot-find-implementation)
+                     (,helix-space-map "a" eglot-code-action-quickfix)
+                     (,helix-space-map "r" eglot-rename)))
+    (let ((command (nth 2 binding)))
+      (should (eq (lookup-key (car binding) (cadr binding)) command))
+      (should (autoloadp (symbol-function command))))))
+
 ;;; Forward long word tests
 
 (ert-deftest helix-test-forward-long-word-start-basic-movement ()
