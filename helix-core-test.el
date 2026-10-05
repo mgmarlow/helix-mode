@@ -583,6 +583,39 @@
     (helix-find-repeat)
     (should (eql (point) 1))))
 
+;;; Word motion count tests
+
+(ert-deftest helix-test-forward-word-start-count ()
+  "A count moves multiple words, selecting only the last."
+  (let ((transient-mark-mode t))
+    (with-temp-buffer
+      (insert "one two three")
+      (goto-char 1)
+      (helix-forward-word-start 2)
+      (should (= (point) 9)) ; before "three"
+      (should (= (region-beginning) 5)))))
+
+(ert-deftest helix-test-backward-long-word-count ()
+  "A count moves multiple long words backward, selecting only the last."
+  (let ((transient-mark-mode t))
+    (with-temp-buffer
+      (insert "hello world test")
+      (goto-char (point-max))
+      (helix-backward-long-word 2)
+      (should (= (point) 7)) ; start of "world"
+      (should (= (region-end) 13)))))
+
+(ert-deftest helix-test-forward-word-start-count-extends-selection ()
+  "In selection mode, a count extends the region from the original point."
+  (let ((transient-mark-mode t)
+        (helix--current-selection t))
+    (with-temp-buffer
+      (insert "one two three")
+      (goto-char 1)
+      (helix-forward-word-start 2)
+      (should (= (point) 9))
+      (should (= (region-beginning) 1)))))
+
 ;;; helix-select-line tests
 
 (ert-deftest helix-test-select-line-no-region ()
