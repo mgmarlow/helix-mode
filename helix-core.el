@@ -166,64 +166,82 @@ If a region is already active, no new region is created."
          (push-mark current t 'activate)))))
 
 (define-obsolete-function-alias 'helix-forward-word 'helix-forward-word-start "0.8.0")
-(defun helix-forward-word-start ()
-  "Move to start of the next word."
-  (interactive)
-  (helix--with-movement-surround
-   (re-search-forward "[[:alnum:]]+[ ]*\\|[[:punct:]]+[ ]*\\|\n" nil 'move)))
+(defun helix-forward-word-start (&optional count)
+  "Move point forward COUNT words.
 
-(defun helix-forward-word-end ()
-  "Move to the end of the current word."
-  (interactive)
-  (helix--with-movement-surround
-   (re-search-forward "\\([[:alnum:]]+\\)\\|\\([[:punct:]]+\\)\\|\n" nil 'move)))
+If COUNT is omitted or nil, defaults to one."
+  (interactive "p")
+  (dotimes (_ (or count 1))
+    (helix--with-movement-surround
+     (re-search-forward "[[:alnum:]]+[ ]*\\|[[:punct:]]+[ ]*\\|\n" nil 'move))))
 
-(defun helix-backward-word ()
-  "Move to previous word."
-  (interactive)
-  (helix--with-movement-surround
-   (when (re-search-backward "\\([[:alnum:]]+[ ]*\\)\\|\\([[:punct:]]+[ ]*\\)\\|\n" nil 'move)
-     (or (eq (char-after (match-beginning 0)) ?\n)
-         (if (match-string 1)
-             (skip-syntax-backward "w")
-           (skip-syntax-backward ".()"))))))
+(defun helix-forward-word-end (&optional count)
+  "Move point to the end of COUNT words.
+
+If COUNT is omitted or nil, defaults to one."
+  (interactive "p")
+  (dotimes (_ (or count 1))
+    (helix--with-movement-surround
+     (re-search-forward "\\([[:alnum:]]+\\)\\|\\([[:punct:]]+\\)\\|\n" nil 'move))))
+
+(defun helix-backward-word (&optional count)
+  "Move point backward COUNT words.
+
+If COUNT is omitted or nil, defaults to one."
+  (interactive "p")
+  (dotimes (_ (or count 1))
+    (helix--with-movement-surround
+     (when (re-search-backward "\\([[:alnum:]]+[ ]*\\)\\|\\([[:punct:]]+[ ]*\\)\\|\n" nil 'move)
+       (or (eq (char-after (match-beginning 0)) ?\n)
+           (if (match-string 1)
+               (skip-syntax-backward "w")
+             (skip-syntax-backward ".()")))))))
 
 (define-obsolete-function-alias 'helix-forward-long-word 'helix-forward-long-word-start "0.8.0")
-(defun helix-forward-long-word-start ()
-  "Move to start of the next long word.
-If the point is at the end of a line, it first searches for the
-non-empty line before moving to the next long word."
-  (interactive)
-  (unless (eobp)
-    (when (looking-at-p "\\s-\\S-") (forward-char))
-    (while (looking-at-p ".?$") (forward-line))
-    (helix--with-movement-surround
-     (when (re-search-forward "[ \t]+\\S-" (- (pos-eol) 1) 'move)
-       (backward-char 2)))))
+(defun helix-forward-long-word-start (&optional count)
+  "Move point forward COUNT WORDs.
 
-(defun helix-forward-long-word-end ()
-  "Move to end of this long word.
 If the point is at the end of a line, it first searches for the
-non-empty line before moving to the next long word."
-  (interactive)
-  (unless (eobp)
-    (when (looking-at-p "\\S-\\(\\s-\\|[[:punct:]]\\)") (forward-char))
-    (while (looking-at-p ".?$") (forward-line))
-    (helix--with-movement-surround
-     (when (re-search-forward "\\S-+\\(\\s-\\|[[:punct:]]\\)" (- (pos-eol) 1) 'move)
-       (backward-char 2)))))
+non-empty line before moving to the next long word.  If COUNT
+is omitted or nil, defaults to one."
+  (interactive "p")
+  (dotimes (_ (or count 1))
+    (unless (eobp)
+      (when (looking-at-p "\\s-\\S-") (forward-char))
+      (while (looking-at-p ".?$") (forward-line))
+      (helix--with-movement-surround
+       (when (re-search-forward "[ \t]+\\S-" (- (pos-eol) 1) 'move)
+         (backward-char 2))))))
 
-(defun helix-backward-long-word ()
-  "Move to previous long word.
+(defun helix-forward-long-word-end (&optional count)
+  "Move point to the end of COUNT WORDs.
+
+If the point is at the end of a line, it first searches for the
+non-empty line before moving to the next long word.  If COUNT
+is omitted or nil, defaults to one."
+  (interactive "p")
+  (dotimes (_ (or count 1))
+    (unless (eobp)
+      (when (looking-at-p "\\S-\\(\\s-\\|[[:punct:]]\\)") (forward-char))
+      (while (looking-at-p ".?$") (forward-line))
+      (helix--with-movement-surround
+       (when (re-search-forward "\\S-+\\(\\s-\\|[[:punct:]]\\)" (- (pos-eol) 1) 'move)
+         (backward-char 2))))))
+
+(defun helix-backward-long-word (&optional count)
+  "Move point backward COUNT WORDs.
+
 If the point is at the beginning of a line, it first searches for the
-previous character before moving to the previous long word."
-  (interactive)
-  (unless (bobp)
-    (when (and (bolp) (re-search-backward "[^\n]"))
-      (forward-char))
-    (helix--with-movement-surround
-     (when (re-search-backward "[ \t]+\\S-" (pos-bol) 'move)
-       (forward-char)))))
+previous character before moving to the previous long word.  If COUNT
+is omitted or nil, defaults to one."
+  (interactive "p")
+  (dotimes (_ (or count 1))
+    (unless (bobp)
+      (when (and (bolp) (re-search-backward "[^\n]"))
+        (forward-char))
+      (helix--with-movement-surround
+       (when (re-search-backward "[ \t]+\\S-" (pos-bol) 'move)
+         (forward-char))))))
 
 (defun helix-go-beginning-line ()
   "Go to beginning of line."
